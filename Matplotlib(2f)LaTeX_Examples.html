@@ -1,0 +1,392 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Producing Graphs for Publication using LaTeX &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Cookbook/Matplotlib/Legend" href="Matplotlib(2f)Legend.html" />
+    <link rel="prev" title="Interactive point identification" href="Matplotlib(2f)Interactive_Plotting.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Legend.html" title="Cookbook/Matplotlib/Legend"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Interactive_Plotting.html" title="Interactive point identification"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="producing-graphs-for-publication-using-latex">
+<h1>Producing Graphs for Publication using LaTeX<a class="headerlink" href="#producing-graphs-for-publication-using-latex" title="Permalink to this headline">¶</a></h1>
+<p>This page describes several ways to produce publication quality graphics
+with LaTeX.</p>
+<div class="section" id="latex-usingtex">
+<h2>LaTeX UsingTex<a class="headerlink" href="#latex-usingtex" title="Permalink to this headline">¶</a></h2>
+<p>This section describes a technique following the
+[&#8220;Cookbook/Matplotlib/UsingTex&#8221;] guidelines.</p>
+<p>Here is the outline of the LaTeX file used to include the figure
+(example for `REVTeX4` for publication is APS physics journals with a
+two column format.)</p>
+<div class="highlight-python"><div class="highlight"><pre>\<span class="n">documentclass</span><span class="p">[</span><span class="n">prl</span><span class="p">,</span><span class="mi">10</span><span class="n">pt</span><span class="p">,</span><span class="n">twocolumn</span><span class="p">]{</span><span class="n">revtex4</span><span class="p">}</span>
+\<span class="n">usepackage</span><span class="p">{</span><span class="n">graphicx</span><span class="p">}</span>    <span class="o">%</span> <span class="n">Used</span> <span class="n">to</span> <span class="kn">import</span> <span class="nn">the</span> <span class="nn">graphics</span>
+\<span class="n">begin</span><span class="p">{</span><span class="n">document</span><span class="p">}</span>
+<span class="o">%...</span>
+\<span class="n">begin</span><span class="p">{</span><span class="n">figure</span><span class="p">}[</span><span class="n">t</span><span class="p">]</span>
+  \<span class="n">begin</span><span class="p">{</span><span class="n">center</span><span class="p">}</span>
+    \<span class="n">showthe</span>\<span class="n">columnwidth</span> <span class="o">%</span> <span class="n">Use</span> <span class="n">this</span> <span class="n">to</span> <span class="n">determine</span> <span class="n">the</span> <span class="n">width</span> <span class="n">of</span> <span class="n">the</span> <span class="n">figure</span><span class="o">.</span>
+    \<span class="n">includegraphics</span><span class="p">[</span><span class="n">width</span><span class="o">=</span>\<span class="n">columnwidth</span><span class="p">]{</span><span class="n">fig1</span><span class="o">.</span><span class="n">eps</span><span class="p">}</span>
+    \<span class="n">caption</span><span class="p">{</span>\<span class="n">label</span><span class="p">{</span><span class="n">fig</span><span class="p">:</span><span class="n">sin_cos</span><span class="p">}</span> <span class="n">Plot</span> <span class="n">of</span> <span class="n">the</span> <span class="n">sine</span> <span class="ow">and</span> <span class="n">cosine</span> <span class="n">functions</span><span class="o">.</span><span class="p">}</span>
+  \<span class="n">end</span><span class="p">{</span><span class="n">center</span><span class="p">}</span>
+\<span class="n">end</span><span class="p">{</span><span class="n">figure</span><span class="p">}</span>
+<span class="o">%...</span>
+\<span class="n">end</span><span class="p">{</span><span class="n">document</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="determining-the-figure-size">
+<h3>Determining the Figure Size<a class="headerlink" href="#determining-the-figure-size" title="Permalink to this headline">¶</a></h3>
+<p>The first step is to determine the size of the figure: this way, when
+the graphic is included, it will not be resized, and the fonts etc. will
+be exactly as you set them rather than scaled (and possibly distored).
+This can be done in LaTeX by explicitly setting the width of the figure
+and using the `\showthe` command to print this width. (In the example
+above, the figure width is set to the `\columnwidth`.)</p>
+<p>When the file is processed by LaTeX, look at the output. The example
+above produces the following output (Note: LaTeX will pause after the
+`\showthe` command, press enter to continue):</p>
+<div class="highlight-python"><pre>This is TeX, Version 3.14159 (Web2C 7.4.5)
+LaTeX2e &lt;2001/06/01&gt;
+...
+&gt; 246.0pt.
+l.8     \showthe\columnwidth
+                             % Use this to determine the width of the figure.
+?
+&lt;fig1.eps&gt; [1] (./tst.aux) )
+...</pre>
+</div>
+<p>Thus, the figure will be 246.0pt wide. There are 1 inch = 72.27pt (in
+[La]TeX), so this means that the figure width should be 3.40390 inches.
+The heigth depends on the content of the figure, but the golden mean may
+be used to make a pleasing figure. Once this is determined, the
+`figure.figsize` property can be used to set the default figure size.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="n">fig_width_pt</span> <span class="o">=</span> <span class="mf">246.0</span>  <span class="c"># Get this from LaTeX using \showthe\columnwidth</span>
+<span class="n">inches_per_pt</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="mf">72.27</span>               <span class="c"># Convert pt to inches</span>
+<span class="n">golden_mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span>         <span class="c"># Aesthetic ratio</span>
+<span class="n">fig_width</span> <span class="o">=</span> <span class="n">fig_width_pt</span><span class="o">*</span><span class="n">inches_per_pt</span>  <span class="c"># width in inches</span>
+<span class="n">fig_height</span> <span class="o">=</span><span class="n">fig_width</span><span class="o">*</span><span class="n">golden_mean</span>       <span class="c"># height in inches</span>
+<span class="n">fig_size</span> <span class="o">=</span> <span class="p">[</span><span class="n">fig_width</span><span class="p">,</span><span class="n">fig_height</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="setting-font-sizes">
+<h3>Setting Font Sizes<a class="headerlink" href="#setting-font-sizes" title="Permalink to this headline">¶</a></h3>
+<p>Since the figure will not be scaled down, we may explicitly set the font
+sizes.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+          <span class="s">&#39;font.size&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+          <span class="s">&#39;axes.labelsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+          <span class="s">&#39;font.size&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+          <span class="s">&#39;text.fontsize&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+          <span class="s">&#39;legend.fontsize&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+          <span class="s">&#39;xtick.labelsize&#39;</span> <span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+          <span class="s">&#39;ytick.labelsize&#39;</span> <span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="fine-tuning">
+<h3>Fine Tuning<a class="headerlink" href="#fine-tuning" title="Permalink to this headline">¶</a></h3>
+<p>With these smaller plot sizes, the default margins are not enough to
+display the axis labels, so we need to specify large margins. We do this
+with an explicit call to the `axes()` function. In this example, we
+only have one axis. The typeset LaTeX document will have whitespace on
+either side of the figure, so we do not need to include this in the
+figure. Thus, we keep just a bit of whitespace at the top and to the
+right so that the labels do not extend beyond the bounding box, and add
+more space to the bottom for the x label:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">axes</span><span class="p">([</span><span class="mf">0.125</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.95</span><span class="o">-</span><span class="mf">0.125</span><span class="p">,</span><span class="mf">0.95</span><span class="o">-</span><span class="mf">0.2</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="putting-it-all-together">
+<h3>Putting it all Together<a class="headerlink" href="#putting-it-all-together" title="Permalink to this headline">¶</a></h3>
+<p>Here is the python file that generates the plots.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="kn">import</span> <span class="nn">pylab</span>
+<span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">arange</span><span class="p">,</span><span class="n">pi</span><span class="p">,</span><span class="n">sin</span><span class="p">,</span><span class="n">cos</span><span class="p">,</span><span class="n">sqrt</span>
+<span class="n">fig_width_pt</span> <span class="o">=</span> <span class="mf">246.0</span>  <span class="c"># Get this from LaTeX using \showthe\columnwidth</span>
+<span class="n">inches_per_pt</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="mf">72.27</span>               <span class="c"># Convert pt to inch</span>
+<span class="n">golden_mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span>         <span class="c"># Aesthetic ratio</span>
+<span class="n">fig_width</span> <span class="o">=</span> <span class="n">fig_width_pt</span><span class="o">*</span><span class="n">inches_per_pt</span>  <span class="c"># width in inches</span>
+<span class="n">fig_height</span> <span class="o">=</span> <span class="n">fig_width</span><span class="o">*</span><span class="n">golden_mean</span>      <span class="c"># height in inches</span>
+<span class="n">fig_size</span> <span class="o">=</span>  <span class="p">[</span><span class="n">fig_width</span><span class="p">,</span><span class="n">fig_height</span><span class="p">]</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;backend&#39;</span><span class="p">:</span> <span class="s">&#39;ps&#39;</span><span class="p">,</span>
+          <span class="s">&#39;axes.labelsize&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+          <span class="s">&#39;text.fontsize&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+          <span class="s">&#39;legend.fontsize&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+          <span class="s">&#39;xtick.labelsize&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+          <span class="s">&#39;ytick.labelsize&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+          <span class="s">&#39;text.usetex&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+          <span class="s">&#39;figure.figsize&#39;</span><span class="p">:</span> <span class="n">fig_size</span><span class="p">}</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+<span class="c"># Generate data</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">y1</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">y2</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="c"># Plot data</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">axes</span><span class="p">([</span><span class="mf">0.125</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.95</span><span class="o">-</span><span class="mf">0.125</span><span class="p">,</span><span class="mf">0.95</span><span class="o">-</span><span class="mf">0.2</span><span class="p">])</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="s">&#39;g:&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&#39;$\sin(x)$&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="s">&#39;-b&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&#39;$\cos(x)$&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;$x$ (radians)&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;$y$&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;fig1.eps&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="Matplotlib(2f)LaTeX_Examples_attachments/fig.png" src="Matplotlib(2f)LaTeX_Examples_attachments/fig.png" />
+</div>
+</div>
+<div class="section" id="producing-gray-scale-dashed-plots">
+<h2>producing gray scale dashed plots<a class="headerlink" href="#producing-gray-scale-dashed-plots" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">An&nbsp;obvious&nbsp;solution&nbsp;is&nbsp;to&nbsp;greyscale&nbsp;convert&nbsp;your&nbsp;figure,&nbsp;but&nbsp;for&nbsp;readibility,&nbsp;adding&nbsp;dashes&nbsp;is&nbsp;often&nbsp;better..&nbsp;This&nbsp;maybe&nbsp;implemented&nbsp;for&nbsp;an&nbsp;example&nbsp;of&nbsp;a&nbsp;SigmoidalFunctions&nbsp;with&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`..</span> <span class="pre">image::</span> <span class="pre">Matplotlib(2f)LaTeX_Examples_attachments/naka-rushton.png</span></tt> &lt;.. image:: Matplotlib(2f)LaTeX_Examples_attachments/naka-rushton.png&gt;`__</p>
+</div>
+<div class="section" id="latex-using-psfrag">
+<h2>LaTeX using psfrag<a class="headerlink" href="#latex-using-psfrag" title="Permalink to this headline">¶</a></h2>
+<p><strong>Note: This section is obsolete.</strong> Recent versions matplotlib break the
+psfrag functionality (see for example <a class="reference external" href="http://article.gmane.org/gmane.comp.python.matplotlib.general/26740/">this
+discussion</a>.
+That being said, one can use the usetex feature to render the LaTeX text
+directly with very good results (if you are careful about choosing
+fonts). I will try to discuss this here further in the near future. &#8211;
+MichaelMcNeilForbes</p>
+<p>To ensure that your graphics use exactly the same fonts as your
+document, you can have LaTeX generate and substitute the text for your
+graph using the psfrag package. This is a good option if you have
+problems with the `text.usetex` method (for example, if the
+appropriate fonts cannot be found.)</p>
+<p>To do this, simply use plain text for the labels and then replace them
+using the psfrag package. Here are the modified files to make use of
+this method:</p>
+<div class="highlight-python"><pre>\documentclass[prl,10pt,twocolumn]{revtex4}
+\usepackage{graphicx}    % Used to import the graphics
+\usepackage{psfrag}
+\begin{document}
+%...
+\begin{figure}[t]
+  \begin{center}
+    \psfrag{sin(x)}{$\sin(x)$}
+    \psfrag{cos(x)}{$\cos(x)$}
+    \psfrag{x (radians)}{$x$ (radians)}
+    \psfrag{y}{$y$}
+    {\footnotesize                  % Replace tick-lables with smaller font.
+      \psfrag{1.0}{1.0}
+      \psfrag{0.5}{0.5}
+      \psfrag{0.0}{0.0}
+      \psfrag{-0.5}{-0.5}
+      \psfrag{-1.0}{-1.0}
+      \psfrag{-8}{-8}
+      \psfrag{-6}{-6}
+      \psfrag{-4}{-4}
+      \psfrag{-2}{-2}
+      \psfrag{0}{0}
+      \psfrag{2}{2}
+      \psfrag{4}{4}
+      \psfrag{6}{6}
+      \psfrag{8}{8}
+      \showthe\columnwidth % Use this to determine the width of the figure.
+      \includegraphics[width=\columnwidth]{fig2.eps}
+    } % Note that the psfrag commands only work in the top-most environment.
+    \caption{\label{fig:sin_cos} Plot of the sine and cosine functions.}
+  \end{center}
+\end{figure}
+%...
+\end{document}</pre>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="kn">import</span> <span class="nn">pylab</span>
+<span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">arange</span><span class="p">,</span><span class="n">pi</span><span class="p">,</span><span class="n">sin</span><span class="p">,</span><span class="n">cos</span><span class="p">,</span><span class="n">sqrt</span>
+<span class="n">fig_width_pt</span> <span class="o">=</span> <span class="mf">246.0</span>  <span class="c"># Get this from LaTeX using \showthe\columnwidth</span>
+<span class="n">inches_per_pt</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="mf">72.27</span>               <span class="c"># Convert pt to inch</span>
+<span class="n">golden_mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span>         <span class="c"># Aesthetic ratio</span>
+<span class="n">fig_width</span> <span class="o">=</span> <span class="n">fig_width_pt</span><span class="o">*</span><span class="n">inches_per_pt</span>  <span class="c"># width in inches</span>
+<span class="n">fig_height</span> <span class="o">=</span> <span class="n">fig_width</span><span class="o">*</span><span class="n">golden_mean</span>      <span class="c"># height in inches</span>
+<span class="n">fig_size</span> <span class="o">=</span>  <span class="p">[</span><span class="n">fig_width</span><span class="p">,</span><span class="n">fig_height</span><span class="p">]</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;backend&#39;</span><span class="p">:</span> <span class="s">&#39;ps&#39;</span><span class="p">,</span>
+          <span class="s">&#39;axes.labelsize&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+          <span class="s">&#39;text.fontsize&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+          <span class="s">&#39;legend.fontsize&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+          <span class="s">&#39;xtick.labelsize&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+          <span class="s">&#39;ytick.labelsize&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+          <span class="s">&#39;text.usetex&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+          <span class="s">&#39;figure.figsize&#39;</span><span class="p">:</span> <span class="n">fig_size</span><span class="p">}</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+<span class="c"># Generate data</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">y1</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">y2</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="c"># Plot data</span>
+<span class="c"># Plot data</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">axes</span><span class="p">([</span><span class="mf">0.125</span><span class="p">,</span><span class="mf">0.2</span><span class="p">,</span><span class="mf">0.95</span><span class="o">-</span><span class="mf">0.125</span><span class="p">,</span><span class="mf">0.95</span><span class="o">-</span><span class="mf">0.2</span><span class="p">])</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="s">&#39;g:&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&#39;sin(x)&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="s">&#39;-b&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&#39;cos(x)&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;x (radians)&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;y&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;fig2.eps&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="Matplotlib(2f)LaTeX_Examples_attachments/psfrag_example.png" src="Matplotlib(2f)LaTeX_Examples_attachments/psfrag_example.png" />
+</div>
+<div class="section" id="odds-and-ends">
+<h2>Odds and Ends<a class="headerlink" href="#odds-and-ends" title="Permalink to this headline">¶</a></h2>
+<p>Another way to set the legend fonts after the legend has been drawn is
+to use, for example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">matplotlib.font_manager</span> <span class="kn">import</span> <span class="n">fontManager</span><span class="p">,</span> <span class="n">FontProperties</span>
+<span class="n">font</span><span class="o">=</span> <span class="n">FontProperties</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="s">&#39;x-small&#39;</span><span class="p">);</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="n">font</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>&#8211; DavidDonovan</p>
+<div class="section" id="pdf-file-size">
+<h3>PDF File Size<a class="headerlink" href="#pdf-file-size" title="Permalink to this headline">¶</a></h3>
+<p>If you have very complex images such as high-resolution contour plots or
+three-dimensional plots, saving these to vector graphic formats like PDF
+or EPS can result in unacceptably large files (though with the ability
+for stunning zooms). One solution is to selectively convert parts of the
+plot (not the text labels) to a rasterized image. This can be done with
+the so-called &#8220;mixed-mode rendering&#8221; capability in recent versions of
+matplotlib. Here is an example as it should probably work:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">meshgrid</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">linspace</span><span class="p">,</span> <span class="n">contourf</span><span class="p">,</span> <span class="n">savefig</span><span class="p">,</span> <span class="n">clf</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">500</span><span class="p">),)</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="mi">20</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="mi">30</span><span class="o">*</span><span class="n">y</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">contourf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">savefig</span><span class="p">(</span><span class="s">&#39;full_vector.pdf&#39;</span><span class="p">)</span>
+<span class="n">clf</span><span class="p">()</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">contourf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="n">rasterized</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">savefig</span><span class="p">(</span><span class="s">&#39;rasterized.pdf&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>however, currently does not support the option (which is silently
+ignored). Some other plot elements do however. I am looking into a
+solution for this. &#8211; MichaelMcNeilForbes</p>
+<p>CategoryCookbookMatplotlib</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Producing Graphs for Publication using LaTeX</a><ul>
+<li><a class="reference internal" href="#latex-usingtex">LaTeX UsingTex</a><ul>
+<li><a class="reference internal" href="#determining-the-figure-size">Determining the Figure Size</a></li>
+<li><a class="reference internal" href="#setting-font-sizes">Setting Font Sizes</a></li>
+<li><a class="reference internal" href="#fine-tuning">Fine Tuning</a></li>
+<li><a class="reference internal" href="#putting-it-all-together">Putting it all Together</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#producing-gray-scale-dashed-plots">producing gray scale dashed plots</a></li>
+<li><a class="reference internal" href="#latex-using-psfrag">LaTeX using psfrag</a></li>
+<li><a class="reference internal" href="#odds-and-ends">Odds and Ends</a><ul>
+<li><a class="reference internal" href="#pdf-file-size">PDF File Size</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)Interactive_Plotting.html"
+                        title="previous chapter">Interactive point identification</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)Legend.html"
+                        title="next chapter">Cookbook/Matplotlib/Legend</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Matplotlib(2f)LaTeX_Examples.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Legend.html" title="Cookbook/Matplotlib/Legend"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Interactive_Plotting.html" title="Interactive point identification"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

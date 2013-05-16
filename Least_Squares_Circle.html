@@ -1,0 +1,459 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Line Integral Convolution" href="LineIntegralConvolution.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="LASReader.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="LineIntegralConvolution.html" title="Line Integral Convolution"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="LASReader.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>TableOfContents(3)</p>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>This page gathers different methods used to find the least squares
+circle fitting a set of 2D points (x,y).</p>
+<p>The full code of this analysis is available here:
+.. image:: Least_Squares_Circle_attachments/least_squares_circle_v1d.py.</p>
+<p>Finding the least squares circle corresponds to finding the center of
+the circle (xc, yc) and its radius Rc which minimize the residu function
+defined below:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! python</span>
+<span class="n">Ri</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">xc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">yc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">residu</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span> <span class="p">(</span><span class="n">Ri</span> <span class="o">-</span> <span class="n">Rc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is a nonlinear problem. We well see three approaches to the
+problem, and compare there results, as well as their speeds.</p>
+</div>
+<div class="section" id="using-an-algebraic-approximation">
+<h1>Using an algebraic approximation<a class="headerlink" href="#using-an-algebraic-approximation" title="Permalink to this headline">¶</a></h1>
+<p>As detailed in <a class="reference external" href="http://www.dtcenter.org/met/users/docs/write_ups/circle_fit.pdf">this
+document</a>
+this problem can be approximated by a linear one if we define the
+function to minimize as follow:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! python</span>
+<span class="n">residu_2</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span> <span class="p">(</span><span class="n">Ri</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">Rc</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This leads to the following method, using linalg.solve :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! python</span>
+<span class="c"># == METHOD 1 ==</span>
+<span class="n">method_1</span> <span class="o">=</span> <span class="s">&#39;algebraic&#39;</span>
+
+<span class="c"># coordinates of the barycenter</span>
+<span class="n">x_m</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">y_m</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+<span class="c"># calculation of the reduced coordinates</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">x_m</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">y_m</span>
+
+<span class="c"># linear system defining the center (uc, vc) in reduced coordinates:</span>
+<span class="c">#    Suu * uc +  Suv * vc = (Suuu + Suvv)/2</span>
+<span class="c">#    Suv * uc +  Svv * vc = (Suuv + Svvv)/2</span>
+<span class="n">Suv</span>  <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="n">v</span><span class="p">)</span>
+<span class="n">Suu</span>  <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">Svv</span>  <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">v</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">Suuv</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">v</span><span class="p">)</span>
+<span class="n">Suvv</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">u</span> <span class="o">*</span> <span class="n">v</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">Suuu</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">u</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">Svvv</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">v</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c"># Solving the linear system</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span> <span class="p">[</span> <span class="n">Suu</span><span class="p">,</span> <span class="n">Suv</span> <span class="p">],</span> <span class="p">[</span><span class="n">Suv</span><span class="p">,</span> <span class="n">Svv</span><span class="p">]])</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span> <span class="n">Suuu</span> <span class="o">+</span> <span class="n">Suvv</span><span class="p">,</span> <span class="n">Svvv</span> <span class="o">+</span> <span class="n">Suuv</span> <span class="p">])</span><span class="o">/</span><span class="mf">2.0</span>
+<span class="n">uc</span><span class="p">,</span> <span class="n">vc</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+
+<span class="n">xc_1</span> <span class="o">=</span> <span class="n">x_m</span> <span class="o">+</span> <span class="n">uc</span>
+<span class="n">yc_1</span> <span class="o">=</span> <span class="n">y_m</span> <span class="o">+</span> <span class="n">vc</span>
+
+<span class="c"># Calcul des distances au centre (xc_1, yc_1)</span>
+<span class="n">Ri_1</span>     <span class="o">=</span> <span class="n">sqrt</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">xc_1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">yc_1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">R_1</span>      <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">Ri_1</span><span class="p">)</span>
+<span class="n">residu_1</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">Ri_1</span><span class="o">-</span><span class="n">R_1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-scipy-optimize-leastsq">
+<h1>Using scipy.optimize.leastsq<a class="headerlink" href="#using-scipy-optimize-leastsq" title="Permalink to this headline">¶</a></h1>
+<p>Scipy comes will several tools to solve the nonlinear problem above.
+Among them,
+<a class="reference external" href="http://docs.scipy.org/doc/scipy/reference/tutorial/optimize.html#least-square-fitting-leastsq">scipy.optimize.leastsq</a>
+is very simple to use in this case.</p>
+<p>Indeed, once the center of the circle is defined, the radius can be
+calculated directly and is equal to mean(Ri). So there is only two
+parameters left: xc and yc.</p>
+<div class="section" id="basic-usage">
+<h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! python</span>
+<span class="c">#  == METHOD 2 ==</span>
+<span class="kn">from</span> <span class="nn">scipy</span>      <span class="kn">import</span> <span class="n">optimize</span>
+
+<span class="n">method_2</span> <span class="o">=</span> <span class="s">&quot;leastsq&quot;</span>
+
+<span class="k">def</span> <span class="nf">calc_R</span><span class="p">(</span><span class="n">xc</span><span class="p">,</span> <span class="n">yc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; calculate the distance of each 2D points from the center (xc, yc) &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">sqrt</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">xc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">yc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">f_2</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; calculate the algebraic distance between the data points and the mean ci</span>
+<span class="sd">rcle centered at c=(xc, yc) &quot;&quot;&quot;</span>
+    <span class="n">Ri</span> <span class="o">=</span> <span class="n">calc_R</span><span class="p">(</span><span class="o">*</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Ri</span> <span class="o">-</span> <span class="n">Ri</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+<span class="n">center_estimate</span> <span class="o">=</span> <span class="n">x_m</span><span class="p">,</span> <span class="n">y_m</span>
+<span class="n">center_2</span><span class="p">,</span> <span class="n">ier</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">leastsq</span><span class="p">(</span><span class="n">f_2</span><span class="p">,</span> <span class="n">center_estimate</span><span class="p">)</span>
+
+<span class="n">xc_2</span><span class="p">,</span> <span class="n">yc_2</span> <span class="o">=</span> <span class="n">center_2</span>
+<span class="n">Ri_2</span>       <span class="o">=</span> <span class="n">calc_R</span><span class="p">(</span><span class="o">*</span><span class="n">center_2</span><span class="p">)</span>
+<span class="n">R_2</span>        <span class="o">=</span> <span class="n">Ri_2</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">residu_2</span>   <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">Ri_2</span> <span class="o">-</span> <span class="n">R_2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="advanced-usage-with-jacobian-function">
+<h2>Advanced usage, with jacobian function<a class="headerlink" href="#advanced-usage-with-jacobian-function" title="Permalink to this headline">¶</a></h2>
+<p>To gain in speed, it is possible to tell optimize.leastsq how to compute
+the jacobian of the function by adding a Dfun argument:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! python</span>
+<span class="c"># == METHOD 2b ==</span>
+<span class="n">method_2b</span>  <span class="o">=</span> <span class="s">&quot;leastsq with jacobian&quot;</span>
+
+<span class="k">def</span> <span class="nf">calc_R</span><span class="p">(</span><span class="n">xc</span><span class="p">,</span> <span class="n">yc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; calculate the distance of each data points from the center (xc, yc) &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">sqrt</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">xc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">yc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">f_2b</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; calculate the algebraic distance between the 2D points and the mean circ</span>
+<span class="sd">le centered at c=(xc, yc) &quot;&quot;&quot;</span>
+    <span class="n">Ri</span> <span class="o">=</span> <span class="n">calc_R</span><span class="p">(</span><span class="o">*</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Ri</span> <span class="o">-</span> <span class="n">Ri</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">Df_2b</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Jacobian of f_2b</span>
+<span class="sd">    The axis corresponding to derivatives must be coherent with the col_deriv op</span>
+<span class="sd">tion of leastsq&quot;&quot;&quot;</span>
+    <span class="n">xc</span><span class="p">,</span> <span class="n">yc</span>     <span class="o">=</span> <span class="n">c</span>
+    <span class="n">df2b_dc</span>    <span class="o">=</span> <span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+
+    <span class="n">Ri</span> <span class="o">=</span> <span class="n">calc_R</span><span class="p">(</span><span class="n">xc</span><span class="p">,</span> <span class="n">yc</span><span class="p">)</span>
+    <span class="n">df2b_dc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">xc</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="n">Ri</span>                   <span class="c"># dR/dxc</span>
+    <span class="n">df2b_dc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">yc</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span><span class="o">/</span><span class="n">Ri</span>                   <span class="c"># dR/dyc</span>
+    <span class="n">df2b_dc</span>    <span class="o">=</span> <span class="n">df2b_dc</span> <span class="o">-</span> <span class="n">df2b_dc</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">newaxis</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">df2b_dc</span>
+
+<span class="n">center_estimate</span> <span class="o">=</span> <span class="n">x_m</span><span class="p">,</span> <span class="n">y_m</span>
+<span class="n">center_2b</span><span class="p">,</span> <span class="n">ier</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">leastsq</span><span class="p">(</span><span class="n">f_2b</span><span class="p">,</span> <span class="n">center_estimate</span><span class="p">,</span> <span class="n">Dfun</span><span class="o">=</span><span class="n">Df_2b</span><span class="p">,</span> <span class="n">col_deriv</span><span class="o">=</span><span class="n">T</span>
+<span class="n">rue</span><span class="p">)</span>
+
+<span class="n">xc_2b</span><span class="p">,</span> <span class="n">yc_2b</span> <span class="o">=</span> <span class="n">center_2b</span>
+<span class="n">Ri_2b</span>        <span class="o">=</span> <span class="n">calc_R</span><span class="p">(</span><span class="o">*</span><span class="n">center_2b</span><span class="p">)</span>
+<span class="n">R_2b</span>         <span class="o">=</span> <span class="n">Ri_2b</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">residu_2b</span>    <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">Ri_2b</span> <span class="o">-</span> <span class="n">R_2b</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="using-scipy-odr">
+<h1>Using scipy.odr<a class="headerlink" href="#using-scipy-odr" title="Permalink to this headline">¶</a></h1>
+<p>Scipy has a dedicated package to deal with orthogonal distance
+regression, namely
+<a class="reference external" href="http://docs.scipy.org/doc/scipy/reference/odr.html">scipy.odr</a>. This
+package can handle both explict and implicit function definition, and we
+will used the second form in this case.</p>
+<p>Here is the implicit definition of the circle:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! python</span>
+<span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">xc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">yc</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">Rc</span><span class="o">**</span><span class="mi">2</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<div class="section" id="id1">
+<h2>Basic usage<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>This leads to the following code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! python</span>
+<span class="c"># == METHOD 3 ==</span>
+<span class="kn">from</span> <span class="nn">scipy</span>      <span class="kn">import</span>  <span class="n">odr</span>
+
+<span class="n">method_3</span> <span class="o">=</span> <span class="s">&quot;odr&quot;</span>
+
+<span class="k">def</span> <span class="nf">f_3</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; implicit definition of the circle &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">beta</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">beta</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span><span class="n">beta</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="c"># initial guess for parameters</span>
+<span class="n">R_m</span> <span class="o">=</span> <span class="n">calc_R</span><span class="p">(</span><span class="n">x_m</span><span class="p">,</span> <span class="n">y_m</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">beta0</span> <span class="o">=</span> <span class="p">[</span> <span class="n">x_m</span><span class="p">,</span> <span class="n">y_m</span><span class="p">,</span> <span class="n">R_m</span><span class="p">]</span>
+
+<span class="c"># for implicit function :</span>
+<span class="c">#       data.x contains both coordinates of the points (data.x = [x, y])</span>
+<span class="c">#       data.y is the dimensionality of the response</span>
+<span class="n">lsc_data</span>  <span class="o">=</span> <span class="n">odr</span><span class="o">.</span><span class="n">Data</span><span class="p">(</span><span class="n">row_stack</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]),</span> <span class="n">y</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">lsc_model</span> <span class="o">=</span> <span class="n">odr</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">f_3</span><span class="p">,</span> <span class="n">implicit</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">lsc_odr</span>   <span class="o">=</span> <span class="n">odr</span><span class="o">.</span><span class="n">ODR</span><span class="p">(</span><span class="n">lsc_data</span><span class="p">,</span> <span class="n">lsc_model</span><span class="p">,</span> <span class="n">beta0</span><span class="p">)</span>
+<span class="n">lsc_out</span>   <span class="o">=</span> <span class="n">lsc_odr</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="n">xc_3</span><span class="p">,</span> <span class="n">yc_3</span><span class="p">,</span> <span class="n">R_3</span> <span class="o">=</span> <span class="n">lsc_out</span><span class="o">.</span><span class="n">beta</span>
+<span class="n">Ri_3</span> <span class="o">=</span> <span class="n">calc_R</span><span class="p">([</span><span class="n">xc_3</span><span class="p">,</span> <span class="n">yc_3</span><span class="p">])</span>
+<span class="n">residu_3</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">Ri_3</span> <span class="o">-</span> <span class="n">R_3</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="advanced-usage-with-jacobian-functions">
+<h2>Advanced usage, with jacobian functions<a class="headerlink" href="#advanced-usage-with-jacobian-functions" title="Permalink to this headline">¶</a></h2>
+<p>One of the advantages of the implicit function definition is that its
+derivatives are very easily calculated.</p>
+<p>This can be used to complete the model:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! python</span>
+<span class="c"># == METHOD 3b ==</span>
+<span class="n">method_3b</span>  <span class="o">=</span> <span class="s">&quot;odr with jacobian&quot;</span>
+
+<span class="k">def</span> <span class="nf">f_3b</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; implicit definition of the circle &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">beta</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">beta</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span><span class="n">beta</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="k">def</span> <span class="nf">jacb</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Jacobian function with respect to the parameters beta.</span>
+<span class="sd">    return df_3b/dbeta</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xc</span><span class="p">,</span> <span class="n">yc</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">beta</span>
+    <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span>    <span class="o">=</span> <span class="n">x</span>
+
+    <span class="n">df_db</span>    <span class="o">=</span> <span class="n">empty</span><span class="p">((</span><span class="n">beta</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">df_db</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span>  <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">xc</span><span class="o">-</span><span class="n">xi</span><span class="p">)</span>                     <span class="c"># d_f/dxc</span>
+    <span class="n">df_db</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span>  <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">yc</span><span class="o">-</span><span class="n">yi</span><span class="p">)</span>                     <span class="c"># d_f/dyc</span>
+    <span class="n">df_db</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span>                           <span class="c"># d_f/dr</span>
+
+    <span class="k">return</span> <span class="n">df_db</span>
+
+<span class="k">def</span> <span class="nf">jacd</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Jacobian function with respect to the input x.</span>
+<span class="sd">    return df_3b/dx</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xc</span><span class="p">,</span> <span class="n">yc</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">beta</span>
+    <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span>    <span class="o">=</span> <span class="n">x</span>
+
+    <span class="n">df_dx</span>    <span class="o">=</span> <span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">df_dx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span>  <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">xi</span><span class="o">-</span><span class="n">xc</span><span class="p">)</span>                     <span class="c"># d_f/dxi</span>
+    <span class="n">df_dx</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span>  <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">yi</span><span class="o">-</span><span class="n">yc</span><span class="p">)</span>                     <span class="c"># d_f/dyi</span>
+
+    <span class="k">return</span> <span class="n">df_dx</span>
+
+<span class="k">def</span> <span class="nf">calc_estimate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Return a first estimation on the parameter from the data  &quot;&quot;&quot;</span>
+    <span class="n">xc0</span><span class="p">,</span> <span class="n">yc0</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">r0</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">((</span><span class="n">data</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">xc0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span><span class="n">yc0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">xc0</span><span class="p">,</span> <span class="n">yc0</span><span class="p">,</span> <span class="n">r0</span>
+
+<span class="c"># for implicit function :</span>
+<span class="c">#       data.x contains both coordinates of the points</span>
+<span class="c">#       data.y is the dimensionality of the response</span>
+<span class="n">lsc_data</span>  <span class="o">=</span> <span class="n">odr</span><span class="o">.</span><span class="n">Data</span><span class="p">(</span><span class="n">row_stack</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]),</span> <span class="n">y</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">lsc_model</span> <span class="o">=</span> <span class="n">odr</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">f_3b</span><span class="p">,</span> <span class="n">implicit</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">estimate</span><span class="o">=</span><span class="n">calc_estimate</span><span class="p">,</span> <span class="n">fjacd</span><span class="o">=</span><span class="n">jacd</span><span class="p">,</span> <span class="n">f</span>
+<span class="n">jacb</span><span class="o">=</span><span class="n">jacb</span><span class="p">)</span>
+<span class="n">lsc_odr</span>   <span class="o">=</span> <span class="n">odr</span><span class="o">.</span><span class="n">ODR</span><span class="p">(</span><span class="n">lsc_data</span><span class="p">,</span> <span class="n">lsc_model</span><span class="p">)</span>    <span class="c"># beta0 has been replaced by an esti</span>
+<span class="n">mate</span> <span class="n">function</span>
+<span class="n">lsc_odr</span><span class="o">.</span><span class="n">set_job</span><span class="p">(</span><span class="n">deriv</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>                    <span class="c"># use user derivatives function with</span>
+<span class="n">out</span> <span class="n">checking</span>
+<span class="n">lsc_odr</span><span class="o">.</span><span class="n">set_iprint</span><span class="p">(</span><span class="nb">iter</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">iter_step</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>     <span class="c"># print details for each iteration</span>
+<span class="n">lsc_out</span>   <span class="o">=</span> <span class="n">lsc_odr</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="n">xc_3b</span><span class="p">,</span> <span class="n">yc_3b</span><span class="p">,</span> <span class="n">R_3b</span> <span class="o">=</span> <span class="n">lsc_out</span><span class="o">.</span><span class="n">beta</span>
+<span class="n">Ri_3b</span>       <span class="o">=</span> <span class="n">calc_R</span><span class="p">(</span><span class="n">xc_3b</span><span class="p">,</span> <span class="n">yc_3b</span><span class="p">)</span>
+<span class="n">residu_3b</span>   <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">Ri_3b</span> <span class="o">-</span> <span class="n">R_3b</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="comparison-of-the-three-methods">
+<h1>Comparison of the three methods<a class="headerlink" href="#comparison-of-the-three-methods" title="Permalink to this headline">¶</a></h1>
+<p>We will compare the results of these three methods in two cases:</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;when&nbsp;2D&nbsp;points&nbsp;are&nbsp;all&nbsp;around&nbsp;the&nbsp;circle</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;when&nbsp;2D&nbsp;points&nbsp;are&nbsp;in&nbsp;a&nbsp;small&nbsp;arc</span></tt></p>
+<div class="section" id="data-points-all-around-the-circle">
+<h2>Data points all around the circle<a class="headerlink" href="#data-points-all-around-the-circle" title="Permalink to this headline">¶</a></h2>
+<p>Here is an example with data points all around the circle:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! python</span>
+<span class="c"># Coordinates of the 2D points</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">r_</span><span class="p">[</span>  <span class="mi">9</span><span class="p">,</span>  <span class="mi">35</span><span class="p">,</span> <span class="o">-</span><span class="mi">13</span><span class="p">,</span>  <span class="mi">10</span><span class="p">,</span>  <span class="mi">23</span><span class="p">,</span>   <span class="mi">0</span><span class="p">]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">r_</span><span class="p">[</span> <span class="mi">34</span><span class="p">,</span>  <span class="mi">10</span><span class="p">,</span>   <span class="mi">6</span><span class="p">,</span> <span class="o">-</span><span class="mi">14</span><span class="p">,</span>  <span class="mi">27</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This gives:</p>
+<p>||||||||||||||||<strong>SUMMARY</strong>||
+||<strong>Method</strong>|| <strong>Xc</strong> || <strong>Yc</strong> || <strong>Rc</strong>
+||<strong>nb_calls</strong> || <strong>std(Ri)</strong>|| <strong>residu</strong> || <strong>residu2</strong>
+|| ||algebraic || 10.55231 || 9.70590|| 23.33482|| 1||
+1.135135|| 7.731195|| 16236.34|| ||leastsq || 10.50009 ||
+9.65995|| 23.33353|| 15|| 1.133715|| 7.711852|| 16276.89||
+||leastsq with jacobian || 10.50009 || 9.65995|| 23.33353||
+7|| 1.133715|| 7.711852|| 16276.89|| ||odr || 10.50009 ||
+9.65995|| 23.33353|| 82|| 1.133715|| 7.711852|| 16276.89||
+||odr with jacobian || 10.50009 || 9.65995|| 23.33353|| 16||
+1.133715|| 7.711852|| 16276.89||</p>
+<p>Note:</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;`nb_calls`&nbsp;correspond&nbsp;to&nbsp;the&nbsp;number&nbsp;of&nbsp;function&nbsp;calls&nbsp;of&nbsp;the&nbsp;function&nbsp;to&nbsp;be&nbsp;minimized,&nbsp;and&nbsp;do&nbsp;not&nbsp;take&nbsp;into&nbsp;account&nbsp;the&nbsp;number&nbsp;of&nbsp;calls&nbsp;to&nbsp;derivatives&nbsp;function.&nbsp;This&nbsp;differs&nbsp;from&nbsp;the&nbsp;number&nbsp;of&nbsp;iteration&nbsp;as&nbsp;ODR&nbsp;can&nbsp;make&nbsp;multiple&nbsp;calls&nbsp;during&nbsp;an&nbsp;iteration.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;as&nbsp;shown&nbsp;on&nbsp;the&nbsp;figures&nbsp;below,&nbsp;the&nbsp;two&nbsp;functions&nbsp;`residu`&nbsp;and&nbsp;`residu_2`&nbsp;are&nbsp;not&nbsp;equivalent,&nbsp;but&nbsp;their&nbsp;minima&nbsp;are&nbsp;close&nbsp;in&nbsp;this&nbsp;case.</span></tt></p>
+<img alt="Least_Squares_Circle_attachments/full_cercle_v5.png..image::Least_Squares_Circle_attachments/full_cercle_residu2_v5.png" src="Least_Squares_Circle_attachments/full_cercle_v5.png..image::Least_Squares_Circle_attachments/full_cercle_residu2_v5.png" />
+</div>
+<div class="section" id="data-points-around-an-arc">
+<h2>Data points around an arc<a class="headerlink" href="#data-points-around-an-arc" title="Permalink to this headline">¶</a></h2>
+<p>Here is an example where data points form an arc:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! python</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">r_</span><span class="p">[</span><span class="mi">36</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">26</span><span class="p">]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">r_</span><span class="p">[</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">26</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>||||||||||||||||<strong>SUMMARY</strong>||
+||<strong>Method</strong>|| <strong>Xc</strong> || <strong>Yc</strong> || <strong>Rc</strong>
+||<strong>nb_calls</strong> || <strong>std(Ri)</strong>|| <strong>residu</strong> || <strong>residu2</strong>
+|| || algebraic || 15.05503|| 8.83615|| 20.82995|| 1||
+0.930508|| 5.195076|| 9153.40 || || leastsq || 9.88760||
+3.68753|| 27.35040|| 24|| 0.820825|| 4.042522|| 12001.98 ||
+|| leastsq with jacobian || 9.88759|| 3.68752|| 27.35041||
+10|| 0.820825|| 4.042522|| 12001.98 || || odr || 9.88757||
+3.68750|| 27.35044|| 472|| 0.820825|| 4.042522|| 12002.01 ||
+|| odr with jacobian || 9.88757|| 3.68750|| 27.35044|| 109||
+0.820825|| 4.042522|| 12002.01 ||</p>
+<img alt="Least_Squares_Circle_attachments/arc_v5.png..image::Least_Squares_Circle_attachments/arc_residu2_v6.png" src="Least_Squares_Circle_attachments/arc_v5.png..image::Least_Squares_Circle_attachments/arc_residu2_v6.png" />
+</div>
+<div class="section" id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
+<p>ODR and leastsq gives the same results.</p>
+<p>Optimize.leastsq is the most efficient method, and can be two to ten
+times faster than ODR, at least as regards the number of function call.</p>
+<p>Adding a function to compute the jacobian can lead to decrease the
+number of function calls by a factor of two to five.</p>
+<p>In this case, to use ODR seems a bit overkill but it can be very handy
+for more complex use cases like ellipses.</p>
+<p>The algebraic approximation gives good results when the points are all
+around the circle but is limited when there is only an arc to fit.</p>
+<p>Indeed, the two errors functions to minimize are not equivalent when
+data points are not all exactly on a circle. The algebraic method leads
+in most of the case to a smaller radius than that of the least squares
+circle, as its error function is based on squared distances and not on
+the distance themselves.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a></li>
+<li><a class="reference internal" href="#using-an-algebraic-approximation">Using an algebraic approximation</a></li>
+<li><a class="reference internal" href="#using-scipy-optimize-leastsq">Using scipy.optimize.leastsq</a><ul>
+<li><a class="reference internal" href="#basic-usage">Basic usage</a></li>
+<li><a class="reference internal" href="#advanced-usage-with-jacobian-function">Advanced usage, with jacobian function</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-scipy-odr">Using scipy.odr</a><ul>
+<li><a class="reference internal" href="#id1">Basic usage</a></li>
+<li><a class="reference internal" href="#advanced-usage-with-jacobian-functions">Advanced usage, with jacobian functions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#comparison-of-the-three-methods">Comparison of the three methods</a><ul>
+<li><a class="reference internal" href="#data-points-all-around-the-circle">Data points all around the circle</a></li>
+<li><a class="reference internal" href="#data-points-around-an-arc">Data points around an arc</a></li>
+<li><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="LASReader.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="LineIntegralConvolution.html"
+                        title="next chapter">Line Integral Convolution</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Least_Squares_Circle.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="LineIntegralConvolution.html" title="Line Integral Convolution"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="LASReader.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

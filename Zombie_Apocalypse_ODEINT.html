@@ -1,0 +1,229 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Modeling a Zombie Apocalypse &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Update - 1/18/2007" href="dbase.html" />
+    <link rel="prev" title="Inline Weave With Basic Array Conversion (no Blitz)" href="Weave.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dbase.html" title="Update - 1/18/2007"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Weave.html" title="Inline Weave With Basic Array Conversion (no Blitz)"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="modeling-a-zombie-apocalypse">
+<h1>Modeling a Zombie Apocalypse<a class="headerlink" href="#modeling-a-zombie-apocalypse" title="Permalink to this headline">¶</a></h1>
+<p>This example demonstrates how to solve a system of first order ODEs
+using SciPy. Note that a Nth order equation can also be solved using
+SciPy by transforming it into <a class="reference external" href="http://en.wikipedia.org/wiki/Ordinary_differential_equation#Reduction_to_a_first_order_system">a system of first order
+equations</a>.
+In a this lighthearted example, a system of ODEs can be used to model a
+&#8220;zombie invasion&#8221;, using the equations specified in <a class="reference external" href="http://mysite.science.uottawa.ca/rsmith43/Zombies.pdf">Munz et al.
+2009</a>.</p>
+<p>The system is given as:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">dS</span><span class="o">/</span><span class="n">dt</span> <span class="o">=</span> <span class="n">P</span> <span class="o">-</span> <span class="n">B</span><span class="o">*</span><span class="n">S</span><span class="o">*</span><span class="n">Z</span> <span class="o">-</span> <span class="n">d</span><span class="o">*</span><span class="n">S</span>
+<span class="n">dZ</span><span class="o">/</span><span class="n">dt</span> <span class="o">=</span> <span class="n">B</span><span class="o">*</span><span class="n">S</span><span class="o">*</span><span class="n">Z</span> <span class="o">+</span> <span class="n">G</span><span class="o">*</span><span class="n">R</span> <span class="o">-</span> <span class="n">A</span><span class="o">*</span><span class="n">S</span><span class="o">*</span><span class="n">Z</span>
+<span class="n">dR</span><span class="o">/</span><span class="n">dt</span> <span class="o">=</span> <span class="n">d</span><span class="o">*</span><span class="n">S</span> <span class="o">+</span> <span class="n">A</span><span class="o">*</span><span class="n">S</span><span class="o">*</span><span class="n">Z</span> <span class="o">-</span> <span class="n">G</span><span class="o">*</span><span class="n">R</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="n">the</span> <span class="n">following</span> <span class="n">notations</span><span class="p">:</span>
+
+<span class="o">*</span>  <span class="n">S</span><span class="p">:</span> <span class="n">the</span> <span class="n">number</span> <span class="n">of</span> <span class="n">susceptible</span> <span class="n">victims</span>
+<span class="o">*</span>  <span class="n">Z</span><span class="p">:</span> <span class="n">the</span> <span class="n">number</span> <span class="n">of</span> <span class="n">zombies</span>
+<span class="o">*</span>  <span class="n">R</span><span class="p">:</span> <span class="n">the</span> <span class="n">number</span> <span class="n">of</span> <span class="n">people</span> <span class="s">&quot;killed&quot;</span>
+<span class="o">*</span>  <span class="n">P</span><span class="p">:</span> <span class="n">the</span> <span class="n">population</span> <span class="n">birth</span> <span class="n">rate</span>
+<span class="o">*</span>  <span class="n">d</span><span class="p">:</span> <span class="n">the</span> <span class="n">chance</span> <span class="n">of</span> <span class="n">a</span> <span class="n">natural</span> <span class="n">death</span>
+<span class="o">*</span>  <span class="n">B</span><span class="p">:</span> <span class="n">the</span> <span class="n">chance</span> <span class="n">the</span> <span class="s">&quot;zombie disease&quot;</span> <span class="ow">is</span> <span class="n">transmitted</span> <span class="p">(</span><span class="n">an</span> <span class="n">alive</span> <span class="n">person</span> <span class="n">becomes</span> <span class="n">a</span>
+<span class="n">zombie</span><span class="p">)</span>
+<span class="o">*</span>  <span class="n">G</span><span class="p">:</span> <span class="n">the</span> <span class="n">chance</span> <span class="n">a</span> <span class="n">dead</span> <span class="n">person</span> <span class="ow">is</span> <span class="n">resurrected</span> <span class="n">into</span> <span class="n">a</span> <span class="n">zombie</span>
+<span class="o">*</span>  <span class="n">A</span><span class="p">:</span> <span class="n">the</span> <span class="n">chance</span> <span class="n">a</span> <span class="n">zombie</span> <span class="ow">is</span> <span class="n">totally</span> <span class="n">destroyed</span>
+</pre></div>
+</div>
+<p>This involves solving a system of first order ODEs given by: d<strong>y</strong>/dt
+= <strong>f</strong>(<strong>y</strong>, t)</p>
+<p>Where <strong>y</strong> = [S, Z, R].</p>
+<p>The code used to solve this system is below:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># zombie apocalypse modeling</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">odeint</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>
+
+<span class="n">P</span> <span class="o">=</span> <span class="mi">0</span>           <span class="c"># birth rate</span>
+<span class="n">d</span> <span class="o">=</span> <span class="mf">0.0001</span>  <span class="c"># natural death percent (per day)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="mf">0.0095</span>  <span class="c"># transmission percent  (per day)</span>
+<span class="n">G</span> <span class="o">=</span> <span class="mf">0.0001</span>  <span class="c"># resurect percent (per day)</span>
+<span class="n">A</span> <span class="o">=</span> <span class="mf">0.0001</span>  <span class="c"># destroy percent  (per day)</span>
+
+<span class="c"># solve the system dy/dt = f(y, t)</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="n">Si</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">Zi</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">Ri</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="c"># the model equations (see Munz et al. 2009)</span>
+    <span class="n">f0</span> <span class="o">=</span> <span class="n">P</span> <span class="o">-</span> <span class="n">B</span><span class="o">*</span><span class="n">Si</span><span class="o">*</span><span class="n">Zi</span> <span class="o">-</span> <span class="n">d</span><span class="o">*</span><span class="n">Si</span>
+    <span class="n">f1</span> <span class="o">=</span> <span class="n">B</span><span class="o">*</span><span class="n">Si</span><span class="o">*</span><span class="n">Zi</span> <span class="o">+</span> <span class="n">G</span><span class="o">*</span><span class="n">Ri</span> <span class="o">-</span> <span class="n">A</span><span class="o">*</span><span class="n">Si</span><span class="o">*</span><span class="n">Zi</span>
+    <span class="n">f2</span> <span class="o">=</span> <span class="n">d</span><span class="o">*</span><span class="n">Si</span> <span class="o">+</span> <span class="n">A</span><span class="o">*</span><span class="n">Si</span><span class="o">*</span><span class="n">Zi</span> <span class="o">-</span> <span class="n">G</span><span class="o">*</span><span class="n">Ri</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">f0</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">]</span>
+
+<span class="c"># initial conditions</span>
+<span class="n">S0</span> <span class="o">=</span> <span class="mf">500.</span>                   <span class="c"># initial population</span>
+<span class="n">Z0</span> <span class="o">=</span> <span class="mi">0</span>                      <span class="c"># initial zombie population</span>
+<span class="n">R0</span> <span class="o">=</span> <span class="mi">0</span>                      <span class="c"># initial death population</span>
+<span class="n">y0</span> <span class="o">=</span> <span class="p">[</span><span class="n">S0</span><span class="p">,</span> <span class="n">Z0</span><span class="p">,</span> <span class="n">R0</span><span class="p">]</span>   <span class="c"># initial condition vector</span>
+<span class="n">t</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>       <span class="c"># time grid</span>
+
+<span class="c"># solve the DEs</span>
+<span class="n">soln</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="n">S</span> <span class="o">=</span> <span class="n">soln</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">soln</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">R</span> <span class="o">=</span> <span class="n">soln</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+
+<span class="c"># plot results</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;Living&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;Zombies&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Days from outbreak&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Population&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Zombie Apocalypse - No Init. Dead Pop.; No New Births.&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c"># change the initial conditions</span>
+<span class="n">R0</span> <span class="o">=</span> <span class="mf">0.01</span><span class="o">*</span><span class="n">S0</span>   <span class="c"># 1% of initial pop is dead</span>
+<span class="n">y0</span> <span class="o">=</span> <span class="p">[</span><span class="n">S0</span><span class="p">,</span> <span class="n">Z0</span><span class="p">,</span> <span class="n">R0</span><span class="p">]</span>
+
+<span class="c"># solve the DEs</span>
+<span class="n">soln</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="n">S</span> <span class="o">=</span> <span class="n">soln</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">soln</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">R</span> <span class="o">=</span> <span class="n">soln</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;Living&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;Zombies&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Days from outbreak&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Population&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Zombie Apocalypse - 1% Init. Pop. is Dead; No New Births.&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c"># change the initial conditions</span>
+<span class="n">R0</span> <span class="o">=</span> <span class="mf">0.01</span><span class="o">*</span><span class="n">S0</span>   <span class="c"># 1% of initial pop is dead</span>
+<span class="n">P</span>  <span class="o">=</span> <span class="mi">10</span>        <span class="c"># 10 new births daily</span>
+<span class="n">y0</span> <span class="o">=</span> <span class="p">[</span><span class="n">S0</span><span class="p">,</span> <span class="n">Z0</span><span class="p">,</span> <span class="n">R0</span><span class="p">]</span>
+
+<span class="c"># solve the DEs</span>
+<span class="n">soln</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="n">S</span> <span class="o">=</span> <span class="n">soln</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">soln</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">R</span> <span class="o">=</span> <span class="n">soln</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;Living&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;Zombies&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Days from outbreak&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Population&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Zombie Apocalypse - 1% Init. Pop. is Dead; 10 Daily Births&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="Zombie_Apocalypse_ODEINT_attachments/zombie_nodead_nobirths.png" src="Zombie_Apocalypse_ODEINT_attachments/zombie_nodead_nobirths.png" />
+<img alt="Zombie_Apocalypse_ODEINT_attachments/zombie_somedead_nobirth.png" src="Zombie_Apocalypse_ODEINT_attachments/zombie_somedead_nobirth.png" />
+<img alt="Zombie_Apocalypse_ODEINT_attachments/zombie_somedead_10birth.png" src="Zombie_Apocalypse_ODEINT_attachments/zombie_somedead_10birth.png" />
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Weave.html"
+                        title="previous chapter">Inline Weave With Basic Array Conversion (no Blitz)</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dbase.html"
+                        title="next chapter">Update - 1/18/2007</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Zombie_Apocalypse_ODEINT.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="dbase.html" title="Update - 1/18/2007"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Weave.html" title="Inline Weave With Basic Array Conversion (no Blitz)"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,292 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Table of Contents &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="CommTheory.html" />
+    <link rel="prev" title="C Extensions to NumPy and Python" href="C_Extensions(2f)NumPy_arrays.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="CommTheory.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="C_Extensions(2f)NumPy_arrays.html" title="C Extensions to NumPy and Python"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="table-of-contents">
+<h1>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h1>
+<p>TableOfContents</p>
+</div>
+<div class="section" id="skeleton">
+<h1>Skeleton<a class="headerlink" href="#skeleton" title="Permalink to this headline">¶</a></h1>
+<p>`extmodule.h`:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#ifndef EXTMODULE_H</span>
+<span class="c">#define EXTMODULE_H</span>
+
+<span class="c">#ifdef __cplusplus</span>
+<span class="n">extern</span> <span class="s">&quot;C&quot;</span> <span class="p">{</span>
+<span class="c">#endif</span>
+
+<span class="o">/*</span> <span class="n">Python</span><span class="o">.</span><span class="n">h</span> <span class="n">must</span> <span class="n">be</span> <span class="n">included</span> <span class="n">before</span> <span class="n">everything</span> <span class="k">else</span> <span class="o">*/</span>
+<span class="c">#include &quot;Python.h&quot;</span>
+
+<span class="o">/*</span> <span class="n">include</span> <span class="n">system</span> <span class="n">headers</span> <span class="n">here</span> <span class="o">*/</span>
+
+<span class="c">#if !defined(EXTMODULE_IMPORT_ARRAY)</span>
+<span class="c">#define NO_IMPORT_ARRAY</span>
+<span class="c">#endif</span>
+<span class="c">#include &quot;numpy/arrayobject.h&quot;</span>
+
+<span class="c">#ifdef __cplusplus</span>
+<span class="p">}</span>
+<span class="c">#endif</span>
+
+<span class="c">#endif</span>
+</pre></div>
+</div>
+<p>Note that `PY_ARRAY_UNIQUE_SYMBOL` must be set to a unique value
+for each extension module. But, you actually don&#8217;t need to set it at all
+unless you are going to compile an extension module that uses two
+different source files</p>
+<p>`extmodule.c`:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#define EXTMODULE_IMPORT_ARRAY</span>
+<span class="c">#include &quot;extmodule.h&quot;</span>
+<span class="c">#undef EXTMODULE_IMPORT_ARRAY</span>
+
+<span class="n">static</span> <span class="n">PyObject</span><span class="o">*</span> <span class="n">FooError</span><span class="p">;</span>
+
+<span class="n">static</span> <span class="n">PyObject</span><span class="o">*</span> <span class="n">Ext_Foo</span><span class="p">(</span><span class="n">PyObject</span><span class="o">*</span> <span class="n">obj</span><span class="p">,</span> <span class="n">PyObject</span><span class="o">*</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+   <span class="n">Py_INCREF</span><span class="p">(</span><span class="n">Py_None</span><span class="p">);</span>
+   <span class="k">return</span> <span class="n">Py_None</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">static</span> <span class="n">PyMethodDef</span> <span class="n">methods</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="p">{</span><span class="s">&quot;foo&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">PyCFunction</span><span class="p">)</span> <span class="n">Ext_Foo</span><span class="p">,</span> <span class="n">METH_VARARGS</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">},</span>
+   <span class="p">{</span><span class="n">NULL</span><span class="p">,</span> <span class="n">NULL</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">NULL</span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">PyMODINIT_FUNC</span> <span class="n">init_extmodule</span><span class="p">()</span> <span class="p">{</span>
+   <span class="n">PyObject</span><span class="o">*</span> <span class="n">m</span><span class="p">;</span>
+   <span class="n">m</span> <span class="o">=</span> <span class="n">Py_InitModule</span><span class="p">(</span><span class="s">&quot;_extmodule&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="p">);</span>
+   <span class="n">import_array</span><span class="p">();</span>
+   <span class="n">SVMError</span> <span class="o">=</span> <span class="n">PyErr_NewException</span><span class="p">(</span><span class="s">&quot;_extmodule.FooError&quot;</span><span class="p">,</span> <span class="n">NULL</span><span class="p">,</span> <span class="n">NULL</span><span class="p">);</span>
+   <span class="n">Py_INCREF</span><span class="p">(</span><span class="n">FooError</span><span class="p">);</span>
+   <span class="n">PyModule_AddObject</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="s">&quot;FooError&quot;</span><span class="p">,</span> <span class="n">FooError</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If your extension module is contained in a single source file then you
+can get rid of extmodule.h entirely and replace the first part of
+extmodule.c with</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#inlude &quot;Python.h&quot;</span>
+<span class="c">#include &quot;numpy/arrayobject.h&quot;</span>
+
+<span class="o">/*</span> <span class="n">remainder</span> <span class="n">of</span> <span class="n">extmodule</span><span class="o">.</span><span class="n">c</span> <span class="n">after</span> <span class="n">here</span> <span class="o">*/</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="debugging-c-extensions-on-windows">
+<h1>Debugging C Extensions on Windows<a class="headerlink" href="#debugging-c-extensions-on-windows" title="Permalink to this headline">¶</a></h1>
+<p>Debugging C extensions on Windows can be tricky. If you compile your
+extension code in debug mode, you have to link against the debug version
+of the Python library, e.g. `Python24_d.lib`. When building with
+Visual Studio, this is taken care of by a pragma in `Python24.h`. If
+you force the compiler to link debug code against the release library,
+you will probably get the following errors (especially when compiling
+SWIG wrapped codes):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">extmodule</span><span class="o">.</span><span class="n">obj</span> <span class="p">:</span> <span class="n">error</span> <span class="n">LNK2019</span><span class="p">:</span> <span class="n">unresolved</span> <span class="n">external</span> <span class="n">symbol</span> <span class="n">__imp___Py_Dealloc</span> <span class="n">ref</span>
+<span class="n">erenced</span> <span class="ow">in</span> <span class="n">function</span> <span class="n">_PySwigObject_format</span>
+<span class="n">extmodule</span><span class="o">.</span><span class="n">obj</span> <span class="p">:</span> <span class="n">error</span> <span class="n">LNK2019</span><span class="p">:</span> <span class="n">unresolved</span> <span class="n">external</span> <span class="n">symbol</span> <span class="n">__imp___Py_NegativeRef</span>
+<span class="n">count</span> <span class="n">referenced</span> <span class="ow">in</span> <span class="n">function</span> <span class="n">_PySwigObject_format</span>
+<span class="n">extmodule</span><span class="o">.</span><span class="n">obj</span> <span class="p">:</span> <span class="n">error</span> <span class="n">LNK2001</span><span class="p">:</span> <span class="n">unresolved</span> <span class="n">external</span> <span class="n">symbol</span> <span class="n">__imp___Py_RefTotal</span>
+<span class="n">extmodule</span><span class="o">.</span><span class="n">obj</span> <span class="p">:</span> <span class="n">error</span> <span class="n">LNK2019</span><span class="p">:</span> <span class="n">unresolved</span> <span class="n">external</span> <span class="n">symbol</span> <span class="n">__imp___PyObject_Debug</span>
+<span class="n">Free</span> <span class="n">referenced</span> <span class="ow">in</span> <span class="n">function</span> <span class="n">_PySwigObject_dealloc</span>
+<span class="n">extmodule</span><span class="o">.</span><span class="n">obj</span> <span class="p">:</span> <span class="n">error</span> <span class="n">LNK2019</span><span class="p">:</span> <span class="n">unresolved</span> <span class="n">external</span> <span class="n">symbol</span> <span class="n">__imp___PyObject_Debug</span>
+<span class="n">Malloc</span> <span class="n">referenced</span> <span class="ow">in</span> <span class="n">function</span> <span class="n">_PySwigObject_New</span>
+<span class="n">extmodule</span><span class="o">.</span><span class="n">obj</span> <span class="p">:</span> <span class="n">error</span> <span class="n">LNK2019</span><span class="p">:</span> <span class="n">unresolved</span> <span class="n">external</span> <span class="n">symbol</span> <span class="n">__imp__Py_InitModule4T</span>
+<span class="n">raceRefs</span> <span class="n">referenced</span> <span class="ow">in</span> <span class="n">function</span> <span class="n">_init_extmodule</span>
+</pre></div>
+</div>
+<p>However, now you also need a debug build of the Python interpreter if
+you want to import this debuggable extension module. Now you also need
+debug builds of every other extension module you use. Clearly, this can
+take some time to get sorted out.</p>
+<p>An alternative is to build your library code as a debug DLL. This way,
+you can at least that your extension module is passing the right data to
+the library code you are wrapping.</p>
+<p>As an aside, it seems that the MinGW GCC compiler doesn&#8217;t produce debug
+symbols that are understood by the Visual Studio debugger.</p>
+</div>
+<div class="section" id="valgrind">
+<h1>Valgrind<a class="headerlink" href="#valgrind" title="Permalink to this headline">¶</a></h1>
+<p>To develop a stable extension module, it is essential that you check the
+memory allocation and memory accesses done by your C code. On Linux, you
+can use <a class="reference external" href="http://www.valgrind.org/">Valgrind</a>. On Windows, you could
+try a commercial tool such as <a class="reference external" href="http://www-306.ibm.com/software/awdtools/purifyplus/">Rational
+PurifyPlus</a>.</p>
+<p>Before using Valgrind, make sure your extension module is compiled with
+the `-g` switch to GCC so that you can get useful stack traces when
+errors are detected.</p>
+<p>Then put the following in a shell script, say `valgrind_py.sh`:</p>
+<div class="highlight-python"><pre>#!/bin/sh
+valgrind \
+   --tool=memcheck \
+   --leak-check=yes \
+   --error-limit=no \
+   --suppressions=valgrind-python.supp \
+   --num-callers=10 \
+   -v \
+   python $1</pre>
+</div>
+<p>`valgrind-python.supp` suppresses some warnings caused by the Python
+code. You can find the suppression file for Python 2.4 <a class="reference external" href="http://svn.python.org/projects/python/branches/release24-maint/Misc/valgrind-python.supp">in the Python
+SVN
+repository</a>.
+See also
+<a class="reference external" href="http://svn.python.org/projects/python/branches/release24-maint/Misc/README.valgrind">README.valgrind</a>
+in the same location. Some of the suppressions are commented out by
+default. Enable them by removing the # comment markers.</p>
+<p>Execute `chmod +x valgrind_py.sh` and run it as `./valgrind_py.sh
+test_extmodule.py`.</p>
+</div>
+<div class="section" id="documentation">
+<h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Extending</span></tt> <tt class="docutils literal"><span class="pre">and</span></tt> <tt class="docutils literal"><span class="pre">Embedding</span></tt> <tt class="docutils literal"><span class="pre">the</span></tt> <tt class="docutils literal"><span class="pre">Python</span></tt></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">Interpreter</span></tt> &lt;<a class="reference external" href="http://docs.python.org/ext/ext.html">http://docs.python.org/ext/ext.html</a>&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;(read&nbsp;this&nbsp;first)</span></tt>
+| <tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Python/C</span></tt> <tt class="docutils literal"><span class="pre">API</span></tt> <tt class="docutils literal"><span class="pre">Reference</span></tt>
+<tt class="docutils literal"><span class="pre">Manual</span></tt> &lt;<a class="reference external" href="http://docs.python.org/api/api.html">http://docs.python.org/api/api.html</a>&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;(then&nbsp;browse&nbsp;through&nbsp;this)</span></tt>
+| <tt class="docutils literal"><span class="pre">*&nbsp;Chapter&nbsp;13&nbsp;of&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Guide</span></tt> <tt class="docutils literal"><span class="pre">to</span></tt>
+<tt class="docutils literal"><span class="pre">NumPy</span></tt> &lt;<a class="reference external" href="http://www.tramy.us/">http://www.tramy.us/</a>&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;describes&nbsp;the&nbsp;complete&nbsp;API</span></tt>
+| <tt class="docutils literal"><span class="pre">*&nbsp;Chapter&nbsp;14&nbsp;deals&nbsp;with&nbsp;extending&nbsp;!NumPy&nbsp;(make&nbsp;sure&nbsp;you&nbsp;have&nbsp;the&nbsp;edition&nbsp;dated&nbsp;March&nbsp;15,&nbsp;2006&nbsp;or&nbsp;later)</span></tt></p>
+</div>
+<div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`ndimage</span></tt> <tt class="docutils literal"><span class="pre">in</span></tt> <tt class="docutils literal"><span class="pre">the</span></tt> <tt class="docutils literal"><span class="pre">SciPy</span></tt> <tt class="docutils literal"><span class="pre">SVN</span></tt></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">repository</span></tt> &lt;<a class="reference external" href="http://projects.scipy.org/scipy/scipy/browser/trunk/Lib/ndimage">http://projects.scipy.org/scipy/scipy/browser/trunk/Lib/ndimage</a>&gt;`__
+| <tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/C_Extensions/NumPy_arrays:NumPy&nbsp;arrays]&nbsp;(collection&nbsp;of&nbsp;small&nbsp;examples)</span></tt></p>
+</div>
+<div class="section" id="mailing-list-threads">
+<h1>Mailing List Threads<a class="headerlink" href="#mailing-list-threads" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Freeing</span></tt> <tt class="docutils literal"><span class="pre">memory</span></tt> <tt class="docutils literal"><span class="pre">allocated</span></tt> <tt class="docutils literal"><span class="pre">in</span></tt></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">C</span></tt> &lt;<a class="reference external" href="http://thread.gmane.org/gmane.comp.python.numeric.general/5206/focus=5206">http://thread.gmane.org/gmane.comp.python.numeric.general/5206/focus=5206</a>&gt;`__
+| <tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`port</span></tt> <tt class="docutils literal"><span class="pre">C/C++</span></tt> <tt class="docutils literal"><span class="pre">matlab</span></tt> <tt class="docutils literal"><span class="pre">mexing</span></tt> <tt class="docutils literal"><span class="pre">code</span></tt> <tt class="docutils literal"><span class="pre">to</span></tt>
+<tt class="docutils literal"><span class="pre">numpy</span></tt> &lt;<a class="reference external" href="http://thread.gmane.org/gmane.comp.python.scientific.user/7392/focus=7400">http://thread.gmane.org/gmane.comp.python.scientific.user/7392/focus=7400</a>&gt;`__
+| <tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`newbie</span></tt> <tt class="docutils literal"><span class="pre">for</span></tt> <tt class="docutils literal"><span class="pre">writing</span></tt> <tt class="docutils literal"><span class="pre">numpy/scipy</span></tt>
+<tt class="docutils literal"><span class="pre">extensions</span></tt> &lt;<a class="reference external" href="http://thread.gmane.org/gmane.comp.python.numeric.general/5186/focus=5186">http://thread.gmane.org/gmane.comp.python.numeric.general/5186/focus=5186</a>&gt;`__
+| <tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Array</span></tt> <tt class="docutils literal"><span class="pre">data</span></tt> <tt class="docutils literal"><span class="pre">and</span></tt> <tt class="docutils literal"><span class="pre">struct</span></tt>
+<tt class="docutils literal"><span class="pre">alignment</span></tt> &lt;<a class="reference external" href="http://thread.gmane.org/gmane.comp.python.numeric.general/5234/focus=5234">http://thread.gmane.org/gmane.comp.python.numeric.general/5234/focus=5234</a>&gt;`__</p>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Table of Contents</a></li>
+<li><a class="reference internal" href="#skeleton">Skeleton</a></li>
+<li><a class="reference internal" href="#debugging-c-extensions-on-windows">Debugging C Extensions on Windows</a></li>
+<li><a class="reference internal" href="#valgrind">Valgrind</a></li>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#mailing-list-threads">Mailing List Threads</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="C_Extensions(2f)NumPy_arrays.html"
+                        title="previous chapter">C Extensions to NumPy and Python</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="CommTheory.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/C_Extensions.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="CommTheory.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="C_Extensions(2f)NumPy_arrays.html" title="C Extensions to NumPy and Python"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

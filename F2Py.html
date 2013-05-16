@@ -1,0 +1,220 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Short examples &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="FIRFilter.html" />
+    <link rel="prev" title="Eye Diagram" href="EyeDiagram.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="FIRFilter.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="EyeDiagram.html" title="Eye Diagram"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>This page provides examples on how to use the [&#8220;F2py&#8221;] fortran wrapping
+program.</p>
+<p>It is possible to start with simple routines or even to wrap full
+Fortran modules. [&#8220;F2py&#8221;] is used in SciPy itself and you can find some
+examples in the source code of SciPy.</p>
+<p>TableOfContents</p>
+<div class="section" id="short-examples">
+<h1>Short examples<a class="headerlink" href="#short-examples" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="wrapping-a-function-from-lapack">
+<h2>Wrapping a function from lapack<a class="headerlink" href="#wrapping-a-function-from-lapack" title="Permalink to this headline">¶</a></h2>
+<p><em>Taken from a message on 2006-06-22 to scipy-user by ArndBaecker</em></p>
+<p>Thanks to f2py, wrapping Fortran code is (with a bit of effort) trivial
+in many cases. For complicated functions requiring many arguments the
+wrapper can become longish. Fortunately, many things can be learnt from
+looking at ``scipy/Lib/linalg/generic_flapack.pyf`` In particular,
+the documentation at <a class="reference external" href="http://cens.ioc.ee/projects/f2py2e/">http://cens.ioc.ee/projects/f2py2e/</a> is excellent. I
+also found the f2py notes by FernandoPerez very helpful,
+<a class="reference external" href="http://cens.ioc.ee/pipermail/f2py-users/2003-April/000472.html">http://cens.ioc.ee/pipermail/f2py-users/2003-April/000472.html</a></p>
+<p>Let me try to give some general remarks on how to start (the real
+authority on all this is of course Pearu, so please correct me if I got
+things wrong here): * first find a routine which will do the job you
+want: * If the lapack documentation is installed properly on Linux you
+could do * <a class="reference external" href="http://www.netlib.org/">http://www.netlib.org/</a> provides a nice decision tree * make
+sure that that it does not exist in scipy:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">scipy.lib</span> <span class="kn">import</span> <span class="n">lapack</span>
+<span class="n">lapack</span><span class="o">.</span><span class="n">clapack</span><span class="o">.&lt;</span><span class="n">TAB</span><span class="o">&gt;</span>         <span class="p">(</span><span class="n">assuming</span> <span class="n">Ipython</span><span class="p">)</span>
+<span class="n">lapack</span><span class="o">.</span><span class="n">clapack</span><span class="o">.&lt;</span><span class="n">routine_name</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;Remark:&nbsp;routines&nbsp;starting&nbsp;with&nbsp;c/z&nbsp;are&nbsp;for&nbsp;double/single&nbsp;complex</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;and&nbsp;routines&nbsp;for&nbsp;d/s&nbsp;for&nbsp;double/single&nbsp;real&nbsp;numbers.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;The&nbsp;calling&nbsp;sequence&nbsp;for&nbsp;c/z&nbsp;and&nbsp;d/s&nbsp;are&nbsp;(I&nbsp;think&nbsp;always)&nbsp;the&nbsp;same&nbsp;and</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;sometimes&nbsp;they&nbsp;are&nbsp;also&nbsp;the&nbsp;same&nbsp;for&nbsp;the&nbsp;real&nbsp;and&nbsp;complex&nbsp;case.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Then&nbsp;one&nbsp;has&nbsp;to&nbsp;download&nbsp;the&nbsp;fortran&nbsp;file&nbsp;for&nbsp;the&nbsp;lapack&nbsp;routine&nbsp;of&nbsp;interest.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Generate&nbsp;wrapper&nbsp;by&nbsp;calling</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;</span></tt></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Generate&nbsp;library</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;</span></tt></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;You&nbsp;can&nbsp;use&nbsp;this&nbsp;by</span></tt></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">wrap_lap</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;Note,&nbsp;that&nbsp;this&nbsp;is&nbsp;not&nbsp;yet&nbsp;polished&nbsp;(this&nbsp;is&nbsp;the&nbsp;part&nbsp;on</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;which&nbsp;has&nbsp;to&nbsp;spent&nbsp;some&nbsp;effort&nbsp;;-)&nbsp;),&nbsp;i.e.&nbsp;one</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;has&nbsp;to&nbsp;tell&nbsp;which&nbsp;variables&nbsp;are&nbsp;input,&nbsp;which&nbsp;are&nbsp;output</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;and&nbsp;which&nbsp;are&nbsp;optional.&nbsp;In&nbsp;addition&nbsp;temporary</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;storage&nbsp;has&nbsp;to&nbsp;be&nbsp;provided&nbsp;with&nbsp;the&nbsp;right&nbsp;dimensions</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;as&nbsp;described&nbsp;in&nbsp;the&nbsp;documentation&nbsp;part&nbsp;of&nbsp;the&nbsp;lapack&nbsp;routine.</span></tt></div>
+</div>
+<p>Concrete (and very simple) example (non-lapack):</p>
+</div>
+<div class="section" id="wrapping-hermite-polynomials">
+<h2>Wrapping Hermite polynomials<a class="headerlink" href="#wrapping-hermite-polynomials" title="Permalink to this headline">¶</a></h2>
+<p>Download code (found after hours of googling ;-) , from
+<a class="reference external" href="http://cdm.unimo.it/home/matematica/funaro.daniele/splib.txt">http://cdm.unimo.it/home/matematica/funaro.daniele/splib.txt</a></p>
+<p>and extract</p>
+<p>Generate wrapper framework:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># only run the following line _once_</span>
+<span class="c"># (and never again, otherwise the hand-modified hermite.pyf</span>
+<span class="c">#  goes down the drains)</span>
+<span class="n">f2py</span> <span class="o">-</span><span class="n">m</span> <span class="n">hermite</span> <span class="o">-</span><span class="n">h</span> <span class="n">hermite</span><span class="o">.</span><span class="n">pyf</span> <span class="n">hermite</span><span class="o">.</span><span class="n">f</span>
+</pre></div>
+</div>
+<p>Then modify</p>
+<p>Create the module:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">f2py</span> <span class="o">-</span><span class="n">c</span> <span class="n">hermite</span><span class="o">.</span><span class="n">pyf</span>  <span class="n">hermite</span><span class="o">.</span><span class="n">f</span>
+
+<span class="c"># add this if you want:</span>
+<span class="o">-</span><span class="n">DF2PY_REPORT_ON_ARRAY_COPY</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span><span class="n">DF2PY_REPORT_ATEXIT</span>
+</pre></div>
+</div>
+<p>Simple test:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">hermite</span>
+<span class="n">hermite</span><span class="o">.</span><span class="n">vahepo</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">hermite</span><span class="p">(</span><span class="mi">2</span><span class="p">)(</span><span class="mf">2.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A more complicated example about how to wrap routines for band matrices
+can be found at <a class="reference external" href="http://www.physik.tu-dresden.de/~baecker/comp_talks.html">http://www.physik.tu-dresden.de/~baecker/comp_talks.html</a>
+under &#8220;Python and Co - some recent developments&#8221;.</p>
+</div>
+<div class="section" id="wrapping-a-simple-c-code">
+<h2>Wrapping a simple C code<a class="headerlink" href="#wrapping-a-simple-c-code" title="Permalink to this headline">¶</a></h2>
+<p>f2py is also capable of handling C code. An example is found on the
+wiki: [&#8220;Cookbook/f2py_and_NumPy&#8221;].</p>
+</div>
+</div>
+<div class="section" id="step-by-step-wrapping-of-a-simple-numerical-code-interactive-system-for-ice-sheet-simulation">
+<h1>Step by step wrapping of a simple numerical code: Interactive System for Ice sheet Simulation<a class="headerlink" href="#step-by-step-wrapping-of-a-simple-numerical-code-interactive-system-for-ice-sheet-simulation" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="http://websrv.cs.umt.edu/isis/index.php/F2py_example">http://websrv.cs.umt.edu/isis/index.php/F2py_example</a></p>
+<hr class="docutils" />
+<p>CategoryCookbook CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Short examples</a><ul>
+<li><a class="reference internal" href="#wrapping-a-function-from-lapack">Wrapping a function from lapack</a></li>
+<li><a class="reference internal" href="#wrapping-hermite-polynomials">Wrapping Hermite polynomials</a></li>
+<li><a class="reference internal" href="#wrapping-a-simple-c-code">Wrapping a simple C code</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#step-by-step-wrapping-of-a-simple-numerical-code-interactive-system-for-ice-sheet-simulation">Step by step wrapping of a simple numerical code: Interactive System for Ice sheet Simulation</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="EyeDiagram.html"
+                        title="previous chapter">Eye Diagram</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="FIRFilter.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/F2Py.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="FIRFilter.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="EyeDiagram.html" title="Eye Diagram"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

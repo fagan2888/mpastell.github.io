@@ -1,0 +1,281 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Introduction" href="MayaVi(2f)examples.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="MayaVi(2f)Surf.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)examples.html" title="Introduction"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)Surf.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>TableOfContents</p>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>Here are general tips on how best to use !MayaVi2.</p>
+</div>
+<div class="section" id="scripting-mayavi2-effectively">
+<h1>Scripting MayaVi2 effectively<a class="headerlink" href="#scripting-mayavi2-effectively" title="Permalink to this headline">¶</a></h1>
+<p>Here are a few tips showing how to script mayavi2 interactively and
+effectively.</p>
+<div class="section" id="drag-and-drop-object">
+<h2>Drag and drop object<a class="headerlink" href="#drag-and-drop-object" title="Permalink to this headline">¶</a></h2>
+<p>Running the contour.py python script example, you should get:</p>
+<img alt="MayaVi(2f)Tips_attachments/ps1.png" src="MayaVi(2f)Tips_attachments/ps1.png" />
+<p>First, enable python shell clicking on Python in the &#8220;View&#8221; menu. A
+python shell should appear at the bottom of the !MayaVi2 window:</p>
+<img alt="MayaVi(2f)Tips_attachments/ps2.png" src="MayaVi(2f)Tips_attachments/ps2.png" />
+<p>Then drag any object from the tree view on the left and drop it on the
+python shell and you&#8217;ll get the object. Say you want to get the Outline
+module:</p>
+<img alt="MayaVi(2f)Tips_attachments/ps3.png" src="MayaVi(2f)Tips_attachments/ps3.png" />
+<p>Now, you can use your object following two ways: typing directly in the
+python shell or using the explore() method.</p>
+</div>
+<div class="section" id="typing-in-the-python-shell">
+<h2>Typing in the python shell<a class="headerlink" href="#typing-in-the-python-shell" title="Permalink to this headline">¶</a></h2>
+<p>You can create an instance of your object in the python shell window.</p>
+<img alt="MayaVi(2f)Tips_attachments/ps4.png" src="MayaVi(2f)Tips_attachments/ps4.png" />
+<p>Note that you benefit of &#8220;word completion&#8221; in this python shell, ie a
+little window popups letting you choose the name of the expected object
+or method.</p>
+<p>Thus, you can display the RGB values of the outline color for instance:</p>
+<img alt="MayaVi(2f)Tips_attachments/ps5.png" src="MayaVi(2f)Tips_attachments/ps5.png" />
+<p>However, find out objects or methods can be not so easy: you may not
+know how they depends from each other. An easier way is using the
+explore() method.</p>
+</div>
+<div class="section" id="using-the-explore-method">
+<h2>Using the explore() method<a class="headerlink" href="#using-the-explore-method" title="Permalink to this headline">¶</a></h2>
+<p>Simply type</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">explore</span><span class="p">(</span><span class="n">_</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">explore</span><span class="p">(</span><span class="n">foobar</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>if you have previously defined it:</p>
+<img alt="MayaVi(2f)Tips_attachments/ps6.png" src="MayaVi(2f)Tips_attachments/ps6.png" />
+<p>Then, you get the following window:</p>
+<img alt="MayaVi(2f)Tips_attachments/ps7.png" src="MayaVi(2f)Tips_attachments/ps7.png" />
+<p>Considering the last example, about the color of the outline module, you
+can unfold the &#8220;tree&#8221; and thus, get the info you need:</p>
+<img alt="MayaVi(2f)Tips_attachments/ps8.png" src="MayaVi(2f)Tips_attachments/ps8.png" />
+<p>Very powerful, isn&#8217;t it ! :-)</p>
+<p>You can also work in the pyhon shell, create your objects and so on...</p>
+</div>
+<div class="section" id="working-in-the-python-shell">
+<h2>Working in the python shell<a class="headerlink" href="#working-in-the-python-shell" title="Permalink to this headline">¶</a></h2>
+<p>On the embedded Python shell in the !MayaVi2 application, the name
+&#8216;mayavi&#8217; is bound to the !MayaVi scripting interface which can be used
+to script mayavi easily as shown here:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">e</span> <span class="o">=</span> <span class="n">mayavi</span><span class="o">.</span><span class="n">engine</span> <span class="c"># Get the MayaVi engine.</span>
+<span class="n">mayavi</span><span class="o">.</span><span class="n">new_scene</span><span class="p">()</span> <span class="c"># Create a new scene</span>
+<span class="c"># [...]</span>
+<span class="n">mayavi</span><span class="o">.</span><span class="n">save_visualization</span><span class="p">(</span><span class="s">&#39;foo.mv2&#39;</span><span class="p">)</span>
+<span class="n">mayavi</span><span class="o">.</span><span class="n">load_visualization</span><span class="p">(</span><span class="s">&#39;foo.mv2&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that the Mayavi engine lets you script mayavi in powerful ways. For
+example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">e</span> <span class="o">=</span> <span class="n">mayavi</span><span class="o">.</span><span class="n">engine</span>
+</pre></div>
+</div>
+<p>Here &#8216;e&#8217; is the running Engine instance (mayavi/engine.py) and has the
+same hierarchy that you see on the mayavi tree view. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">e</span><span class="o">.</span><span class="n">scenes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>             <span class="c"># --&gt; first scene in mayavi.</span>
+<span class="n">e</span><span class="o">.</span><span class="n">scenes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c"># --&gt; first scene&#39;s first source (vtkfile)</span>
+</pre></div>
+</div>
+<p>Another example, just run examples/contour.py and type/cut/paste the
+following to get the scalar cut plane module:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">e</span> <span class="o">=</span> <span class="n">mayavi</span><span class="o">.</span><span class="n">engine</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">scenes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="c"># Think scene.datafile.module_manager.last_module</span>
+</pre></div>
+</div>
+<p>It is possible to use Mayavi2 from within
+<a class="reference external" href="http://ipython.scipy.org">IPython</a> and script it. You must first
+start IPython with the &#8216;-wthread&#8217; command line option. Here is an
+example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.app</span> <span class="kn">import</span> <span class="n">Mayavi</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">Mayavi</span><span class="p">()</span>
+<span class="n">m</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+<span class="n">m</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">new_scene</span><span class="p">()</span> <span class="c"># m.script is the mayavi.script.Script instance</span>
+<span class="n">engine</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">script</span><span class="o">.</span><span class="n">engine</span>
+</pre></div>
+</div>
+<p>In the above, &#8216;m.script&#8217; is the same as the &#8216;mayavi&#8217; instance on the
+embedded shell.</p>
+<p>If you are writing a stand-alone script to visualize something like the
+scripts in the examples/ directory, please use any of the examples as a
+template.</p>
+</div>
+</div>
+<div class="section" id="save-snapshots">
+<h1>Save snapshots<a class="headerlink" href="#save-snapshots" title="Permalink to this headline">¶</a></h1>
+<p>Saving snapshots within a python script is very easy:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">s</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">current_scene</span>
+<span class="n">s</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&#39;test.jpg&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">width</span><span class="p">,</span><span class="n">height</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>You can also save images in a lot of others format: !PostScript (ps),
+Encapsuled !PostScript (eps), PDF (pdf), Bitmap (bmp), TIFF (tiff), PNG
+(png), !OpenInventor (iv), Virtual Reality Markup Language (wrl, vrml),
+Geomview (oogl), !RenderMan RIB (rib), Wavefront (obj).</p>
+<p>The obvious corollary of saving snapshots is saving a lot of snapshots
+in order to make a movie for example, without !MayaVi2 window popup for
+each snapshot recorded.</p>
+<p>The answer is straightforward (only under UN*X boxes): use the &#8216;X
+virtual framebuffer&#8217;.</p>
+<p>The following lines give you the trick. You can improve it, of course,
+scripting it in shell, python, and so on.</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;create&nbsp;your&nbsp;X&nbsp;virtual&nbsp;framebuffer&nbsp;with&nbsp;the&nbsp;following&nbsp;command:&nbsp;'xvfb&nbsp;:1&nbsp;-screen&nbsp;0&nbsp;1280x1024x24'.&nbsp;It&nbsp;will&nbsp;use&nbsp;the&nbsp;display&nbsp;#1,&nbsp;with&nbsp;a&nbsp;size&nbsp;of&nbsp;1280x1024&nbsp;and&nbsp;24&nbsp;bit&nbsp;depth&nbsp;color;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;export&nbsp;your&nbsp;display:&nbsp;'export&nbsp;DISPLAY=:1'&nbsp;(sh/bash&nbsp;syntax)&nbsp;or&nbsp;'setenv&nbsp;DISPLAY&nbsp;:1'&nbsp;(csh/tcsh&nbsp;syntax)</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;run&nbsp;your&nbsp;!MayaVi2&nbsp;script&nbsp;as&nbsp;usual;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;once&nbsp;finished,&nbsp;and&nbsp;all&nbsp;your&nbsp;snapshots&nbsp;have&nbsp;been&nbsp;created,&nbsp;don't&nbsp;forget&nbsp;to&nbsp;kill&nbsp;the&nbsp;X&nbsp;virtual&nbsp;framebuffer&nbsp;and&nbsp;reset&nbsp;your&nbsp;display&nbsp;to&nbsp;its&nbsp;previous&nbsp;value.&nbsp;If&nbsp;not,&nbsp;you&nbsp;won't&nbsp;be&nbsp;able&nbsp;to&nbsp;see&nbsp;your&nbsp;movie&nbsp;;-)</span></tt></p>
+</div>
+<div class="section" id="enabling-alpha-transparency-in-the-colormap">
+<h1>Enabling alpha transparency in the colormap<a class="headerlink" href="#enabling-alpha-transparency-in-the-colormap" title="Permalink to this headline">¶</a></h1>
+<p>Drag the module manager to the python shell and you will be able to
+enable alpha transparency in the colormap via:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">dragged</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">lut</span><span class="o">.</span><span class="n">alpha_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="set-mayavi2-session-colors">
+<h1>Set MayaVi2 session colors<a class="headerlink" href="#set-mayavi2-session-colors" title="Permalink to this headline">¶</a></h1>
+<p>Run !MayaVi2, go to &#8220;Tools&#8221; menu then &#8220;Preferences&#8221; then &#8220;TVTK Scene&#8221;.</p>
+<p>Suppose that you want to change background color: click on &#8220;Background
+color&#8221; tag.</p>
+<p>Here, you can choose a predefined color, or click in the square to set
+your RGB value, for instance.</p>
+<img alt="MayaVi(2f)Tips_attachments/setcolors.png" src="MayaVi(2f)Tips_attachments/setcolors.png" />
+<p>Also, if you want to set foreground color, it will be applied for all
+modules and filters, i.e. outline color, text color, labels axes, and so
+on.</p>
+<p>Your preferences will be saved in a !MayaVi2 configuration file, so
+you&#8217;ll get these colors each time you run a !MayaVi2 session.</p>
+</div>
+<div class="section" id="writing-vtk-data-files-using-tvtk">
+<h1>Writing VTK data files using TVTK<a class="headerlink" href="#writing-vtk-data-files-using-tvtk" title="Permalink to this headline">¶</a></h1>
+<p>Coming soon...</p>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a></li>
+<li><a class="reference internal" href="#scripting-mayavi2-effectively">Scripting MayaVi2 effectively</a><ul>
+<li><a class="reference internal" href="#drag-and-drop-object">Drag and drop object</a></li>
+<li><a class="reference internal" href="#typing-in-the-python-shell">Typing in the python shell</a></li>
+<li><a class="reference internal" href="#using-the-explore-method">Using the explore() method</a></li>
+<li><a class="reference internal" href="#working-in-the-python-shell">Working in the python shell</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#save-snapshots">Save snapshots</a></li>
+<li><a class="reference internal" href="#enabling-alpha-transparency-in-the-colormap">Enabling alpha transparency in the colormap</a></li>
+<li><a class="reference internal" href="#set-mayavi2-session-colors">Set MayaVi2 session colors</a></li>
+<li><a class="reference internal" href="#writing-vtk-data-files-using-tvtk">Writing VTK data files using TVTK</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="MayaVi(2f)Surf.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="MayaVi(2f)examples.html"
+                        title="next chapter">Introduction</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/MayaVi(2f)Tips.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)examples.html" title="Introduction"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)Surf.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,468 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>FAQ &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="TimeSeries.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="Theoretical_Ecology.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="TimeSeries.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Theoretical_Ecology.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p><strong>Recipies and FAQ for the Timeseries Scikit</strong></p>
+<p>TableOfContents(4)</p>
+<p>NOTE: The official documentation and important remarks from the
+developers can be found at the <a class="reference external" href="http://pytseries.sourceforge.net">timseries scikit sourceforge
+page</a>.</p>
+<div class="section" id="faq">
+<h1>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="general-threads">
+<h2>General threads<a class="headerlink" href="#general-threads" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;time&nbsp;series&nbsp;analysis&nbsp;-&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`http://article.gmane.org/gmane.comp.python.scientific.user/13949</span></tt> &lt;<a class="reference external" href="http://article.gmane.org/gmane.comp.python.scientific.user/13949">http://article.gmane.org/gmane.comp.python.scientific.user/13949</a>&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;time&nbsp;series:&nbsp;Python&nbsp;vs.&nbsp;R&nbsp;URL&nbsp;missing!!!</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;roadmap/plans&nbsp;for&nbsp;timeseries&nbsp;package&nbsp;-&nbsp;&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`http://permalink.gmane.org/gmane.comp.python.scientific.user/14599</span></tt> &lt;<a class="reference external" href="http://permalink.gmane.org/gmane.comp.python.scientific.user/14599">http://permalink.gmane.org/gmane.comp.python.scientific.user/14599</a>&gt;`__</div>
+</div>
+</div>
+<div class="section" id="reading-data-and-creating-timeseries-objects">
+<h2>Reading data and creating timeseries objects<a class="headerlink" href="#reading-data-and-creating-timeseries-objects" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="masking-nodata-values">
+<h3>masking NoData values<a class="headerlink" href="#masking-nodata-values" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="question">
+<h4>Question<a class="headerlink" href="#question" title="Permalink to this headline">¶</a></h4>
+<p>In my original data nodata values are marked with &#8220;-999&#8221;. How can I
+import the data or create the time series and exclude these no data
+points from further processing? (flagging no data in timeseries -
+<a class="reference external" href="http://permalink.gmane.org/gmane.comp.python.scientific.user/14455">http://permalink.gmane.org/gmane.comp.python.scientific.user/14455</a>)</p>
+</div>
+<div class="section" id="answer">
+<h4>Answer<a class="headerlink" href="#answer" title="Permalink to this headline">¶</a></h4>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;use&nbsp;masked_where&nbsp;from&nbsp;maskedarray</span></tt></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="n">myvalues_ts_hourly</span> <span class="o">=</span> <span class="n">masked_where</span><span class="p">(</span><span class="n">myvalues_ts_hourly</span> <span class="p">,</span> <span class="o">-</span><span class="mi">999</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;Use&nbsp;indexing</span></tt></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="n">myvalues_ts_hourly</span><span class="p">[</span><span class="n">myvalues_ts_hourly</span><span class="o">==-</span><span class="mi">999</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">masked</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="more-extensive-answer">
+<h4>More extensive answer<a class="headerlink" href="#more-extensive-answer" title="Permalink to this headline">¶</a></h4>
+<p><strong>* START SAMPLE DATA (tmp.txt) *</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">date</span><span class="p">;</span><span class="n">hour_of_day</span><span class="p">;</span><span class="n">value</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">1</span><span class="p">;</span><span class="mi">247</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">2</span><span class="p">;</span><span class="mi">889</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">3</span><span class="p">;</span><span class="mi">914</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">4</span><span class="p">;</span><span class="mi">292</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">5</span><span class="p">;</span><span class="mi">183</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">6</span><span class="p">;</span><span class="mi">251</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">7</span><span class="p">;</span><span class="mi">953</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">8</span><span class="p">;</span><span class="mi">156</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">9</span><span class="p">;</span><span class="mi">991</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">10</span><span class="p">;</span><span class="mi">557</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">11</span><span class="p">;</span><span class="mi">581</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">12</span><span class="p">;</span><span class="mi">354</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">13</span><span class="p">;</span><span class="mi">485</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">14</span><span class="p">;</span><span class="mi">655</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">15</span><span class="p">;</span><span class="o">-</span><span class="mi">999</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">16</span><span class="p">;</span><span class="o">-</span><span class="mi">999</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">17</span><span class="p">;</span><span class="o">-</span><span class="mi">999</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">18</span><span class="p">;</span><span class="mi">744</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">19</span><span class="p">;</span><span class="mi">445</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">20</span><span class="p">;</span><span class="mi">374</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">21</span><span class="p">;</span><span class="mi">168</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">22</span><span class="p">;</span><span class="mi">995</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">23</span><span class="p">;</span><span class="mi">943</span>
+<span class="mf">01.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">24</span><span class="p">;</span><span class="mi">326</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">1</span><span class="p">;</span><span class="mf">83.98</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">2</span><span class="p">;</span><span class="mf">302.26</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">3</span><span class="p">;</span><span class="mf">310.76</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">4</span><span class="p">;</span><span class="o">-</span><span class="mi">999</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">5</span><span class="p">;</span><span class="mf">62.22</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">6</span><span class="p">;</span><span class="mf">85.34</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">7</span><span class="p">;</span><span class="mf">324.02</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">8</span><span class="p">;</span><span class="mf">53.04</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">9</span><span class="p">;</span><span class="mf">336.94</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">10</span><span class="p">;</span><span class="mf">189.38</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">11</span><span class="p">;</span><span class="mf">197.54</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">12</span><span class="p">;</span><span class="mf">120.36</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">13</span><span class="p">;</span><span class="mf">164.9</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">14</span><span class="p">;</span><span class="mf">222.7</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">15</span><span class="p">;</span><span class="mf">34.74</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">16</span><span class="p">;</span><span class="mf">85.34</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">17</span><span class="p">;</span><span class="mf">53.04</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">18</span><span class="p">;</span><span class="mf">252.96</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">19</span><span class="p">;</span><span class="mf">151.3</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">20</span><span class="p">;</span><span class="o">-</span><span class="mi">999</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">21</span><span class="p">;</span><span class="mf">57.12</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">22</span><span class="p">;</span><span class="mf">338.3</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">23</span><span class="p">;</span><span class="mf">320.62</span>
+<span class="mf">02.02</span><span class="o">.</span><span class="mi">2004</span><span class="p">;</span><span class="mi">24</span><span class="p">;</span><span class="mf">110.84</span><span class="p">}}}</span>
+
+<span class="sd">&#39;&#39;&#39;* END SAMPLE DATA *&#39;&#39;&#39;</span>
+
+<span class="p">{{{</span>
+<span class="c">#!python</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
+<span class="kn">import</span> <span class="nn">maskedarray</span> <span class="kn">as</span> <span class="nn">M</span>
+<span class="kn">import</span> <span class="nn">timeseries</span> <span class="kn">as</span> <span class="nn">ts</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s">&quot;tmp.txt&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;|S10&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">dates</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">date_array</span><span class="p">([</span><span class="n">ts</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="s">&#39;H&#39;</span><span class="p">,</span><span class="n">string</span><span class="o">=</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">:00&quot;</span> <span class="o">%</span>
+<span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+                       <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">],</span>
+                      <span class="n">freq</span><span class="o">=</span><span class="s">&#39;H&#39;</span><span class="p">)</span>
+<span class="n">series</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">time_series</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">N</span><span class="o">.</span><span class="n">float_</span><span class="p">),</span>
+                        <span class="n">dates</span><span class="p">,</span>
+                        <span class="n">mask</span><span class="o">=</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s">&#39;-999&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="frequencies">
+<h3>frequencies<a class="headerlink" href="#frequencies" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id1">
+<h4>Question<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<p>Is there a example data set for at least one year on a high temporal
+resolution: 15min or at least 1h. Having such a common data set one
+could set up tutorials examples and debug or ask questions easier
+because all will have the same (non-confidetial) data on the disk.</p>
+</div>
+<div class="section" id="id2">
+<h4>Answer<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>For hours, you have the &#8216;hourly&#8217; frequency. For 15min, you have the
+&#8216;minutely&#8217; frequency, from which you can select every other 15th point.</p>
+<p>(cf. Re: roadmap/plans for timeseries package -
+<a class="reference external" href="http://permalink.gmane.org/gmane.comp.python.scientific.user/1459">http://permalink.gmane.org/gmane.comp.python.scientific.user/1459</a>)</p>
+</div>
+</div>
+<div class="section" id="hour-of-the-day">
+<h3>hour of the day<a class="headerlink" href="#hour-of-the-day" title="Permalink to this headline">¶</a></h3>
+<p>(cf.: assignment of hours of day in time series -
+<a class="reference external" href="http://permalink.gmane.org/gmane.comp.python.scientific.user/14597">http://permalink.gmane.org/gmane.comp.python.scientific.user/14597</a>) When
+exchanging agrregated data sets (e.g. with hourly frequency) the data is
+often presented as follows: desired report output</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">date</span><span class="p">;</span> <span class="n">hour_of_day</span><span class="p">;</span> <span class="n">value</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">1</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">247</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">2</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">889</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">3</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">914</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">4</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">292</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">5</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">183</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">6</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">251</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">7</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">953</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">8</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">156</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">9</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">991</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">10</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">557</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">11</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">581</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">12</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">354</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">13</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">485</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">14</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">655</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">15</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">862</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">16</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">399</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">17</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">598</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">18</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">744</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">19</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">445</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">20</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">374</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">21</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">168</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">22</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">995</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">23</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">943</span>
+<span class="mi">1</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">2004</span><span class="p">;</span><span class="mi">24</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span><span class="mi">326</span>
+</pre></div>
+</div>
+<p>This formatting may be the result of some logging devices which for
+instance record 5 minutes averaged values which have been taken with a
+device using a sample rate of 16 sec. As well, syntetically generated
+data sets which have been created by scientifc models or from remote
+sensing information can have such a format. When creating a timeseries
+object the start hour should be set to zero (0) internally to achieve a
+correct assignment of the hours (01:00 h is the end of the period 00:00
+h - 01:00 h =&gt; data for this period starts at 00:00 h). For the output
+one can be customized as shown below in the answer. The python built-in
+module datetime can help here.</p>
+<div class="section" id="id3">
+<h4>Question<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<p>I have hourly measurements where hour 1 represents the end of the period
+0:00-1:00, 2 the end of the period 1:00-2:00, ... , 24 the end of the
+period 23:00 to 24:00.</p>
+<p>When I plot these hourly time series from February to November the curve
+is continued into December because of that matter. time series then
+assumes that the value for hour 0:00 of dec, 01 is 0 which then leads do
+a wrong plotting behaviour.</p>
+<p>I want to achieve that hour 24 is accounted as the last measurement
+period of a day and not as the first measurement of the next day (like
+0:00).</p>
+</div>
+<div class="section" id="id4">
+<h4>Answer<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<p>Since the time &#8220;24:00&#8221; doesn&#8217;t actually exist (as far as I am aware
+anyway), you will have to rely on somewhat of a hack to get your desired
+output. Try this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="kn">import</span> <span class="nn">timeseries</span> <span class="kn">as</span> <span class="nn">ts</span>
+<span class="n">series</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">time_series</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="mi">430</span><span class="p">),</span> <span class="n">start_date</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="s">&#39;hourly&#39;</span><span class="p">))</span>
+<span class="n">hours</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">time_series</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">hour</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dates</span><span class="o">=</span><span class="n">series</span><span class="o">.</span><span class="n">dates</span><span class="p">)</span>
+<span class="n">hour_fmtfunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="s">&#39;</span><span class="si">%i</span><span class="s">:00&#39;</span> <span class="o">%</span> <span class="n">x</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">Report</span><span class="p">(</span><span class="n">hours</span><span class="p">,</span> <span class="n">series</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%d</span><span class="s">-%b-%Y&#39;</span><span class="p">,</span> <span class="n">delim</span><span class="o">=</span><span class="s">&#39;  &#39;</span><span class="p">,</span> <span class="n">fmtfunc</span><span class="o">=</span><span class="p">[</span><span class="bp">None</span> <span class="n">hour_fmtf</span>
+<span class="n">unc</span><span class="p">,])()</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">date</span> <span class="n">time</span><span class="p">;</span> <span class="n">value</span>
+<span class="mo">06</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>  <span class="mi">23</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">400</span>
+<span class="mo">06</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>  <span class="mi">24</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">401</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>   <span class="mi">1</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">402</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>   <span class="mi">2</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">403</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>   <span class="mi">3</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">404</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>   <span class="mi">4</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">405</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>   <span class="mi">5</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">406</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>   <span class="mi">6</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">407</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>   <span class="mi">7</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">408</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>   <span class="mi">8</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">409</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>   <span class="mi">9</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">410</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>  <span class="mi">10</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">411</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>  <span class="mi">11</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">412</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>  <span class="mi">12</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">413</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>  <span class="mi">13</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">414</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>  <span class="mi">14</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">415</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>  <span class="mi">15</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">416</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>  <span class="mi">16</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">417</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>  <span class="mi">17</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">418</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>  <span class="mi">18</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">419</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>  <span class="mi">19</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">420</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>  <span class="mi">20</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">421</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>  <span class="mi">21</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">422</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>  <span class="mi">22</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">423</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>  <span class="mi">23</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">424</span>
+<span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>  <span class="mi">24</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">425</span>
+<span class="mi">08</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>   <span class="mi">1</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">426</span>
+<span class="mi">08</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>   <span class="mi">2</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">427</span>
+<span class="mi">08</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>   <span class="mi">3</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">428</span>
+<span class="mi">08</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span>   <span class="mi">4</span><span class="p">:</span><span class="mo">00</span><span class="p">;</span>  <span class="mi">429</span>
+</pre></div>
+</div>
+<p>Manipulations &amp; Operations with time series</p>
+</div>
+</div>
+<div class="section" id="use-the-datetime-information-of-the-time-series">
+<h3>use the datetime information of the time series<a class="headerlink" href="#use-the-datetime-information-of-the-time-series" title="Permalink to this headline">¶</a></h3>
+<p>(Re: roadmap/plans for timeseries package -
+<a class="reference external" href="http://permalink.gmane.org/gmane.comp.python.scientific.user/14598">http://permalink.gmane.org/gmane.comp.python.scientific.user/14598</a>) A
+example:</p>
+<div class="section" id="id5">
+<h4>Question<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<p>One has to get rainfall intensity during early morning hours. For such a
+filter the information on the corresponding hours are neccessary.</p>
+</div>
+<div class="section" id="id6">
+<h4>Answer<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">timeseries</span> <span class="kn">as</span> <span class="nn">ts</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">time_series</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">start_date</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">today</span><span class="p">(</span><span class="s">&#39;hourly&#39;</span><span class="p">))</span>
+<span class="n">hours</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">hour</span>
+<span class="n">filtered_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[(</span><span class="n">hours</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">hours</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">)]</span>
+<span class="n">filtered_data</span>
+<span class="n">timeseries</span><span class="p">([</span><span class="mi">80</span>  <span class="mi">6</span>  <span class="mi">7</span>  <span class="mi">8</span> <span class="mi">30</span> <span class="mi">31</span> <span class="mi">32</span> <span class="mi">54</span> <span class="mi">55</span> <span class="mi">56</span> <span class="mi">78</span> <span class="mi">79</span><span class="p">],</span>
+<span class="n">dates</span> <span class="o">=</span> <span class="p">[</span><span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span> <span class="mo">04</span><span class="p">:</span><span class="mo">00</span> <span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span> <span class="mo">05</span><span class="p">:</span><span class="mo">00</span> <span class="mo">07</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span> <span class="mo">06</span><span class="p">:</span><span class="mo">00</span>
+<span class="mi">08</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span> <span class="mo">04</span><span class="p">:</span><span class="mo">00</span> <span class="mi">08</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span> <span class="mo">05</span><span class="p">:</span><span class="mo">00</span> <span class="mi">08</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span> <span class="mo">06</span><span class="p">:</span><span class="mo">00</span> <span class="mi">09</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span> <span class="mo">04</span><span class="p">:</span><span class="mo">00</span>
+<span class="mi">09</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span> <span class="mo">05</span><span class="p">:</span><span class="mo">00</span> <span class="mi">09</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span> <span class="mo">06</span><span class="p">:</span><span class="mo">00</span> <span class="mi">10</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span> <span class="mo">04</span><span class="p">:</span><span class="mo">00</span> <span class="mi">10</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span> <span class="mo">05</span><span class="p">:</span><span class="mo">00</span>
+<span class="mi">10</span><span class="o">-</span><span class="n">Jan</span><span class="o">-</span><span class="mi">2008</span> <span class="mo">06</span><span class="p">:</span><span class="mo">00</span><span class="p">],</span>
+          <span class="n">freq</span>  <span class="o">=</span> <span class="n">H</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="using-the-result-of-time-series-operations">
+<h3>using the result of time series operations<a class="headerlink" href="#using-the-result-of-time-series-operations" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id7">
+<h4>Question<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<p>How can one save the read the result of time series operations into a
+array?</p>
+<p>For instance, if I convert data in an hourly frequency to daily averages
+how to I read the daily averages into a array for further processing?</p>
+<p>when I print out my daily timeseries converted from hourly data I get
+something like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="n">In</span><span class="p">:</span> <span class="n">myvalues_ts_daily</span>
+<span class="n">Out</span><span class="p">:</span>
+<span class="n">timeseries</span><span class="p">([</span>  <span class="mf">1.4</span>   <span class="mf">89.4</span>  <span class="mf">3.5</span> <span class="o">...</span><span class="p">,</span>  <span class="mf">11.5</span>  <span class="mf">1.6</span>
+     <span class="mf">0.</span>        <span class="p">],</span>
+            <span class="n">dates</span> <span class="o">=</span> <span class="p">[</span><span class="mo">01</span><span class="o">-</span><span class="n">Dec</span><span class="o">-</span><span class="mi">2006</span> <span class="mo">01</span><span class="o">-</span><span class="n">Feb</span><span class="o">-</span><span class="mi">1995</span> <span class="o">...</span><span class="p">],</span>
+            <span class="n">freq</span>  <span class="o">=</span> <span class="n">D</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>What I would like is an array with just the values of the daily averages
+. Additional a report-like array output with the format day value</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="mi">1</span>   <span class="mi">3</span>
+<span class="mi">2</span>   <span class="mi">11</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id8">
+<h4>Answer<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<p>&gt; For instance, if I convert data in an hourly frequency to daily
+averages &gt; &gt; how to I read the daily averages into a array for further
+processing?</p>
+<p><tt class="docutils literal"><span class="pre">1.&nbsp;possibility&nbsp;#1:&nbsp;use&nbsp;the&nbsp;keyword&nbsp;func&nbsp;while&nbsp;converting.</span></tt></p>
+<div class="highlight-python"><div class="highlight"><pre> <span class="mf">1.</span> <span class="n">possibility</span> <span class="c">#2:</span>
+<span class="n">If</span> <span class="n">you</span> <span class="n">don</span><span class="s">&#39;t use the keyword func, you end up with a 2d array, each row being  a</span>
+ <span class="n">day</span><span class="p">,</span> <span class="n">each</span> <span class="n">column</span> <span class="n">an</span> <span class="n">hour</span><span class="o">.</span> <span class="n">Just</span> <span class="n">use</span> <span class="n">maskedarray</span><span class="o">.</span><span class="n">mean</span> <span class="n">on</span> <span class="n">each</span> <span class="n">row</span> <span class="n">avgdata</span> <span class="o">=</span> <span class="n">conve</span>
+<span class="n">rt</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="s">&#39;D&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">If</span> <span class="n">you</span> <span class="n">only</span> <span class="n">want</span> <span class="n">the</span> <span class="n">values</span><span class="p">,</span> <span class="n">use</span> <span class="n">the</span> <span class="o">.</span><span class="n">series</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">it</span> <span class="n">will</span> <span class="n">give</span> <span class="n">you</span> <span class="n">a</span>  <span class="n">view</span>
+ <span class="n">of</span> <span class="n">the</span> <span class="n">array</span> <span class="k">as</span> <span class="n">a</span> <span class="n">MaskedArray</span><span class="o">.</span>
+
+<span class="o">==</span> <span class="n">Plotting</span> <span class="o">==</span>
+<span class="n">Word</span> <span class="n">of</span> <span class="n">caution</span><span class="o">...</span> <span class="n">the</span> <span class="n">timeseries</span> <span class="n">plotting</span> <span class="n">stuff</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">currently</span> <span class="n">support</span> <span class="n">freq</span>
+<span class="n">uencies</span> <span class="n">higher</span> <span class="n">than</span> <span class="n">daily</span> <span class="p">(</span><span class="n">eg</span><span class="o">.</span> <span class="n">hourly</span><span class="p">,</span> <span class="n">minutely</span><span class="p">,</span> <span class="n">etc</span><span class="o">...</span><span class="p">)</span><span class="o">.</span> <span class="n">Support</span> <span class="k">for</span> <span class="n">these</span> <span class="n">freq</span>
+<span class="n">uencies</span> <span class="n">could</span> <span class="n">be</span> <span class="n">added</span> <span class="n">without</span> <span class="n">too</span> <span class="n">much</span> <span class="n">trouble</span><span class="p">,</span> <span class="n">but</span> <span class="n">just</span> <span class="n">haven</span><span class="s">&#39;t got around to</span>
+<span class="n">it</span> <span class="n">yet</span><span class="o">.</span> <span class="p">(</span><span class="n">Cf</span><span class="o">.</span> <span class="n">Re</span><span class="p">:</span> <span class="n">roadmap</span><span class="o">/</span><span class="n">plans</span> <span class="k">for</span> <span class="n">timeseries</span> <span class="n">package</span> <span class="o">-</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">permalink</span><span class="o">.</span><span class="n">gmane</span><span class="o">.</span><span class="n">o</span>
+<span class="n">rg</span><span class="o">/</span><span class="n">gmane</span><span class="o">.</span><span class="n">comp</span><span class="o">.</span><span class="n">python</span><span class="o">.</span><span class="n">scientific</span><span class="o">.</span><span class="n">user</span><span class="o">/</span><span class="mi">14598</span><span class="p">)</span>
+
+<span class="o">=</span> <span class="n">About</span> <span class="n">this</span> <span class="n">page</span> <span class="o">=</span>
+<span class="o">==</span> <span class="n">Source</span> <span class="o">==</span>
+ <span class="o">*</span> <span class="n">Most</span> <span class="n">information</span> <span class="n">presented</span> <span class="n">here</span> <span class="n">has</span> <span class="n">been</span> <span class="n">compiled</span> <span class="kn">from</span> <span class="nn">discussions</span> <span class="nn">at</span> <span class="nn">the</span> <span class="nn">sci</span>
+<span class="n">py</span> <span class="n">mailing</span> <span class="nb">list</span><span class="o">.</span>
+<span class="o">==</span> <span class="n">todo</span> <span class="o">==</span>
+ <span class="o">*</span> <span class="n">Use</span> <span class="n">one</span> <span class="n">data</span> <span class="nb">set</span> <span class="n">consistently</span> <span class="k">for</span> <span class="n">the</span> <span class="n">examples</span>
+ <span class="o">*</span> <span class="n">offer</span> <span class="n">the</span> <span class="n">code</span> <span class="k">for</span> <span class="n">download</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">FAQ</a><ul>
+<li><a class="reference internal" href="#general-threads">General threads</a></li>
+<li><a class="reference internal" href="#reading-data-and-creating-timeseries-objects">Reading data and creating timeseries objects</a><ul>
+<li><a class="reference internal" href="#masking-nodata-values">masking NoData values</a><ul>
+<li><a class="reference internal" href="#question">Question</a></li>
+<li><a class="reference internal" href="#answer">Answer</a></li>
+<li><a class="reference internal" href="#more-extensive-answer">More extensive answer</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#frequencies">frequencies</a><ul>
+<li><a class="reference internal" href="#id1">Question</a></li>
+<li><a class="reference internal" href="#id2">Answer</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hour-of-the-day">hour of the day</a><ul>
+<li><a class="reference internal" href="#id3">Question</a></li>
+<li><a class="reference internal" href="#id4">Answer</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#use-the-datetime-information-of-the-time-series">use the datetime information of the time series</a><ul>
+<li><a class="reference internal" href="#id5">Question</a></li>
+<li><a class="reference internal" href="#id6">Answer</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-the-result-of-time-series-operations">using the result of time series operations</a><ul>
+<li><a class="reference internal" href="#id7">Question</a></li>
+<li><a class="reference internal" href="#id8">Answer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Theoretical_Ecology.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="TimeSeries.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/TimeSeries(2f)FAQ.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="TimeSeries.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Theoretical_Ecology.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

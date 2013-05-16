@@ -1,0 +1,346 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Introduction" href="MayaVi(2f)ScriptingMayavi2(2f)MainModules.html" />
+    <link rel="prev" title="Introduction" href="MayaVi(2f)ScriptingMayavi2(2f)BasicModules.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)ScriptingMayavi2(2f)MainModules.html" title="Introduction"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)ScriptingMayavi2(2f)BasicModules.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>TableOfContents</p>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>Well, until now, examples above are quite simple: scalars or vectors
+data are presented in the &#8220;vaccum&#8221;, i.e. there is not object or material
+or whatsoever.</p>
+<p>In others words, how can one display some object, say a metallic
+parallellepiped, for example, in a scalars or vectors field ?</p>
+<p>The first filter you will be presented here deals with this problem.</p>
+</div>
+<div class="section" id="extractunstructuredgrid-filter">
+<h1>ExtractUnstructuredGrid filter<a class="headerlink" href="#extractunstructuredgrid-filter" title="Permalink to this headline">¶</a></h1>
+<p>For this example, we suppose several hypotheses:</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;the&nbsp;mesh&nbsp;of&nbsp;the&nbsp;volume&nbsp;data&nbsp;is&nbsp;made&nbsp;of&nbsp;76x60x72&nbsp;cubic&nbsp;cells&nbsp;(8&nbsp;vertices);&nbsp;thus,&nbsp;the&nbsp;VTK&nbsp;object&nbsp;cell&nbsp;used&nbsp;for&nbsp;the&nbsp;&quot;vaccum&quot;&nbsp;is&nbsp;called&nbsp;VTK_HEXAHEDRON&nbsp;(#12).&nbsp;Cell&nbsp;ids&nbsp;begins&nbsp;at&nbsp;0&nbsp;and&nbsp;ends&nbsp;at&nbsp;#342880.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;a&nbsp;metallic&nbsp;parallellepiped&nbsp;is&nbsp;immersed&nbsp;in&nbsp;a&nbsp;EM&nbsp;field&nbsp;spreading&nbsp;over&nbsp;the&nbsp;whole&nbsp;volume&nbsp;data&nbsp;;&nbsp;this&nbsp;object&nbsp;is&nbsp;made&nbsp;of&nbsp;faceted&nbsp;cells&nbsp;(4&nbsp;vertices),&nbsp;called&nbsp;VTK_QUAD&nbsp;(#9)&nbsp;cells&nbsp;in&nbsp;VTK&nbsp;denomination.&nbsp;These&nbsp;faceted&nbsp;cells&nbsp;are&nbsp;used&nbsp;here&nbsp;because&nbsp;of&nbsp;the&nbsp;null&nbsp;EM&nbsp;field&nbsp;within&nbsp;the&nbsp;parallellepiped.&nbsp;Cell&nbsp;ids&nbsp;begin&nbsp;at&nbsp;#342881&nbsp;and&nbsp;end&nbsp;at&nbsp;#345966.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;as&nbsp;there&nbsp;are&nbsp;different&nbsp;kinds&nbsp;of&nbsp;cells,&nbsp;the&nbsp;!UnstructuredGrid&nbsp;data&nbsp;set&nbsp;must&nbsp;be&nbsp;used&nbsp;(see&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`http://www.vtk.org/pdf/file-formats.pdf</span></tt> &lt;<a class="reference external" href="http://www.vtk.org/pdf/file-formats.pdf">http://www.vtk.org/pdf/file-formats.pdf</a>&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;to&nbsp;know&nbsp;how&nbsp;!UnstructuredGrid&nbsp;files&nbsp;must&nbsp;be&nbsp;written,&nbsp;VTK&nbsp;cells&nbsp;syntax,&nbsp;etc).</span></tt></p>
+<p>To display the metallic parallellepiped as a separate object from the
+vaccum, you have to extract the cells corresponding to this object.
+Thus, you will be able to display this object using the Surface module
+for example.</p>
+<p>First, import !ExtractUnstructuredGrid filter and Surface module, as
+usual:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.surface</span> <span class="kn">import</span> <span class="n">Surface</span>
+
+<span class="kn">from</span> <span class="nn">enthought.mayavi.filters.extract_unstructured_grid</span> <span class="kn">import</span> <span class="n">ExtractUnstructur</span>
+<span class="n">edGrid</span>
+</pre></div>
+</div>
+<p>then</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">### for the metallic parallellepiped</span>
+<span class="n">script</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">current_object</span> <span class="o">=</span> <span class="n">src</span>  <span class="c"># current object must be set to the source</span>
+<span class="n">eug1</span> <span class="o">=</span> <span class="n">ExtractUnstructuredGrid</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">eug1</span><span class="p">)</span>
+<span class="n">eug1</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">cell_clipping</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">eug1</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">cell_minimum</span> <span class="o">=</span> <span class="mi">342881</span>
+<span class="n">eug1</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">cell_maximum</span> <span class="o">=</span> <span class="mi">345966</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">Surface</span><span class="p">()</span>                       <span class="c"># the metallic is displayed using Surface mo</span>
+<span class="n">dule</span>
+<span class="n">eug1</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>                  <span class="c"># the module must be added to the current fi</span>
+<span class="n">lter</span>
+<span class="n">s</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">scalar_visibility</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">s</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.509804</span><span class="p">,</span> <span class="mf">0.5098040</span><span class="p">,</span> <span class="mf">0.5490196</span><span class="p">)</span> <span class="c"># grey color for the m</span>
+<span class="n">etallic</span> <span class="n">parallellepiped</span>
+
+<span class="c">### we need also extract the required cells for and only for the vaccum</span>
+<span class="n">script</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">current_object</span> <span class="o">=</span> <span class="n">src</span>  <span class="c"># current object must be set to the source</span>
+<span class="n">eug2</span> <span class="o">=</span> <span class="n">ExtractUnstructuredGrid</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">eug2</span><span class="p">)</span>
+<span class="n">eug2</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">cell_clipping</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">eug2</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">cell_minimum</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">eug2</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">cell_maximum</span> <span class="o">=</span> <span class="mi">342880</span>
+
+<span class="c">### here, we can display the EM field using ScalarCutPlane/VectorCutPlane,</span>
+<span class="c">### Surface, Vectors modules as usual</span>
+<span class="o">.../...</span>
+</pre></div>
+</div>
+<p>This should look like this:</p>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)Filters_attachments/filter_eug1.png" src="MayaVi(2f)ScriptingMayavi2(2f)Filters_attachments/filter_eug1.png" />
+<p>For this first example, there was only one object, and it was faceted.</p>
+<p>Now, say we have a second object, not metallic but dielectric (so the EM
+field within it should not be null). Thus we have to use some 3D cells,
+as VTK_HEXAHEDRON cells (cell ids go from #345967 to #349094). We also
+want to display the field on the surface on the metallic object <em>and</em> in
+the dielectric object.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">### for the metallic parallellepiped</span>
+<span class="n">script</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">current_object</span> <span class="o">=</span> <span class="n">src</span>
+<span class="n">eug1</span> <span class="o">=</span> <span class="n">ExtractUnstructuredGrid</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">eug1</span><span class="p">)</span>
+<span class="n">eug1</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">cell_clipping</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">eug1</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">cell_minimum</span> <span class="o">=</span> <span class="mi">342881</span>
+<span class="n">eug1</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">cell_maximum</span> <span class="o">=</span> <span class="mi">345966</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">Surface</span><span class="p">()</span>
+<span class="n">eug1</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">scalar_visibility</span> <span class="o">=</span> <span class="bp">True</span> <span class="c"># scalar field on the surface</span>
+
+<span class="c">### for the dielectric parallellepiped</span>
+<span class="n">script</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">current_object</span> <span class="o">=</span> <span class="n">src</span>
+<span class="n">eug2</span> <span class="o">=</span> <span class="n">ExtractUnstructuredGrid</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">eug2</span><span class="p">)</span>
+<span class="n">eug2</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">cell_clipping</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">eug2</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">cell_minimum</span> <span class="o">=</span> <span class="mi">345967</span>
+<span class="n">eug2</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">cell_maximum</span> <span class="o">=</span> <span class="mi">349094</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">Surface</span><span class="p">()</span>
+<span class="n">eug2</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">scalar_visibility</span> <span class="o">=</span> <span class="bp">True</span> <span class="c"># scalar field set to on</span>
+<span class="n">s</span><span class="o">.</span><span class="n">enable_contours</span> <span class="o">=</span> <span class="bp">True</span>                <span class="c"># in the volume</span>
+
+<span class="c">### we need also extract the required cells for and only for the vaccum</span>
+<span class="n">script</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">current_object</span> <span class="o">=</span> <span class="n">src</span>  <span class="c"># current object must be set to the source</span>
+<span class="n">eug3</span> <span class="o">=</span> <span class="n">ExtractUnstructuredGrid</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">eug3</span><span class="p">)</span>
+<span class="n">eug3</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">cell_clipping</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">eug3</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">cell_minimum</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">eug3</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">cell_maximum</span> <span class="o">=</span> <span class="mi">342880</span>
+
+<span class="o">.../...</span>
+</pre></div>
+</div>
+<p>This should render this:</p>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)Filters_attachments/filter_eug2.png" src="MayaVi(2f)ScriptingMayavi2(2f)Filters_attachments/filter_eug2.png" />
+</div>
+<div class="section" id="extractgrid-filter">
+<h1>ExtractGrid filter<a class="headerlink" href="#extractgrid-filter" title="Permalink to this headline">¶</a></h1>
+<p>Using !ExtractGrid filter is easier, because it works (only) on
+structured grids: you only have to set min/max values for x, y, z
+coordinates. Thus, you can cut a subvolume of your data. You can also
+apply a ratio on each coordinates, to decrease the cells number.</p>
+<p>Import, as usual, the required modules and/or filter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.surface</span> <span class="kn">import</span> <span class="n">Surface</span>
+
+<span class="kn">from</span> <span class="nn">enthought.mayavi.filters.extract_grid</span> <span class="kn">import</span> <span class="n">ExtractGrid</span>
+</pre></div>
+</div>
+<p>then you can set filter&#8217;s limits as:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">eg</span> <span class="o">=</span> <span class="n">ExtractGrid</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">eg</span><span class="p">)</span>
+<span class="n">eg</span><span class="o">.</span><span class="n">x_min</span><span class="p">,</span> <span class="n">eg</span><span class="o">.</span><span class="n">x_max</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">40</span>
+<span class="n">eg</span><span class="o">.</span><span class="n">y_min</span><span class="p">,</span> <span class="n">eg</span><span class="o">.</span><span class="n">y_max</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">40</span>
+<span class="n">eg</span><span class="o">.</span><span class="n">z_min</span><span class="p">,</span> <span class="n">eg</span><span class="o">.</span><span class="n">z_max</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">40</span>
+
+<span class="c"># eg.x_ratio = 2</span>
+<span class="c"># eg.y_ratio = 2</span>
+<span class="c"># eg.z_ratio = 2</span>
+
+<span class="c"># same example using Surface module</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">Surface</span><span class="p">()</span>
+<span class="n">s</span><span class="o">.</span><span class="n">enable_contours</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">s</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">auto_contours</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">s</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">number_of_contours</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">s</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">minimum_contour</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">s</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">maximum_contour</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">s</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">data_range</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)Filters_attachments/filter_eg.png" src="MayaVi(2f)ScriptingMayavi2(2f)Filters_attachments/filter_eg.png" />
+</div>
+<div class="section" id="threshold-filter">
+<h1>Threshold filter<a class="headerlink" href="#threshold-filter" title="Permalink to this headline">¶</a></h1>
+<p>Using this filter, you can consider scalars values contained in a
+specific range.</p>
+<p>Suppose that your scalars data spread from 0 to 1, but you are only
+interested by the values in the range [0.4, 0.6] and you want to play
+with the slidebar of the !IsoSurface module within this range, around
+0.5. By default, min &amp; max values of the slidebar will be set to 0 &amp; 1,
+because of your data range:</p>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)Filters_attachments/filter_thrld1.png" src="MayaVi(2f)ScriptingMayavi2(2f)Filters_attachments/filter_thrld1.png" />
+<p>To play more accurately with the slidebar of the !IsoSurface module, you
+have to set min &amp; max values to the required values, i.e. 0.4 &amp; 0.6.
+Thus, if you want to see your scalars data around 0.5, you can set the
+slidebar from 0.4 to 0.6 more easily than in the case where slidebar
+goes form 0 to 1.</p>
+<p>The Threshold filter can help you to do this.</p>
+<p>Begin to import the module and the filter first:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.iso_surface</span> <span class="kn">import</span> <span class="n">IsoSurface</span>
+
+<span class="kn">from</span> <span class="nn">enthought.mayavi.filters.threshold</span> <span class="kn">import</span> <span class="n">Threshold</span>
+</pre></div>
+</div>
+<p>then, set the threshold values:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">thh</span> <span class="o">=</span> <span class="n">Threshold</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">thh</span><span class="p">)</span>
+<span class="n">thh</span><span class="o">.</span><span class="n">lower_threshold</span> <span class="o">=</span> <span class="mf">0.4</span>
+<span class="n">thh</span><span class="o">.</span><span class="n">upper_threshold</span> <span class="o">=</span> <span class="mf">0.6</span>
+<span class="n">isosurf</span> <span class="o">=</span> <span class="n">IsoSurface</span><span class="p">()</span>
+<span class="n">thh</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">isosurf</span><span class="p">)</span>
+<span class="n">isosurf</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">contours</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">]</span>
+<span class="n">isosurf</span><span class="o">.</span><span class="n">compute_normals</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">isosurf</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">isosurf</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">data_range</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>and you&#8217;re done !</p>
+<p>This should look like this:</p>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)Filters_attachments/filter_thrld2.png" src="MayaVi(2f)ScriptingMayavi2(2f)Filters_attachments/filter_thrld2.png" />
+<p>You can notice on the two previous figures that the Threshold module
+approximates bounds to the nearest values (there are not strictly equal
+to 0.4 &amp; 0.6).</p>
+</div>
+<div class="section" id="pointtocelldata-filter">
+<h1>PointToCellData filter<a class="headerlink" href="#pointtocelldata-filter" title="Permalink to this headline">¶</a></h1>
+<p>Generally, data are interpolated between each point. Thus, they look
+like nicer.</p>
+<p>But maybe in some case, you don&#8217;t want them to be interpolated, and see
+the data &#8220;as they are&#8221;: they are not displayed as points, but as cells.
+In this case, you can use the !PointToCellData filter.</p>
+<p>Let&#8217;s see again the example using the !ScalarCutPlane module, and import
+the !PointToCellData filter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.scalar_cut_plane</span> <span class="kn">import</span> <span class="n">ScalarCutPlane</span>
+
+<span class="kn">from</span> <span class="nn">enthought.mayavi.filters.point_to_cell_data</span> <span class="kn">import</span> <span class="n">PointToCellData</span>
+</pre></div>
+</div>
+<p>then add the !ScalarCutPlane module &#8220;above&#8221; the !PointToCellData filter,
+as usual:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ptocd</span> <span class="o">=</span> <span class="n">PointToCellData</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">ptocd</span><span class="p">)</span>
+<span class="n">scp</span> <span class="o">=</span> <span class="n">ScalarCutPlane</span><span class="p">()</span>
+<span class="n">ptocd</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">scp</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">normal</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">diffuse</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">ambient</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">data_range</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Thus, you can see your data on each cell and not as points (compare to
+the first figure showing the use of the !ScalarCutPlane module):</p>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)Filters_attachments/filter_p2c.png" src="MayaVi(2f)ScriptingMayavi2(2f)Filters_attachments/filter_p2c.png" />
+</div>
+<div class="section" id="warpscalar-filter">
+<h1>WarpScalar filter<a class="headerlink" href="#warpscalar-filter" title="Permalink to this headline">¶</a></h1>
+<p>You can use the !WarpScalar filter to warp a 2D surface for example. See
+[:Cookbook/MayaVi/Examples: Example using mlab
+(surf_regular_mlab.py)].</p>
+</div>
+<div class="section" id="transformdata-filter">
+<h1>TransformData filter<a class="headerlink" href="#transformdata-filter" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a></li>
+<li><a class="reference internal" href="#extractunstructuredgrid-filter">ExtractUnstructuredGrid filter</a></li>
+<li><a class="reference internal" href="#extractgrid-filter">ExtractGrid filter</a></li>
+<li><a class="reference internal" href="#threshold-filter">Threshold filter</a></li>
+<li><a class="reference internal" href="#pointtocelldata-filter">PointToCellData filter</a></li>
+<li><a class="reference internal" href="#warpscalar-filter">WarpScalar filter</a></li>
+<li><a class="reference internal" href="#transformdata-filter">TransformData filter</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="MayaVi(2f)ScriptingMayavi2(2f)BasicModules.html"
+                        title="previous chapter">Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="MayaVi(2f)ScriptingMayavi2(2f)MainModules.html"
+                        title="next chapter">Introduction</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/MayaVi(2f)ScriptingMayavi2(2f)Filters.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)ScriptingMayavi2(2f)MainModules.html" title="Introduction"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)ScriptingMayavi2(2f)BasicModules.html" title="Introduction"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

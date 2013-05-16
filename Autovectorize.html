@@ -1,0 +1,140 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Autovectorization &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Brownian Motion" href="BrownianMotion.html" />
+    <link rel="prev" title="Overview" href="ArrayStruct_and_Pyrex.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="BrownianMotion.html" title="Brownian Motion"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ArrayStruct_and_Pyrex.html" title="Overview"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="autovectorization">
+<h1>Autovectorization<a class="headerlink" href="#autovectorization" title="Permalink to this headline">¶</a></h1>
+<p>There are instances where it is very convenient to have a function
+defined in the language of scalars that can operate on arrays.
+<a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.vectorize.html">numpy.vectorize</a>
+provides such a conversion.</p>
+<p>In simplier language: This function basically makes a functions which
+calculate single values (e. g. math.sin) operate on array.</p>
+<p>Some links and threads on this:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;optimising&nbsp;single&nbsp;value&nbsp;functions&nbsp;for&nbsp;array&nbsp;calculations&nbsp;-&nbsp;&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`http://article.gmane.org/gmane.comp.python.numeric.general/26543</span></tt> &lt;<a class="reference external" href="http://article.gmane.org/gmane.comp.python.numeric.general/26543">http://article.gmane.org/gmane.comp.python.numeric.general/26543</a>&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;vectorized&nbsp;function&nbsp;inside&nbsp;a&nbsp;class&nbsp;-&nbsp;&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`http://article.gmane.org/gmane.comp.python.numeric.general/16438</span></tt> &lt;<a class="reference external" href="http://article.gmane.org/gmane.comp.python.numeric.general/16438">http://article.gmane.org/gmane.comp.python.numeric.general/16438</a>&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;numpy.vectorize&nbsp;performance&nbsp;-&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`http://article.gmane.org/gmane.comp.python.numeric.general/6867</span></tt> &lt;<a class="reference external" href="http://article.gmane.org/gmane.comp.python.numeric.general/6867">http://article.gmane.org/gmane.comp.python.numeric.general/6867</a>&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;vectorize()&nbsp;-&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`http://www.scipy.org/Numpy_Example_List_With_Doc#head-fbff061fdb843209707a8fa537d9b24b6a91245e</span></tt> &lt;<a class="reference external" href="http://www.scipy.org/Numpy_Example_List_With_Doc#head-fbff061fdb843209707a8fa537d9b24b6a91245e">http://www.scipy.org/Numpy_Example_List_With_Doc#head-fbff061fdb843209707a8fa537d9b24b6a91245e</a>&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;NumPy:&nbsp;vectorization&nbsp;-&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`http://folk.uio.no/hpl/PyUiT/PyUiT-split/slide218.html</span></tt> &lt;<a class="reference external" href="http://folk.uio.no/hpl/PyUiT/PyUiT-split/slide218.html">http://folk.uio.no/hpl/PyUiT/PyUiT-split/slide218.html</a>&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;vectorizing&nbsp;loops&nbsp;-&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`http://article.gmane.org/gmane.comp.python.numeric.general/17266</span></tt> &lt;<a class="reference external" href="http://article.gmane.org/gmane.comp.python.numeric.general/17266">http://article.gmane.org/gmane.comp.python.numeric.general/17266</a>&gt;`__</div>
+</div>
+<div class="section" id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;[&quot;SciPyPackages/NumExpr&quot;]</span></tt></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Autovectorization</a><ul>
+<li><a class="reference internal" href="#see-also">See also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ArrayStruct_and_Pyrex.html"
+                        title="previous chapter">Overview</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="BrownianMotion.html"
+                        title="next chapter">Brownian Motion</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Autovectorize.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="BrownianMotion.html" title="Brownian Motion"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ArrayStruct_and_Pyrex.html" title="Overview"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

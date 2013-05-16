@@ -1,0 +1,276 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Interactive point identification &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Producing Graphs for Publication using LaTeX" href="Matplotlib(2f)LaTeX_Examples.html" />
+    <link rel="prev" title="Hinton diagrams with matplotlib" href="Matplotlib(2f)HintonDiagrams.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)LaTeX_Examples.html" title="Producing Graphs for Publication using LaTeX"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)HintonDiagrams.html" title="Hinton diagrams with matplotlib"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="interactive-point-identification">
+<h1>Interactive point identification<a class="headerlink" href="#interactive-point-identification" title="Permalink to this headline">¶</a></h1>
+<p>I find it often quite useful to be able to identify points within a plot
+simply by clicking. This recipe provides a fairly simple
+<a class="reference external" href="http://en.wikipedia.org/wiki/Function_object">functor</a> that can be
+connected to any plot. I&#8217;ve used it with both scatter and standard
+plots.</p>
+<p>Because often you&#8217;ll have multiple views of a dataset spread across
+either multiple figures, or at least multiple axis, I&#8217;ve also provided a
+utility to link these plots together so clicking on a point in one plot
+will highlight and identify that data point on all other linked plots.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="kn">import</span> <span class="nn">pylab</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+
+
+<span class="k">class</span> <span class="nc">AnnoteFinder</span><span class="p">:</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  callback for matplotlib to display an annotation when points are clicked on.</span>
+<span class="sd">The</span>
+<span class="sd">  point which is closest to the click and within xtol and ytol is identified.</span>
+
+<span class="sd">  Register this function like this:</span>
+
+<span class="sd">  scatter(xdata, ydata)</span>
+<span class="sd">  af = AnnoteFinder(xdata, ydata, annotes)</span>
+<span class="sd">  connect(&#39;button_press_event&#39;, af)</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">annotes</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">xtol</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ytol</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">annotes</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">xtol</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">xtol</span> <span class="o">=</span> <span class="p">((</span><span class="nb">max</span><span class="p">(</span><span class="n">xdata</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">xdata</span><span class="p">))</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xdata</span><span class="p">)))</span><span class="o">/</span><span class="mi">2</span>
+    <span class="k">if</span> <span class="n">ytol</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="n">ytol</span> <span class="o">=</span> <span class="p">((</span><span class="nb">max</span><span class="p">(</span><span class="n">ydata</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">ydata</span><span class="p">))</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ydata</span><span class="p">)))</span><span class="o">/</span><span class="mi">2</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">xtol</span> <span class="o">=</span> <span class="n">xtol</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ytol</span> <span class="o">=</span> <span class="n">ytol</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">=</span> <span class="n">axis</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">drawnAnnotations</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">links</span> <span class="o">=</span> <span class="p">[]</span>
+
+  <span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    return the distance between two points</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y1</span> <span class="o">-</span> <span class="n">y2</span><span class="p">)</span>
+
+  <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span><span class="p">:</span>
+      <span class="n">clickX</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">xdata</span>
+      <span class="n">clickY</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">ydata</span>
+      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">==</span><span class="n">event</span><span class="o">.</span><span class="n">inaxes</span><span class="p">:</span>
+        <span class="n">annotes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+          <span class="k">if</span>  <span class="n">clickX</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">xtol</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">clickX</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">xtol</span> <span class="ow">and</span>  <span class="n">clickY</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">ytol</span> <span class="o">&lt;</span> <span class="n">y</span>
+<span class="o">&lt;</span> <span class="n">clickY</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">ytol</span> <span class="p">:</span>
+            <span class="n">annotes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">clickX</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">clickY</span><span class="p">),</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="p">)</span>
+        <span class="k">if</span> <span class="n">annotes</span><span class="p">:</span>
+          <span class="n">annotes</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+          <span class="n">distance</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">annote</span> <span class="o">=</span> <span class="n">annotes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">drawAnnote</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">inaxes</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">annote</span><span class="p">)</span>
+          <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">links</span><span class="p">:</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">drawSpecificAnnote</span><span class="p">(</span><span class="n">annote</span><span class="p">)</span>
+
+  <span class="k">def</span> <span class="nf">drawAnnote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">annote</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Draw the annotation on the plot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">drawnAnnotations</span><span class="p">:</span>
+      <span class="n">markers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drawnAnnotations</span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)]</span>
+      <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">markers</span><span class="p">:</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="ow">not</span> <span class="n">m</span><span class="o">.</span><span class="n">get_visible</span><span class="p">())</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">t</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="s">&quot;(</span><span class="si">%3.2f</span><span class="s">, </span><span class="si">%3.2f</span><span class="s">) - </span><span class="si">%s</span><span class="s">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">annote</span><span class="p">),</span> <span class="p">)</span>
+      <span class="n">m</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">x</span><span class="p">],[</span><span class="n">y</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s">&#39;d&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">drawnAnnotations</span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)]</span> <span class="o">=</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+  <span class="k">def</span> <span class="nf">drawSpecificAnnote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">annote</span><span class="p">):</span>
+    <span class="n">annotesToDraw</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="k">if</span> <span class="n">a</span><span class="o">==</span><span class="n">annote</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">a</span> <span class="ow">in</span> <span class="n">annotesToDraw</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">drawAnnote</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To use this functor you can simply do something like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">x</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">annotes</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">,</span> <span class="s">&#39;d&#39;</span><span class="p">,</span> <span class="s">&#39;e&#39;</span><span class="p">,</span> <span class="s">&#39;f&#39;</span><span class="p">,</span> <span class="s">&#39;g&#39;</span><span class="p">,</span> <span class="s">&#39;h&#39;</span><span class="p">,</span> <span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;j&#39;</span><span class="p">]</span>
+
+<span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="n">af</span> <span class="o">=</span>  <span class="n">AnnoteFinder</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">annotes</span><span class="p">)</span>
+<span class="n">connect</span><span class="p">(</span><span class="s">&#39;button_press_event&#39;</span><span class="p">,</span> <span class="n">af</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is fairly useful, but sometimes you&#8217;ll have multiple views of a
+dataset and it is useful to click and identify a point in one plot and
+find it in another. The below code demonstrates this linkage and should
+work between multiple axis or figures.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">linkAnnotationFinders</span><span class="p">(</span><span class="n">afs</span><span class="p">):</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">afs</span><span class="p">)):</span>
+    <span class="n">allButSelfAfs</span> <span class="o">=</span> <span class="n">afs</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">afs</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">afs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">allButSelfAfs</span><span class="p">)</span>
+
+<span class="n">subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
+<span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="n">af1</span> <span class="o">=</span> <span class="n">AnnoteFinder</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">annotes</span><span class="p">)</span>
+<span class="n">connect</span><span class="p">(</span><span class="s">&#39;button_press_event&#39;</span><span class="p">,</span> <span class="n">af1</span><span class="p">)</span>
+
+<span class="n">subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">)</span>
+<span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="n">af2</span> <span class="o">=</span> <span class="n">AnnoteFinder</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">annotes</span><span class="p">)</span>
+<span class="n">connect</span><span class="p">(</span><span class="s">&#39;button_press_event&#39;</span><span class="p">,</span> <span class="n">af2</span><span class="p">)</span>
+
+<span class="n">linkAnnotationFinders</span><span class="p">([</span><span class="n">af1</span><span class="p">,</span> <span class="n">af2</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>I find this fairly useful. By subclassing and redefining drawAnnote this
+simple framework could be used to drive a more sophisticated user
+interface.</p>
+<p>Currently this implementation is a little slow when the number of
+datapoints becomes large. I&#8217;m particularly interested in suggestions
+people might have for making this faster and better.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="handling-click-events-while-zoomed">
+<h1>Handling click events while zoomed<a class="headerlink" href="#handling-click-events-while-zoomed" title="Permalink to this headline">¶</a></h1>
+<p>Often, you don&#8217;t want to respond to click events while zooming or
+panning (selected using the toolbar mode buttons). You can avoid
+responding to those events by checking the attribute of the toolbar
+instance. The first example below shows how to do this using the pylab
+interface.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">def</span> <span class="nf">click</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+   <span class="sd">&quot;&quot;&quot;If the left mouse button is pressed: draw a little square. &quot;&quot;&quot;</span>
+   <span class="n">tb</span> <span class="o">=</span> <span class="n">get_current_fig_manager</span><span class="p">()</span><span class="o">.</span><span class="n">toolbar</span>
+   <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="o">==</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="ow">and</span> <span class="n">tb</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+       <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">xdata</span><span class="p">,</span><span class="n">event</span><span class="o">.</span><span class="n">ydata</span>
+       <span class="n">plot</span><span class="p">([</span><span class="n">x</span><span class="p">],[</span><span class="n">y</span><span class="p">],</span><span class="s">&#39;rs&#39;</span><span class="p">)</span>
+       <span class="n">draw</span><span class="p">()</span>
+
+<span class="n">plot</span><span class="p">((</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="o">/</span><span class="mf">99.0</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_autoscale_on</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">connect</span><span class="p">(</span><span class="s">&#39;button_press_event&#39;</span><span class="p">,</span><span class="n">click</span><span class="p">)</span>
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If your application is in an wxPython window, then chances are you
+created a handle to the toolbar during setup, as shown in the method of
+the embedding_in_wx2.py example script, and can then access the
+attribute of that object (self.toolbar.mode in that case) in your click
+handling method.</p>
+<hr class="docutils" />
+<p>CategoryCookbookMatplotlib</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Interactive point identification</a></li>
+<li><a class="reference internal" href="#handling-click-events-while-zoomed">Handling click events while zoomed</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)HintonDiagrams.html"
+                        title="previous chapter">Hinton diagrams with matplotlib</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)LaTeX_Examples.html"
+                        title="next chapter">Producing Graphs for Publication using LaTeX</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Matplotlib(2f)Interactive_Plotting.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)LaTeX_Examples.html" title="Producing Graphs for Publication using LaTeX"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)HintonDiagrams.html" title="Hinton diagrams with matplotlib"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

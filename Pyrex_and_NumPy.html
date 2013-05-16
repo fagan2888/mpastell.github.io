@@ -1,0 +1,320 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Old Pyrex page &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="RANSAC.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="ParticleFilter.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="RANSAC.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ParticleFilter.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <ol class="arabic simple">
+<li><ol class="first arabic">
+<li>page was renamed from Cookbook/Pyrex And NumPy</li>
+</ol>
+</li>
+</ol>
+<p>Please note that the code described here is slightly out of date, since
+today <a class="reference external" href="http://cython.org">cython</a> is the actively maintained version
+of Pyrex, and numpy now ships with Cython examples.</p>
+<p>Rather than maintaining both the wiki and the source dir, we&#8217;ll continue
+to update the sources, kept
+<a class="reference external" href="http://projects.scipy.org/scipy/numpy/browser/trunk/numpy/doc/cython">here</a>.</p>
+<div class="section" id="old-pyrex-page">
+<h1>Old Pyrex page<a class="headerlink" href="#old-pyrex-page" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="http://nz.cosc.canterbury.ac.nz/~greg/python/Pyrex/">Pyrex</a> is a
+language for writing C extensions to Python. Its syntax is very similar
+to writing Python. A file is compiled to a file, which is then compiled
+like a standard C extension module for Python. Many people find writing
+extension modules with Pyrex preferable to writing them in C or using
+other tools, such as SWIG.</p>
+<p>This page is a starting point for accessing numpy arrays natively with
+Pyrex. Please note that with current versions of NumPy (SVN), the
+directory contains a complete working example with the code in this
+page, including also a proper file so you can install it with the
+standard Python mechanisms. This should help you get up and running
+quickly.</p>
+<p>Here&#8217;s a file I call &#8220;c_python.pxd&#8221;:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cdef</span> <span class="n">extern</span> <span class="kn">from</span> <span class="s">&quot;Python.h&quot;</span><span class="p">:</span>
+    <span class="n">ctypedef</span> <span class="nb">int</span> <span class="n">Py_intptr_t</span>
+</pre></div>
+</div>
+<p>and here&#8217;s &#8220;c_numpy.pxd&#8221;:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cimport</span> <span class="n">c_python</span>
+
+<span class="n">cdef</span> <span class="n">extern</span> <span class="kn">from</span> <span class="s">&quot;numpy/arrayobject.h&quot;</span><span class="p">:</span>
+    <span class="n">ctypedef</span> <span class="k">class</span> <span class="nc">numpy</span><span class="o">.</span><span class="n">ndarray</span> <span class="p">[</span><span class="nb">object</span> <span class="n">PyArrayObject</span><span class="p">]:</span>
+        <span class="n">cdef</span> <span class="n">char</span> <span class="o">*</span><span class="n">data</span>
+        <span class="n">cdef</span> <span class="nb">int</span> <span class="n">nd</span>
+        <span class="n">cdef</span> <span class="n">c_python</span><span class="o">.</span><span class="n">Py_intptr_t</span> <span class="o">*</span><span class="n">dimensions</span>
+        <span class="n">cdef</span> <span class="n">c_python</span><span class="o">.</span><span class="n">Py_intptr_t</span> <span class="o">*</span><span class="n">strides</span>
+        <span class="n">cdef</span> <span class="nb">object</span> <span class="n">base</span>
+        <span class="c"># descr not implemented yet here...</span>
+        <span class="n">cdef</span> <span class="nb">int</span> <span class="n">flags</span>
+        <span class="n">cdef</span> <span class="nb">int</span> <span class="n">itemsize</span>
+        <span class="n">cdef</span> <span class="nb">object</span> <span class="n">weakreflist</span>
+
+    <span class="n">cdef</span> <span class="n">void</span> <span class="n">import_array</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Here&#8217;s an example program, name this something like &#8220;test.pyx&#8221; suffix.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cimport</span> <span class="n">c_numpy</span>
+<span class="n">cimport</span> <span class="n">c_python</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="n">c_numpy</span><span class="o">.</span><span class="n">import_array</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">print_array_info</span><span class="p">(</span><span class="n">c_numpy</span><span class="o">.</span><span class="n">ndarray</span> <span class="n">arr</span><span class="p">):</span>
+    <span class="n">cdef</span> <span class="nb">int</span> <span class="n">i</span>
+
+    <span class="k">print</span> <span class="s">&#39;-=&#39;</span><span class="o">*</span><span class="mi">10</span>
+    <span class="k">print</span> <span class="s">&#39;printing array info for ndarray at 0x</span><span class="si">%0lx</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="o">&lt;</span><span class="n">c_python</span><span class="o">.</span><span class="n">Py_intptr_t</span><span class="o">&gt;</span><span class="n">arr</span>
+<span class="p">,)</span>
+    <span class="k">print</span> <span class="s">&#39;print number of dimensions:&#39;</span><span class="p">,</span><span class="n">arr</span><span class="o">.</span><span class="n">nd</span>
+    <span class="k">print</span> <span class="s">&#39;address of strides: 0x</span><span class="si">%0lx</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="o">&lt;</span><span class="n">c_python</span><span class="o">.</span><span class="n">Py_intptr_t</span><span class="o">&gt;</span><span class="n">arr</span><span class="o">.</span><span class="n">strides</span><span class="p">,)</span>
+    <span class="k">print</span> <span class="s">&#39;strides:&#39;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="kn">from</span> <span class="mi">0</span><span class="o">&lt;=</span><span class="n">i</span><span class="o">&lt;</span><span class="n">arr</span><span class="o">.</span><span class="n">nd</span><span class="p">:</span>
+        <span class="c"># print each stride</span>
+        <span class="k">print</span> <span class="s">&#39;  stride </span><span class="si">%d</span><span class="s">:&#39;</span><span class="o">%</span><span class="n">i</span><span class="p">,</span><span class="o">&lt;</span><span class="n">c_python</span><span class="o">.</span><span class="n">Py_intptr_t</span><span class="o">&gt;</span><span class="n">arr</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">print</span> <span class="s">&#39;memory dump:&#39;</span>
+    <span class="n">print_elements</span><span class="p">(</span> <span class="n">arr</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">strides</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">dimensions</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">nd</span><span class="p">,</span> <span class="n">sizeof</span><span class="p">(</span><span class="n">double</span>
+<span class="p">),</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span> <span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;-=&#39;</span><span class="o">*</span><span class="mi">10</span>
+    <span class="k">print</span>
+
+<span class="n">cdef</span> <span class="n">print_elements</span><span class="p">(</span><span class="n">char</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span>
+                    <span class="n">c_python</span><span class="o">.</span><span class="n">Py_intptr_t</span><span class="o">*</span> <span class="n">strides</span><span class="p">,</span>
+                    <span class="n">c_python</span><span class="o">.</span><span class="n">Py_intptr_t</span><span class="o">*</span> <span class="n">dimensions</span><span class="p">,</span>
+                    <span class="nb">int</span> <span class="n">nd</span><span class="p">,</span>
+                    <span class="nb">int</span> <span class="n">elsize</span><span class="p">,</span>
+                    <span class="nb">object</span> <span class="n">dtype</span><span class="p">):</span>
+    <span class="n">cdef</span> <span class="n">c_python</span><span class="o">.</span><span class="n">Py_intptr_t</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span>
+    <span class="n">cdef</span> <span class="n">void</span><span class="o">*</span> <span class="n">elptr</span>
+
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">object_</span><span class="p">),</span>
+                     <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">)]:</span>
+        <span class="k">print</span> <span class="s">&#39;   print_elements() not (yet) implemented for dtype </span><span class="si">%s</span><span class="s">&#39;</span><span class="o">%</span><span class="n">dtype</span><span class="o">.</span><span class="n">nam</span>
+<span class="n">e</span>
+        <span class="k">return</span>
+
+    <span class="k">if</span> <span class="n">nd</span> <span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dtype</span><span class="o">==</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">object_</span><span class="p">):</span>
+            <span class="n">elptr</span> <span class="o">=</span> <span class="p">(</span><span class="o">&lt;</span><span class="n">void</span><span class="o">**&gt;</span><span class="n">data</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="c">#[0] dereferences pointer in Pyrex</span>
+            <span class="k">print</span> <span class="s">&#39;  &#39;</span><span class="p">,</span><span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="n">elptr</span>
+        <span class="k">elif</span> <span class="n">dtype</span><span class="o">==</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">):</span>
+            <span class="k">print</span> <span class="s">&#39;  &#39;</span><span class="p">,(</span><span class="o">&lt;</span><span class="n">double</span><span class="o">*&gt;</span><span class="n">data</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">nd</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="kn">from</span> <span class="mi">0</span><span class="o">&lt;=</span><span class="n">i</span><span class="o">&lt;</span><span class="n">dimensions</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">dtype</span><span class="o">==</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">object_</span><span class="p">):</span>
+                <span class="n">elptr</span> <span class="o">=</span> <span class="p">(</span><span class="o">&lt;</span><span class="n">void</span><span class="o">**&gt;</span><span class="n">data</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">print</span> <span class="s">&#39;  &#39;</span><span class="p">,</span><span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="n">elptr</span>
+            <span class="k">elif</span> <span class="n">dtype</span><span class="o">==</span><span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">):</span>
+                <span class="k">print</span> <span class="s">&#39;  &#39;</span><span class="p">,(</span><span class="o">&lt;</span><span class="n">double</span><span class="o">*&gt;</span><span class="n">data</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span> <span class="o">+</span> <span class="n">strides</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="kn">from</span> <span class="mi">0</span><span class="o">&lt;=</span><span class="n">i</span><span class="o">&lt;</span><span class="n">dimensions</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">print_elements</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">strides</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">nd</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">elsize</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span> <span class="o">+</span> <span class="n">strides</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;this function is pure Python&quot;&quot;&quot;</span>
+    <span class="n">arr1</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="o">-</span><span class="mf">1e-30</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">Float64</span><span class="p">)</span>
+    <span class="n">arr2</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">3.0</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">Float64</span><span class="p">)</span>
+
+    <span class="n">arr3</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">Float64</span><span class="p">)</span>
+    <span class="n">arr3</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span><span class="mi">3</span>
+
+    <span class="n">four</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">arr4</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s">&#39;one&#39;</span><span class="p">,</span><span class="s">&#39;two&#39;</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">four</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">object_</span><span class="p">)</span>
+
+    <span class="n">arr5</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span> <span class="c"># int types not (yet) supported by print_element</span>
+<span class="n">s</span>
+
+    <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="p">[</span><span class="n">arr1</span><span class="p">,</span><span class="n">arr2</span><span class="p">,</span><span class="n">arr3</span><span class="p">,</span><span class="n">arr4</span><span class="p">,</span><span class="n">arr5</span><span class="p">]:</span>
+        <span class="n">print_array_info</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, if you compile and install the above test.pyx, the output of should
+be something like the following:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="o">-=-=-=-=-=-=-=-=-=-=</span>
+<span class="n">printing</span> <span class="n">array</span> <span class="n">info</span> <span class="k">for</span> <span class="n">ndarray</span> <span class="n">at</span> <span class="mh">0x8184508</span>
+<span class="k">print</span> <span class="n">number</span> <span class="n">of</span> <span class="n">dimensions</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">address</span> <span class="n">of</span> <span class="n">strides</span><span class="p">:</span> <span class="mh">0xb764f7ec</span>
+<span class="n">strides</span><span class="p">:</span>
+<span class="n">memory</span> <span class="n">dump</span><span class="p">:</span>
+   <span class="o">-</span><span class="mf">1e-30</span>
+<span class="o">-=-=-=-=-=-=-=-=-=-=</span>
+
+<span class="o">-=-=-=-=-=-=-=-=-=-=</span>
+<span class="n">printing</span> <span class="n">array</span> <span class="n">info</span> <span class="k">for</span> <span class="n">ndarray</span> <span class="n">at</span> <span class="mh">0x8190060</span>
+<span class="k">print</span> <span class="n">number</span> <span class="n">of</span> <span class="n">dimensions</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">address</span> <span class="n">of</span> <span class="n">strides</span><span class="p">:</span> <span class="mh">0x818453c</span>
+<span class="n">strides</span><span class="p">:</span>
+  <span class="n">stride</span> <span class="mi">0</span><span class="p">:</span> <span class="mi">8</span>
+<span class="n">memory</span> <span class="n">dump</span><span class="p">:</span>
+   <span class="mf">1.0</span>
+   <span class="mf">2.0</span>
+   <span class="mf">3.0</span>
+<span class="o">-=-=-=-=-=-=-=-=-=-=</span>
+
+<span class="o">-=-=-=-=-=-=-=-=-=-=</span>
+<span class="n">printing</span> <span class="n">array</span> <span class="n">info</span> <span class="k">for</span> <span class="n">ndarray</span> <span class="n">at</span> <span class="mh">0x82698a0</span>
+<span class="k">print</span> <span class="n">number</span> <span class="n">of</span> <span class="n">dimensions</span><span class="p">:</span> <span class="mi">2</span>
+<span class="n">address</span> <span class="n">of</span> <span class="n">strides</span><span class="p">:</span> <span class="mh">0x8190098</span>
+<span class="n">strides</span><span class="p">:</span>
+  <span class="n">stride</span> <span class="mi">0</span><span class="p">:</span> <span class="mi">24</span>
+  <span class="n">stride</span> <span class="mi">1</span><span class="p">:</span> <span class="mi">8</span>
+<span class="n">memory</span> <span class="n">dump</span><span class="p">:</span>
+   <span class="mf">0.0</span>
+   <span class="mf">1.0</span>
+   <span class="mf">2.0</span>
+   <span class="mf">3.0</span>
+   <span class="mf">4.0</span>
+   <span class="mf">5.0</span>
+   <span class="mf">6.0</span>
+   <span class="mf">7.0</span>
+   <span class="mf">8.0</span>
+<span class="o">-=-=-=-=-=-=-=-=-=-=</span>
+
+<span class="o">-=-=-=-=-=-=-=-=-=-=</span>
+<span class="n">printing</span> <span class="n">array</span> <span class="n">info</span> <span class="k">for</span> <span class="n">ndarray</span> <span class="n">at</span> <span class="mh">0x821d6e0</span>
+<span class="k">print</span> <span class="n">number</span> <span class="n">of</span> <span class="n">dimensions</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">address</span> <span class="n">of</span> <span class="n">strides</span><span class="p">:</span> <span class="mh">0x818ed74</span>
+<span class="n">strides</span><span class="p">:</span>
+  <span class="n">stride</span> <span class="mi">0</span><span class="p">:</span> <span class="mi">4</span>
+<span class="n">memory</span> <span class="n">dump</span><span class="p">:</span>
+   <span class="n">one</span>
+   <span class="n">two</span>
+   <span class="mi">3</span>
+   <span class="mi">4</span>
+<span class="o">-=-=-=-=-=-=-=-=-=-=</span>
+
+<span class="o">-=-=-=-=-=-=-=-=-=-=</span>
+<span class="n">printing</span> <span class="n">array</span> <span class="n">info</span> <span class="k">for</span> <span class="n">ndarray</span> <span class="n">at</span> <span class="mh">0x821d728</span>
+<span class="k">print</span> <span class="n">number</span> <span class="n">of</span> <span class="n">dimensions</span><span class="p">:</span> <span class="mi">1</span>
+<span class="n">address</span> <span class="n">of</span> <span class="n">strides</span><span class="p">:</span> <span class="mh">0x821d75c</span>
+<span class="n">strides</span><span class="p">:</span>
+  <span class="n">stride</span> <span class="mi">0</span><span class="p">:</span> <span class="mi">4</span>
+<span class="n">memory</span> <span class="n">dump</span><span class="p">:</span>
+   <span class="n">print_elements</span><span class="p">()</span> <span class="ow">not</span> <span class="p">(</span><span class="n">yet</span><span class="p">)</span> <span class="n">implemented</span> <span class="k">for</span> <span class="n">dtype</span> <span class="n">int32</span>
+<span class="o">-=-=-=-=-=-=-=-=-=-=</span>
+</pre></div>
+</div>
+<p>The <a class="reference external" href="http://pytables.sourceforge.net/">pytables project</a> makes
+extensive use of Pyrex and numarray. See the pytables source code for
+more ideas.</p>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><tt class="docutils literal"><span class="pre">[&quot;Cookbook/ArrayStruct_and_Pyrex&quot;]</span></tt></p>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Old Pyrex page</a><ul>
+<li><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ParticleFilter.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="RANSAC.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Pyrex_and_NumPy.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="RANSAC.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ParticleFilter.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

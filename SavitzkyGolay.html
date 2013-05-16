@@ -1,0 +1,409 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Savitzky Golay Filtering &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="The One-Dimensional Finite-Difference Time-Domain (FDTD) Algorithm Applied to the Schrödinger Equation" href="SchrodingerFDTD.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="SWIG_and_NumPy.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="SchrodingerFDTD.html" title="The One-Dimensional Finite-Difference Time-Domain (FDTD) Algorithm Applied to the Schrödinger Equation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="SWIG_and_NumPy.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="savitzky-golay-filtering">
+<h1>Savitzky Golay Filtering<a class="headerlink" href="#savitzky-golay-filtering" title="Permalink to this headline">¶</a></h1>
+<p>The Savitzky Golay filter is a particular type of low-pass filter, well
+adapted for data smoothing. For further information see:
+<a class="reference external" href="http://www.wire.tu-bs.de/OLDWEB/mameyer/cmr/savgol.pdf">http://www.wire.tu-bs.de/OLDWEB/mameyer/cmr/savgol.pdf</a> (or
+<a class="reference external" href="http://www.dalkescientific.com/writings/NBN/data/savitzky_golay.py">http://www.dalkescientific.com/writings/NBN/data/savitzky_golay.py</a> for a
+pre-numpy implementation).</p>
+<div class="section" id="sample-code">
+<h2>Sample Code<a class="headerlink" href="#sample-code" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="k">def</span> <span class="nf">savitzky_golay</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">deriv</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">r&quot;&quot;&quot;Smooth (and optionally differentiate) data with a Savitzky-Golay filter.</span>
+
+<span class="sd">    The Savitzky-Golay filter removes high frequency noise from data.</span>
+<span class="sd">    It has the advantage of preserving the original shape and</span>
+<span class="sd">    features of the signal better than other types of filtering</span>
+<span class="sd">    approaches, such as moving averages techniques.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y : array_like, shape (N,)</span>
+<span class="sd">        the values of the time history of the signal.</span>
+<span class="sd">    window_size : int</span>
+<span class="sd">        the length of the window. Must be an odd integer number.</span>
+<span class="sd">    order : int</span>
+<span class="sd">        the order of the polynomial used in the filtering.</span>
+<span class="sd">        Must be less then `window_size` - 1.</span>
+<span class="sd">    deriv: int</span>
+<span class="sd">        the order of the derivative to compute (default = 0 means only smoothing</span>
+<span class="sd">)</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ys : ndarray, shape (N)</span>
+<span class="sd">        the smoothed signal (or it&#39;s n-th derivative).</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The Savitzky-Golay is a type of low-pass filter, particularly</span>
+<span class="sd">    suited for smoothing noisy data. The main idea behind this</span>
+<span class="sd">    approach is to make for each point a least-square fit with a</span>
+<span class="sd">    polynomial of high order over a odd-sized window centered at</span>
+<span class="sd">    the point.</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    t = np.linspace(-4, 4, 500)</span>
+<span class="sd">    y = np.exp( -t**2 ) + np.random.normal(0, 0.05, t.shape)</span>
+<span class="sd">    ysg = savitzky_golay(y, window_size=31, order=4)</span>
+<span class="sd">    import matplotlib.pyplot as plt</span>
+<span class="sd">    plt.plot(t, y, label=&#39;Noisy signal&#39;)</span>
+<span class="sd">    plt.plot(t, np.exp(-t**2), &#39;k&#39;, lw=1.5, label=&#39;Original signal&#39;)</span>
+<span class="sd">    plt.plot(t, ysg, &#39;r&#39;, label=&#39;Filtered signal&#39;)</span>
+<span class="sd">    plt.legend()</span>
+<span class="sd">    plt.show()</span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] A. Savitzky, M. J. E. Golay, Smoothing and Differentiation of</span>
+<span class="sd">       Data by Simplified Least Squares Procedures. Analytical</span>
+<span class="sd">       Chemistry, 1964, 36 (8), pp 1627-1639.</span>
+<span class="sd">    .. [2] Numerical Recipes 3rd Edition: The Art of Scientific Computing</span>
+<span class="sd">       W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery</span>
+<span class="sd">       Cambridge University Press ISBN-13: 9780521880688</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+    <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">factorial</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">window_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">(</span><span class="n">window_size</span><span class="p">))</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">(</span><span class="n">order</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;window_size and order have to be of type int&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">window_size</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">window_size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;window_size size must be a positive odd number&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">window_size</span> <span class="o">&lt;</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;window_size is too small for the polynomials order&quot;</span><span class="p">)</span>
+    <span class="n">order_range</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">half_window</span> <span class="o">=</span> <span class="p">(</span><span class="n">window_size</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="c"># precompute coefficients</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mat</span><span class="p">([[</span><span class="n">k</span><span class="o">**</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">order_range</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">half_window</span><span class="p">,</span> <span class="n">half_wi</span>
+<span class="n">ndow</span><span class="o">+</span><span class="mi">1</span><span class="p">)])</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">A</span><span class="p">[</span><span class="n">deriv</span><span class="p">]</span> <span class="o">*</span> <span class="n">rate</span><span class="o">**</span><span class="n">deriv</span> <span class="o">*</span> <span class="n">factorial</span><span class="p">(</span><span class="n">deriv</span><span class="p">)</span>
+    <span class="c"># pad the signal at the extremes with</span>
+    <span class="c"># values taken from the signal itself</span>
+    <span class="n">firstvals</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">half_window</span><span class="o">+</span><span class="mi">1</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">lastvals</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="n">half_window</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">firstvals</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">lastvals</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span> <span class="n">m</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;valid&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="code-explanation">
+<h2>Code explanation<a class="headerlink" href="#code-explanation" title="Permalink to this headline">¶</a></h2>
+<p>In lines 61-62 the coefficients of the local least-square polynomial fit
+are pre-computed. These will be used later at line 68, where they will
+be correlated with the signal. To prevent spurious results at the
+extremes of the data, the signal is padded at both ends with its mirror
+image, (lines 65-67).</p>
+</div>
+<div class="section" id="figure">
+<h2>Figure<a class="headerlink" href="#figure" title="Permalink to this headline">¶</a></h2>
+<img alt="SavitzkyGolay_attachments/cd_spec.png" src="SavitzkyGolay_attachments/cd_spec.png" />
+<p>CD-spectrum of a protein. Black: raw data. Red: filter applied</p>
+</div>
+<div class="section" id="a-wrapper-for-cyclic-voltammetry-data">
+<h2>A wrapper for cyclic voltammetry data<a class="headerlink" href="#a-wrapper-for-cyclic-voltammetry-data" title="Permalink to this headline">¶</a></h2>
+<p>One of the most popular applications of S-G filter, apart from smoothing
+UV-VIS and IR spectra, is smoothing of curves obtained in
+electroanalytical experiments. In cyclic voltammetry, voltage (being the
+abcissa) changes like a triangle wave. And in the signal there are cusps
+at the turning points (at switching potentials) which should never be
+smoothed. In this case, Savitzky-Golay smoothing should be done
+piecewise, ie. separately on pieces monotonic in x:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="k">def</span> <span class="nf">savitzky_golay_piecewise</span><span class="p">(</span><span class="n">xvals</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">order</span> <span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+    <span class="n">turnpoint</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">last</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">xvals</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">xvals</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;</span><span class="n">xvals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">:</span> <span class="c">#x is increasing?</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">last</span><span class="p">)</span> <span class="p">:</span> <span class="c">#yes</span>
+            <span class="k">if</span> <span class="n">xvals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;</span><span class="n">xvals</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">:</span> <span class="c">#search where x starts to fall</span>
+                <span class="n">turnpoint</span><span class="o">=</span><span class="n">i</span>
+                <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span> <span class="c">#no, x is decreasing</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">last</span><span class="p">)</span> <span class="p">:</span> <span class="c">#search where it starts to rise</span>
+            <span class="k">if</span> <span class="n">xvals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&gt;</span><span class="n">xvals</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">:</span>
+                <span class="n">turnpoint</span><span class="o">=</span><span class="n">i</span>
+                <span class="k">break</span>
+    <span class="k">if</span> <span class="n">turnpoint</span><span class="o">==</span><span class="mi">0</span> <span class="p">:</span> <span class="c">#no change in direction of x</span>
+        <span class="k">return</span> <span class="n">savitzky_golay</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c">#smooth the first piece</span>
+        <span class="n">firstpart</span><span class="o">=</span><span class="n">savitzky_golay</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">turnpoint</span><span class="p">],</span><span class="n">kernel</span><span class="p">,</span><span class="n">order</span><span class="p">)</span>
+        <span class="c">#recursively smooth the rest</span>
+        <span class="n">rest</span><span class="o">=</span><span class="n">savitzky_golay_piecewise</span><span class="p">(</span><span class="n">xvals</span><span class="p">[</span><span class="n">turnpoint</span><span class="p">:],</span> <span class="n">data</span><span class="p">[</span><span class="n">turnpoint</span><span class="p">:],</span> <span class="n">kerne</span>
+<span class="n">l</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">firstpart</span><span class="p">,</span><span class="n">rest</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="two-dimensional-data-smoothing-and-least-square-gradient-estimate">
+<h2>Two dimensional data smoothing and least-square gradient estimate<a class="headerlink" href="#two-dimensional-data-smoothing-and-least-square-gradient-estimate" title="Permalink to this headline">¶</a></h2>
+<p>Savitsky-Golay filters can also be used to smooth two dimensional data
+affected by noise. The algorithm is exactly the same as for the one
+dimensional case, only the math is a bit more tricky. The basic
+algorithm is as follow: 1. for each point of the two dimensional matrix
+extract a sub-matrix, centered at that point and with a size equal to an
+odd number &#8220;window_size&#8221;. 2. for this sub-matrix compute a least-square
+fit of a polynomial surface, defined as p(x,y) = a0 + a1*x + a2*y +
+a3*x^2 + a4*y^2 + a5*x*y + ... . Note that x and y are equal to zero
+at the central point. 3. replace the initial central point with the
+value computed with the fit.</p>
+<p>Note that because the fit coefficients are linear with respect to the
+data spacing, they can pre-computed for efficiency. Moreover, it is
+important to appropriately pad the borders of the data, with a mirror
+image of the data itself, so that the evaluation of the fit at the
+borders of the data can happen smoothly.</p>
+<p>Here is the code for two dimensional filtering.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=enable</span>
+<span class="k">def</span> <span class="nf">sgolay2d</span> <span class="p">(</span> <span class="n">z</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">derivative</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># number of terms in the polynomial expression</span>
+    <span class="n">n_terms</span> <span class="o">=</span> <span class="p">(</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">)</span> <span class="o">*</span> <span class="p">(</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>  <span class="o">/</span> <span class="mf">2.0</span>
+
+    <span class="k">if</span>  <span class="n">window_size</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;window_size must be odd&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">window_size</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="n">n_terms</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;order is too high for the window size&#39;</span><span class="p">)</span>
+
+    <span class="n">half_size</span> <span class="o">=</span> <span class="n">window_size</span> <span class="o">//</span> <span class="mi">2</span>
+
+    <span class="c"># exponents of the polynomial.</span>
+    <span class="c"># p(x,y) = a0 + a1*x + a2*y + a3*x^2 + a4*y^2 + a5*x*y + ...</span>
+    <span class="c"># this line gives a list of two item tuple. Each tuple contains</span>
+    <span class="c"># the exponents of the k-th term. First element of tuple is for x</span>
+    <span class="c"># second element for y.</span>
+    <span class="c"># Ex. exps = [(0,0), (1,0), (0,1), (2,0), (1,1), (0,2), ...]</span>
+    <span class="n">exps</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="p">]</span>
+
+    <span class="c"># coordinates of points</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">half_size</span><span class="p">,</span> <span class="n">half_size</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span> <span class="n">ind</span><span class="p">,</span> <span class="n">window_size</span> <span class="p">)</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span> <span class="n">ind</span><span class="p">,</span> <span class="p">[</span><span class="n">window_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">window_size</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="p">)</span>
+
+    <span class="c"># build matrix of system of equation</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span> <span class="p">(</span><span class="n">window_size</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">exps</span><span class="p">))</span> <span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">exp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span> <span class="n">exps</span> <span class="p">):</span>
+        <span class="n">A</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">dx</span><span class="o">**</span><span class="n">exp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">dy</span><span class="o">**</span><span class="n">exp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c"># pad input array with appropriate values at the four borders</span>
+    <span class="n">new_shape</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">half_size</span><span class="p">,</span> <span class="n">z</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">half_size</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span><span class="n">new_shape</span><span class="p">)</span> <span class="p">)</span>
+    <span class="c"># top band</span>
+    <span class="n">band</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">Z</span><span class="p">[:</span><span class="n">half_size</span><span class="p">,</span> <span class="n">half_size</span><span class="p">:</span><span class="o">-</span><span class="n">half_size</span><span class="p">]</span> <span class="o">=</span>  <span class="n">band</span> <span class="o">-</span>  <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span> <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">half_s</span>
+<span class="n">ize</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="p">)</span> <span class="o">-</span> <span class="n">band</span> <span class="p">)</span>
+    <span class="c"># bottom band</span>
+    <span class="n">band</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="n">half_size</span><span class="p">:,</span> <span class="n">half_size</span><span class="p">:</span><span class="o">-</span><span class="n">half_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">band</span>  <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span> <span class="n">z</span><span class="p">[</span><span class="o">-</span><span class="n">half_si</span>
+<span class="n">ze</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="p">)</span>  <span class="o">-</span><span class="n">band</span> <span class="p">)</span>
+    <span class="c"># left band</span>
+    <span class="n">band</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span> <span class="n">z</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">half_size</span><span class="p">])</span>
+    <span class="n">Z</span><span class="p">[</span><span class="n">half_size</span><span class="p">:</span><span class="o">-</span><span class="n">half_size</span><span class="p">,</span> <span class="p">:</span><span class="n">half_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">band</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span> <span class="n">z</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="n">half_</span>
+<span class="n">size</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span> <span class="o">-</span> <span class="n">band</span> <span class="p">)</span>
+    <span class="c"># right band</span>
+    <span class="n">band</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span> <span class="n">z</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">half_size</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">Z</span><span class="p">[</span><span class="n">half_size</span><span class="p">:</span><span class="o">-</span><span class="n">half_size</span><span class="p">,</span> <span class="o">-</span><span class="n">half_size</span><span class="p">:]</span> <span class="o">=</span>  <span class="n">band</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span> <span class="n">z</span><span class="p">[:,</span> <span class="o">-</span><span class="n">half</span>
+<span class="n">_size</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span> <span class="o">-</span> <span class="n">band</span> <span class="p">)</span>
+    <span class="c"># central band</span>
+    <span class="n">Z</span><span class="p">[</span><span class="n">half_size</span><span class="p">:</span><span class="o">-</span><span class="n">half_size</span><span class="p">,</span> <span class="n">half_size</span><span class="p">:</span><span class="o">-</span><span class="n">half_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">z</span>
+
+    <span class="c"># top left corner</span>
+    <span class="n">band</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">Z</span><span class="p">[:</span><span class="n">half_size</span><span class="p">,:</span><span class="n">half_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">band</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">half_size</span><span class="o">+</span>
+<span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">half_size</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="p">)</span> <span class="o">-</span> <span class="n">band</span> <span class="p">)</span>
+    <span class="c"># bottom right corner</span>
+    <span class="n">band</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="n">half_size</span><span class="p">:,</span><span class="o">-</span><span class="n">half_size</span><span class="p">:]</span> <span class="o">=</span> <span class="n">band</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="o">-</span><span class="n">half_size</span>
+<span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="n">half_size</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="p">)</span> <span class="o">-</span> <span class="n">band</span> <span class="p">)</span>
+
+    <span class="c"># top right corner</span>
+    <span class="n">band</span> <span class="o">=</span> <span class="n">Z</span><span class="p">[</span><span class="n">half_size</span><span class="p">,</span><span class="o">-</span><span class="n">half_size</span><span class="p">:]</span>
+    <span class="n">Z</span><span class="p">[:</span><span class="n">half_size</span><span class="p">,</span><span class="o">-</span><span class="n">half_size</span><span class="p">:]</span> <span class="o">=</span> <span class="n">band</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">Z</span><span class="p">[</span><span class="n">half_size</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="o">*</span><span class="n">half_si</span>
+<span class="n">ze</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="n">half_size</span><span class="p">:])</span> <span class="o">-</span> <span class="n">band</span> <span class="p">)</span>
+    <span class="c"># bottom left corner</span>
+    <span class="n">band</span> <span class="o">=</span> <span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="n">half_size</span><span class="p">:,</span><span class="n">half_size</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="n">half_size</span><span class="p">:,:</span><span class="n">half_size</span><span class="p">]</span> <span class="o">=</span> <span class="n">band</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="n">Z</span><span class="p">[</span><span class="o">-</span><span class="n">half_size</span><span class="p">:,</span> <span class="n">half_siz</span>
+<span class="n">e</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="o">*</span><span class="n">half_size</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="n">band</span> <span class="p">)</span>
+
+    <span class="c"># solve system and convolve</span>
+    <span class="k">if</span> <span class="n">derivative</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">A</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">window_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">fftconvolve</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;valid&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">derivative</span> <span class="o">==</span> <span class="s">&#39;col&#39;</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">A</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">window_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">fftconvolve</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="o">-</span><span class="n">c</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;valid&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">derivative</span> <span class="o">==</span> <span class="s">&#39;row&#39;</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">A</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">window_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">fftconvolve</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="o">-</span><span class="n">r</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;valid&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">derivative</span> <span class="o">==</span> <span class="s">&#39;both&#39;</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">A</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">window_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">A</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">window_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">fftconvolve</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="o">-</span><span class="n">r</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;valid&#39;</span><span class="p">),</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">fftco</span>
+<span class="n">nvolve</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="o">-</span><span class="n">c</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;valid&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is a demo</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python number=enable</span>
+
+<span class="c"># create some sample twoD data</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span> <span class="o">-</span><span class="p">(</span><span class="n">X</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">Y</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="c"># add noise</span>
+<span class="n">Zn</span> <span class="o">=</span> <span class="n">Z</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">Z</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span>
+
+<span class="c"># filter it</span>
+<span class="n">Zf</span> <span class="o">=</span> <span class="n">sgolay2d</span><span class="p">(</span> <span class="n">Zn</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">29</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="c"># do some plotting</span>
+<span class="n">matshow</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+<span class="n">matshow</span><span class="p">(</span><span class="n">Zn</span><span class="p">)</span>
+<span class="n">matshow</span><span class="p">(</span><span class="n">Zf</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="SavitzkyGolay_attachments/Original.pdfOriginaldata..image::SavitzkyGolay_attachments/Original+noise.pdf" src="SavitzkyGolay_attachments/Original.pdfOriginaldata..image::SavitzkyGolay_attachments/Original+noise.pdf" />
+<p>Original data + noise .. image:: SavitzkyGolay_attachments/Original+noise+filtered.pdf (Original
+data + noise) filtered</p>
+</div>
+<div class="section" id="gradient-of-a-two-dimensional-function">
+<h2>Gradient of a two-dimensional function<a class="headerlink" href="#gradient-of-a-two-dimensional-function" title="Permalink to this headline">¶</a></h2>
+<p>Since we have computed the best fitting interpolating polynomial surface
+it is easy to compute its gradient. This method of computing the
+gradient of a two dimensional function is quite robust, and partially
+hides the noise in the data, which strongly affects the differentiation
+operation. The maximum order of the derivative that can be computed
+obviously depends on the order of the polynomial used in the fitting.</p>
+<p>The code provided above have an option `derivative`, which as of now
+allows to compute the first derivative of the 2D data. It can be &#8220;row&#8221;or
+&#8220;column&#8221;, indicating the direction of the derivative, or &#8220;both&#8221;, which
+returns the gradient.</p>
+<hr class="docutils" />
+<p><tt class="docutils literal"><span class="pre">.&nbsp;CategoryCookbook&nbsp;CategoryCookbook</span></tt></p>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Savitzky Golay Filtering</a><ul>
+<li><a class="reference internal" href="#sample-code">Sample Code</a></li>
+<li><a class="reference internal" href="#code-explanation">Code explanation</a></li>
+<li><a class="reference internal" href="#figure">Figure</a></li>
+<li><a class="reference internal" href="#a-wrapper-for-cyclic-voltammetry-data">A wrapper for cyclic voltammetry data</a></li>
+<li><a class="reference internal" href="#two-dimensional-data-smoothing-and-least-square-gradient-estimate">Two dimensional data smoothing and least-square gradient estimate</a></li>
+<li><a class="reference internal" href="#gradient-of-a-two-dimensional-function">Gradient of a two-dimensional function</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="SWIG_and_NumPy.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="SchrodingerFDTD.html"
+                        title="next chapter">The One-Dimensional Finite-Difference Time-Domain (FDTD) Algorithm Applied to the Schrödinger Equation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/SavitzkyGolay.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="SchrodingerFDTD.html" title="The One-Dimensional Finite-Difference Time-Domain (FDTD) Algorithm Applied to the Schrödinger Equation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="SWIG_and_NumPy.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

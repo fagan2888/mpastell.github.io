@@ -1,0 +1,202 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>introduction &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Learning the Object-Oriented API" href="Matplotlib(2f)EmbeddingInWx.html" />
+    <link rel="prev" title="Using MatPlotLib to dynamically generate charts in a Django web service" href="Matplotlib(2f)Django.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)EmbeddingInWx.html" title="Learning the Object-Oriented API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Django.html" title="Using MatPlotLib to dynamically generate charts in a Django web service"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction">
+<h1>introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>Matplotlib provides event handling to determine things like key presses,
+mouse position, and button clicks. Matplotlib supports a number of GUIs,
+and provides an interface to the GUI event handling via the mpl_connect
+and mpl_disconnect methods.</p>
+<p>This page gives an example of use of these facilities by adding a
+Drag&#8217;n&#8217;Drop handler for text objects. You can get the source code for
+this example here: .. image:: Matplotlib(2f)Drag_n_Drop_Text_Example_attachments/Text_DragnDrop_v0.1.py .</p>
+</div>
+<div class="section" id="defining-the-handler-class">
+<h1>Defining the handler class<a class="headerlink" href="#defining-the-handler-class" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span>         <span class="kn">import</span> <span class="n">pylab</span> <span class="k">as</span> <span class="n">p</span>
+<span class="kn">from</span> <span class="nn">matplotlib.text</span>        <span class="kn">import</span> <span class="n">Text</span>
+
+<span class="k">class</span> <span class="nc">DragHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A simple class to handle Drag n Drop.</span>
+
+<span class="sd">    This is a simple example, which works for Text objects only</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Create a new drag handler and connect it to the figure&#39;s event syste</span>
+<span class="sd">m.</span>
+<span class="sd">        If the figure handler is not given, the current figure is used instead</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">figure</span> <span class="ow">is</span> <span class="bp">None</span> <span class="p">:</span> <span class="n">figure</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+        <span class="c"># simple attibute to store the dragged text object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dragged</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c"># Connect events and callbacks</span>
+        <span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s">&quot;pick_event&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_pick_event</span><span class="p">)</span>
+        <span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s">&quot;button_release_event&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_release_event</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">on_pick_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="s">&quot; Store which text object was picked and were the pick event occurs.&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">artist</span><span class="p">,</span> <span class="n">Text</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dragged</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">artist</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pick_pos</span> <span class="o">=</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">mouseevent</span><span class="o">.</span><span class="n">xdata</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">mouseevent</span><span class="o">.</span><span class="n">ydata</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">on_release_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="s">&quot; Update text position and redraw&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragged</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="p">:</span>
+            <span class="n">old_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragged</span><span class="o">.</span><span class="n">get_position</span><span class="p">()</span>
+            <span class="n">new_pos</span> <span class="o">=</span> <span class="p">(</span><span class="n">old_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">event</span><span class="o">.</span><span class="n">xdata</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                       <span class="n">old_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">event</span><span class="o">.</span><span class="n">ydata</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dragged</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="n">new_pos</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dragged</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">True</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="a-small-use-case">
+<h1>A small use case<a class="headerlink" href="#a-small-use-case" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! python numbers=disable</span>
+
+<span class="c"># Usage example</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c"># Create arbitrary points and labels</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[</span> <span class="s">&quot;Point </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">)]</span>
+
+<span class="c"># trace a scatter plot</span>
+<span class="n">p</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+
+<span class="c"># add labels and set their picker attribute to True</span>
+<span class="k">for</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">l</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">picker</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c"># Create the event hendler</span>
+<span class="n">dragh</span> <span class="o">=</span> <span class="n">DragHandler</span><span class="p">()</span>
+
+<span class="n">p</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The Text objects can now be moved with the mouse.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">introduction</a></li>
+<li><a class="reference internal" href="#defining-the-handler-class">Defining the handler class</a></li>
+<li><a class="reference internal" href="#a-small-use-case">A small use case</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)Django.html"
+                        title="previous chapter">Using MatPlotLib to dynamically generate charts in a Django web service</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)EmbeddingInWx.html"
+                        title="next chapter">Learning the Object-Oriented API</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Matplotlib(2f)Drag_n_Drop_Text_Example.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)EmbeddingInWx.html" title="Learning the Object-Oriented API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Django.html" title="Using MatPlotLib to dynamically generate charts in a Django web service"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

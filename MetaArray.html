@@ -1,0 +1,322 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>MetaArray &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Using reduce" href="MultiDot.html" />
+    <link rel="prev" title="MayaVi2 topics" href="MayaVi.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="MultiDot.html" title="Using reduce"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi.html" title="MayaVi2 topics"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="metaarray">
+<h1>MetaArray<a class="headerlink" href="#metaarray" title="Permalink to this headline">¶</a></h1>
+<p>!MetaArray is a class that extends ndarray, adding support for per-axis
+meta data storage. This class is useful for storing data arrays along
+with units, axis names, column names, axis values, etc. !MetaArray
+objects can be indexed and sliced arbitrarily using named axes and
+columns.</p>
+<p>Download here: .. image:: MetaArray_attachments/MetaArray.py</p>
+<div class="section" id="example-uses">
+<h2>Example Uses<a class="headerlink" href="#example-uses" title="Permalink to this headline">¶</a></h2>
+<p>Here is an example of the type of data one might store with !MetaArray:</p>
+<img alt="MetaArray_attachments/example.png" src="MetaArray_attachments/example.png" />
+<p>Notice that each axis is named and can store different types of meta
+information: * The Signal axis has named columns with different units
+for each column * The Time axis associates a numerical value with each
+row * The Trial axis uses normal integer indexes</p>
+<p>Data from this array can be accessed many different ways:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">data</span><span class="p">[:,</span> <span class="s">&quot;Voltage 1&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">data</span><span class="p">[</span><span class="s">&quot;Trial&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;Signal&quot;</span><span class="p">:</span><span class="s">&quot;Voltage 0&quot;</span><span class="p">]</span>
+<span class="n">data</span><span class="p">[</span><span class="s">&quot;Time&quot;</span><span class="p">:</span><span class="nb">slice</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="features">
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Per&nbsp;axis&nbsp;meta-information:</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;Named&nbsp;axes</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;Numerical&nbsp;values&nbsp;with&nbsp;units&nbsp;(e.g.,&nbsp;&quot;Time&quot;&nbsp;axis&nbsp;above)</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;Column&nbsp;names/units&nbsp;(e.g.,&nbsp;&quot;Signal&quot;&nbsp;axis&nbsp;above)</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Indexing&nbsp;by&nbsp;name:</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;Index&nbsp;each&nbsp;axis&nbsp;by&nbsp;name,&nbsp;so&nbsp;there&nbsp;is&nbsp;no&nbsp;need&nbsp;to&nbsp;remember&nbsp;order&nbsp;of&nbsp;axes</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;Within&nbsp;an&nbsp;axis,&nbsp;index&nbsp;each&nbsp;column&nbsp;by&nbsp;name,&nbsp;so&nbsp;there&nbsp;is&nbsp;no&nbsp;need&nbsp;to&nbsp;remember&nbsp;the&nbsp;order&nbsp;of&nbsp;columns</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Read/write&nbsp;files&nbsp;easily</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Append,&nbsp;extend,&nbsp;and&nbsp;sort&nbsp;convenience&nbsp;functions</span></tt></div>
+</div>
+</div>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="instantiation">
+<h3>Instantiation<a class="headerlink" href="#instantiation" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">&nbsp;Accepted&nbsp;Syntaxes:&nbsp;</span></tt></p>
+<div class="highlight-python"><div class="highlight"><pre> <span class="c"># Constructs MetaArray from a preexisting ndarray and info list</span>
+<span class="n">MetaArray</span><span class="p">(</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+
+ <span class="c"># Constructs MetaArray using empty(shape, dtype=type) and info list</span>
+<span class="n">MetaArray</span><span class="p">((</span><span class="n">shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+
+ <span class="c"># Constructs MetaArray from file written using MetaArray.write()</span>
+<span class="n">MetaArray</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="s">&#39;fileName&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">&nbsp;info&nbsp;parameter:&nbsp;This&nbsp;parameter&nbsp;specifies&nbsp;the&nbsp;entire&nbsp;set&nbsp;of&nbsp;meta&nbsp;data&nbsp;for&nbsp;this&nbsp;!MetaArray&nbsp;and&nbsp;must&nbsp;follow&nbsp;a&nbsp;specific&nbsp;format.&nbsp;First,&nbsp;info&nbsp;is&nbsp;a&nbsp;list&nbsp;of&nbsp;axis&nbsp;descriptions:</span></tt></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">info</span><span class="o">=</span><span class="p">[</span><span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">,</span> <span class="n">axis3</span><span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;Each&nbsp;axis&nbsp;description&nbsp;is&nbsp;a&nbsp;dict&nbsp;which&nbsp;may&nbsp;contain:</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;*&nbsp;&quot;name&quot;:&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;axis</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;*&nbsp;&quot;values&quot;:&nbsp;a&nbsp;list&nbsp;or&nbsp;1D&nbsp;ndarray&nbsp;of&nbsp;values,&nbsp;one&nbsp;per&nbsp;index&nbsp;in&nbsp;the&nbsp;axis</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;*&nbsp;&quot;cols&quot;:&nbsp;a&nbsp;list&nbsp;of&nbsp;column&nbsp;descriptions&nbsp;[col1,&nbsp;col2,&nbsp;col3,...]</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;*&nbsp;&quot;units&quot;:&nbsp;the&nbsp;units&nbsp;associated&nbsp;with&nbsp;the&nbsp;numbers&nbsp;listed&nbsp;in&nbsp;&quot;values&quot;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;All&nbsp;of&nbsp;these&nbsp;parameters&nbsp;are&nbsp;optional.&nbsp;A&nbsp;column&nbsp;description,&nbsp;likewise,&nbsp;is&nbsp;a&nbsp;dict&nbsp;which&nbsp;may&nbsp;contain:</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;*&nbsp;&quot;name&quot;:&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;column</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;*&nbsp;&quot;units&quot;:&nbsp;the&nbsp;units&nbsp;for&nbsp;all&nbsp;values&nbsp;under&nbsp;this&nbsp;column</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;In&nbsp;the&nbsp;case&nbsp;where&nbsp;meta&nbsp;information&nbsp;is&nbsp;to&nbsp;apply&nbsp;to&nbsp;the&nbsp;entire&nbsp;array,&nbsp;(for&nbsp;example,&nbsp;if&nbsp;the&nbsp;entire&nbsp;array&nbsp;uses&nbsp;the&nbsp;same&nbsp;units)&nbsp;simply&nbsp;add&nbsp;an&nbsp;extra&nbsp;axis&nbsp;description&nbsp;to&nbsp;the&nbsp;end&nbsp;of&nbsp;the&nbsp;info&nbsp;list.&nbsp;All&nbsp;dicts&nbsp;may&nbsp;contain&nbsp;any&nbsp;extra&nbsp;information&nbsp;you&nbsp;want.</span></tt></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">&nbsp;For&nbsp;example,&nbsp;the&nbsp;data&nbsp;set&nbsp;shown&nbsp;above&nbsp;would&nbsp;look&nbsp;like:</span></tt></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">MetaArray</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="p">[</span>
+  <span class="p">{</span><span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Signal&quot;</span><span class="p">,</span> <span class="s">&quot;cols&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span><span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Voltage 0&quot;</span><span class="p">,</span> <span class="s">&quot;units&quot;</span><span class="p">:</span> <span class="s">&quot;V&quot;</span><span class="p">},</span>
+      <span class="p">{</span><span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Voltage 1&quot;</span><span class="p">,</span> <span class="s">&quot;units&quot;</span><span class="p">:</span> <span class="s">&quot;V&quot;</span><span class="p">},</span>
+      <span class="p">{</span><span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Current 0&quot;</span><span class="p">,</span> <span class="s">&quot;units&quot;</span><span class="p">:</span> <span class="s">&quot;A&quot;</span><span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">},</span>
+  <span class="p">{</span><span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Time&quot;</span><span class="p">,</span> <span class="s">&quot;units&quot;</span><span class="p">:</span> <span class="s">&quot;msec&quot;</span><span class="p">,</span> <span class="s">&quot;values&quot;</span><span class="p">:[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span> <span class="p">},</span>
+
+  <span class="p">{</span><span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;Trial&quot;</span><span class="p">},</span>
+  <span class="p">{</span><span class="s">&quot;note&quot;</span><span class="p">:</span> <span class="s">&quot;Just some extra info&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="accessing-data">
+<h3>Accessing Data<a class="headerlink" href="#accessing-data" title="Permalink to this headline">¶</a></h3>
+<p>Data can be accessed through a variety of methods: * Standard
+indexing&#8211;You may always just index the array exactly as you would any
+ndarray * Named axes&#8211;If you don&#8217;t remember the order of axes, you may
+specify the axis to be indexed or sliced like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span><span class="p">[</span><span class="s">&quot;AxisName&quot;</span><span class="p">:</span><span class="n">index</span><span class="p">]</span>
+<span class="n">data</span><span class="p">[</span><span class="s">&quot;AxisName&quot;</span><span class="p">:</span><span class="nb">slice</span><span class="p">(</span><span class="o">...</span><span class="p">)]</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;Note&nbsp;that&nbsp;since&nbsp;this&nbsp;syntax&nbsp;hijacks&nbsp;the&nbsp;original&nbsp;slice&nbsp;mechanism,&nbsp;you&nbsp;must&nbsp;specify&nbsp;a&nbsp;slice&nbsp;using&nbsp;slice()&nbsp;if&nbsp;you&nbsp;want&nbsp;to&nbsp;use&nbsp;named&nbsp;axes.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;Column&nbsp;selection--If&nbsp;you&nbsp;don't&nbsp;remember&nbsp;the&nbsp;index&nbsp;of&nbsp;a&nbsp;column&nbsp;you&nbsp;wish&nbsp;to&nbsp;select,&nbsp;you&nbsp;may&nbsp;substitute&nbsp;the&nbsp;column's&nbsp;name&nbsp;for&nbsp;the&nbsp;index&nbsp;number.&nbsp;Lists&nbsp;of&nbsp;column&nbsp;names&nbsp;are&nbsp;also&nbsp;acceptable.&nbsp;For&nbsp;example:</span></tt></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span><span class="p">[</span><span class="s">&quot;AxisName&quot;</span><span class="p">:</span><span class="s">&quot;ColumnName&quot;</span><span class="p">]</span>
+<span class="n">data</span><span class="p">[</span><span class="s">&quot;ColumnName&quot;</span><span class="p">]</span>  <span class="c">## Works only if the named column exists for this axis</span>
+<span class="n">data</span><span class="p">[[</span><span class="s">&quot;ColumnName1&quot;</span><span class="p">,</span> <span class="s">&quot;ColumnName2&quot;</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;Boolean&nbsp;selection--works&nbsp;as&nbsp;you&nbsp;might&nbsp;normally&nbsp;expect,&nbsp;for&nbsp;example:</span></tt></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sel</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&quot;ColumnName&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.2</span>
+<span class="n">data</span><span class="p">[</span><span class="n">sel</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Access&nbsp;axis&nbsp;values&nbsp;using&nbsp;!MetaArray.axisValues(),&nbsp;or&nbsp;.xvals()&nbsp;for&nbsp;short.&nbsp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Access&nbsp;axis&nbsp;units&nbsp;using&nbsp;.axisUnits(),&nbsp;column&nbsp;units&nbsp;using&nbsp;.columnUnits()</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Access&nbsp;any&nbsp;other&nbsp;parameter&nbsp;directly&nbsp;through&nbsp;the&nbsp;info&nbsp;list&nbsp;with&nbsp;.infoCopy()</span></tt></div>
+</div>
+</div>
+<div class="section" id="file-i-o">
+<h3>File I/O<a class="headerlink" href="#file-i-o" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;fileName&#39;</span><span class="p">)</span>
+<span class="n">newData</span> <span class="o">=</span> <span class="n">MetaArray</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="s">&#39;fileName&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="performance-tips">
+<h3>Performance Tips<a class="headerlink" href="#performance-tips" title="Permalink to this headline">¶</a></h3>
+<p>!MetaArray is a subclass of ndarray which overrides the
+`__getitem__` and `__setitem__` methods. Since these methods
+must alter the structure of the meta information for each access, they
+are quite slow compared to the native methods. As a result, many builtin
+functions will run very slowly when operating on a !MetaArray. It is
+recommended, therefore, that you recast your arrays before performing
+these operations like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">MetaArray</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>                <span class="c">## Very slow</span>
+<span class="n">data</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">ndarray</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>  <span class="c">## native speed</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="more-examples">
+<h3>More Examples<a class="headerlink" href="#more-examples" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;A&nbsp;2D&nbsp;array&nbsp;of&nbsp;altitude&nbsp;values&nbsp;for&nbsp;a&nbsp;topographical&nbsp;map&nbsp;might&nbsp;look&nbsp;like</span></tt></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">info</span><span class="o">=</span><span class="p">[</span>
+  <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;lat&#39;</span><span class="p">,</span> <span class="s">&#39;title&#39;</span><span class="p">:</span> <span class="s">&#39;Latitude&#39;</span><span class="p">},</span>
+  <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;lon&#39;</span><span class="p">,</span> <span class="s">&#39;title&#39;</span><span class="p">:</span> <span class="s">&#39;Longitude&#39;</span><span class="p">},</span>
+  <span class="p">{</span><span class="s">&#39;title&#39;</span><span class="p">:</span> <span class="s">&#39;Altitude&#39;</span><span class="p">,</span> <span class="s">&#39;units&#39;</span><span class="p">:</span> <span class="s">&#39;m&#39;</span><span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;In&nbsp;this&nbsp;case,&nbsp;every&nbsp;value&nbsp;in&nbsp;the&nbsp;array&nbsp;represents&nbsp;the&nbsp;altitude&nbsp;in&nbsp;feet&nbsp;at&nbsp;the&nbsp;lat,&nbsp;lon</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;position&nbsp;represented&nbsp;by&nbsp;the&nbsp;array&nbsp;index.&nbsp;All&nbsp;of&nbsp;the&nbsp;following&nbsp;return&nbsp;the&nbsp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;value&nbsp;at&nbsp;lat=10,&nbsp;lon=5:</span></tt></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">array</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="n">array</span><span class="p">[</span><span class="s">&#39;lon&#39;</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span> <span class="s">&#39;lat&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
+<span class="n">array</span><span class="p">[</span><span class="s">&#39;lat&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;Now&nbsp;suppose&nbsp;we&nbsp;want&nbsp;to&nbsp;combine&nbsp;this&nbsp;data&nbsp;with&nbsp;another&nbsp;array&nbsp;of&nbsp;equal&nbsp;dimensions&nbsp;that</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;represents&nbsp;the&nbsp;average&nbsp;rainfall&nbsp;for&nbsp;each&nbsp;location.&nbsp;We&nbsp;could&nbsp;easily&nbsp;store&nbsp;these&nbsp;as&nbsp;two&nbsp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;separate&nbsp;arrays&nbsp;or&nbsp;combine&nbsp;them&nbsp;into&nbsp;a&nbsp;3D&nbsp;array&nbsp;with&nbsp;this&nbsp;description:</span></tt></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">info</span><span class="o">=</span><span class="p">[</span>
+  <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;vals&#39;</span><span class="p">,</span> <span class="s">&#39;cols&#39;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;altitude&#39;</span><span class="p">,</span> <span class="s">&#39;units&#39;</span><span class="p">:</span> <span class="s">&#39;m&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;rainfall&#39;</span><span class="p">,</span> <span class="s">&#39;units&#39;</span><span class="p">:</span> <span class="s">&#39;cm/year&#39;</span><span class="p">}</span>
+  <span class="p">]},</span>
+  <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;lat&#39;</span><span class="p">,</span> <span class="s">&#39;title&#39;</span><span class="p">:</span> <span class="s">&#39;Latitude&#39;</span><span class="p">},</span>
+  <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;lon&#39;</span><span class="p">,</span> <span class="s">&#39;title&#39;</span><span class="p">:</span> <span class="s">&#39;Longitude&#39;</span><span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;We&nbsp;can&nbsp;now&nbsp;access&nbsp;the&nbsp;altitude&nbsp;values&nbsp;with&nbsp;array[0]&nbsp;or&nbsp;array['altitude'],&nbsp;and&nbsp;the</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;rainfall&nbsp;values&nbsp;with&nbsp;array[1]&nbsp;or&nbsp;array['rainfall'].&nbsp;All&nbsp;of&nbsp;the&nbsp;following&nbsp;return</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;the&nbsp;rainfall&nbsp;value&nbsp;at&nbsp;lat=10,&nbsp;lon=5:</span></tt></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">array</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="n">array</span><span class="p">[</span><span class="s">&#39;lon&#39;</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span> <span class="s">&#39;lat&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s">&#39;val&#39;</span><span class="p">:</span> <span class="s">&#39;rainfall&#39;</span><span class="p">]</span>
+<span class="n">array</span><span class="p">[</span><span class="s">&#39;rainfall&#39;</span><span class="p">,</span> <span class="s">&#39;lon&#39;</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span> <span class="s">&#39;lat&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;Notice&nbsp;that&nbsp;in&nbsp;the&nbsp;second&nbsp;example,&nbsp;there&nbsp;is&nbsp;no&nbsp;need&nbsp;for&nbsp;an&nbsp;extra&nbsp;(4th)&nbsp;axis&nbsp;description</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;since&nbsp;the&nbsp;actual&nbsp;values&nbsp;are&nbsp;described&nbsp;(name&nbsp;and&nbsp;units)&nbsp;in&nbsp;the&nbsp;column&nbsp;info&nbsp;for&nbsp;the&nbsp;first&nbsp;axis.</span></tt></div>
+</div>
+</div>
+<div class="section" id="contact">
+<h3>Contact<a class="headerlink" href="#contact" title="Permalink to this headline">¶</a></h3>
+<p>Luke Campagnola - <a class="reference external" href="mailto:lcampagn&#37;&#52;&#48;email&#46;unc&#46;edu">lcampagn<span>&#64;</span>email<span>&#46;</span>unc<span>&#46;</span>edu</a></p>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">MetaArray</a><ul>
+<li><a class="reference internal" href="#example-uses">Example Uses</a></li>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#documentation">Documentation</a><ul>
+<li><a class="reference internal" href="#instantiation">Instantiation</a></li>
+<li><a class="reference internal" href="#accessing-data">Accessing Data</a></li>
+<li><a class="reference internal" href="#file-i-o">File I/O</a></li>
+<li><a class="reference internal" href="#performance-tips">Performance Tips</a></li>
+<li><a class="reference internal" href="#more-examples">More Examples</a></li>
+<li><a class="reference internal" href="#contact">Contact</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="MayaVi.html"
+                        title="previous chapter">MayaVi2 topics</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="MultiDot.html"
+                        title="next chapter">Using reduce</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/MetaArray.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="MultiDot.html" title="Using reduce"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi.html" title="MayaVi2 topics"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,220 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="MayaVi2 topics" href="MayaVi.html" />
+    <link rel="prev" title="A Simple Example" href="MayaVi(2f)mlab.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="MayaVi.html" title="MayaVi2 topics"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)mlab.html" title="A Simple Example"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>||&lt;#80FF80&gt; This page is not the main source of documentation. You are
+invited to refer to the <a class="reference external" href="http://enthought.github.com/mayavi/mayavi">Mayavi2 home
+page</a> for up-to-date
+documentation on TVTK. In particular, bear in mind that if you are
+looking for a high-level Python 3D plotting library, Mayavi also
+provides the right API, and can be embedded (see the <a class="reference external" href="http://enthought.github.com/mayavi/mayavi/building_applications.html">user
+guide</a>).
+||</p>
+<div class="highlight-python"><pre>What is tvtk?
+=============
+
+``tvtk`` is a `traits &lt;http://www.enthought.com/traits&gt;`_
+enabled version of `VTK &lt;http://www.vtk.org&gt;`_
+for 3D graphics and visualization.
+
+It provides an exact match to the VTK objects, but with a Pythonic feel, unlike
+`Mayavi &lt;http://code.enthought.com/projects/mayavi&gt;`_ which aims to provide new
+APIs
+
+Most important features are
+
+* All VTK classes are wrapped.
+* Support for traits.
+* Elementary pickle support.
+* Pythonic feel.
+* Handles numpy/Numeric/numarray arrays/Python lists transparently.
+* Support for a pipeline browser, `ivtk`
+* High-level `mlab` module.
+* Envisage plugins for a tvtk scene and the pipeline browser.
+* MayaVi2 is built on top of tvtk
+
+See the `enthought TVTK page &lt;http://www.enthought.com/enthought/wiki/TVTK&gt;`_ fo
+r more details,
+in particular the `tvtk introduction &lt;http://www.enthought.com/enthought/wiki/TV
+TKIntroduction&gt;`_.
+
+tvtk examples
+-------------
+
+cone
+````
+
+The following example displays a cone which can be rotated/scaled/... with the m
+ouse.
+`Simple_tvtk_cone.py
+
+&lt;.. image:: MayaVi(2f)tvtk_attachments/Simple_tvtk_cone.py&gt;`_
+
+quadrics
+````````
+
+A more interesting example is the generation of some contour surfaces of an impl
+icit function.
+`Vis_quad.py
+
+&lt;.. image:: MayaVi(2f)tvtk_attachments/Vis_quad.py&gt;`_
+
+This displays the following scene on screen and also saves it to a file.
+
+.. image:: .. image:: MayaVi(2f)tvtk_attachments/vis_quad.png
+
+
+
+ivtk
+----
+
+The module `tools.ivtk` makes VTK/TVTK easier to use from the Python
+interpreter.
+For example, start IPython with::
+
+  ipython -wthread
+
+(if you have both wxPython 2.4 and wxPython 2.6 installed you will need a recent
+ IPython
+and do ``ipython -wthread  -wxversion 2.6``).</pre>
+</div>
+<p>Then you can paste the following lines:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.tvtk.tools</span> <span class="kn">import</span> <span class="n">ivtk</span>
+<span class="kn">from</span> <span class="nn">enthought.tvtk.api</span> <span class="kn">import</span> <span class="n">tvtk</span>
+<span class="c"># Create a cone:</span>
+<span class="n">cs</span> <span class="o">=</span> <span class="n">tvtk</span><span class="o">.</span><span class="n">ConeSource</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">mapper</span> <span class="o">=</span> <span class="n">tvtk</span><span class="o">.</span><span class="n">PolyDataMapper</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">cs</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+<span class="n">actor</span> <span class="o">=</span> <span class="n">tvtk</span><span class="o">.</span><span class="n">Actor</span><span class="p">(</span><span class="n">mapper</span><span class="o">=</span><span class="n">mapper</span><span class="p">)</span>
+
+<span class="c"># Now create the viewer:</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">ivtk</span><span class="o">.</span><span class="n">IVTKWithCrustAndBrowser</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span><span class="mi">600</span><span class="p">))</span>
+<span class="n">v</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+<span class="n">v</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">add_actors</span><span class="p">(</span><span class="n">actor</span><span class="p">)</span>  <span class="c"># or v.scene.add_actor(a)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">You</span> <span class="n">can</span> <span class="n">then</span> <span class="n">explore</span> <span class="n">the</span> <span class="n">visualization</span> <span class="n">pipeline</span> <span class="ow">and</span> <span class="n">modify</span> <span class="nb">any</span> <span class="n">settings</span><span class="o">.</span>
+
+<span class="o">..</span> <span class="n">image</span><span class="p">::</span> <span class="o">..</span> <span class="n">image</span><span class="p">::</span> <span class="n">MayaVi</span><span class="p">(</span><span class="mi">2</span><span class="n">f</span><span class="p">)</span><span class="n">tvtk_attachments</span><span class="o">/</span><span class="n">ivtk_example</span><span class="o">.</span><span class="n">png</span>
+
+
+<span class="n">For</span> <span class="n">creating</span> <span class="n">the</span> <span class="n">viewer</span> <span class="n">there</span> <span class="n">are</span> <span class="n">different</span> <span class="n">options</span><span class="p">:</span>
+
+<span class="o">-</span> <span class="sb">``</span><span class="n">v</span> <span class="o">=</span> <span class="n">ivtk</span><span class="o">.</span><span class="n">viewer</span><span class="p">()</span><span class="sb">``</span> <span class="o">-</span> <span class="n">this</span> <span class="n">one</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">need</span> <span class="n">the</span> <span class="sb">``</span><span class="n">v</span><span class="o">.</span><span class="n">open</span><span class="p">()</span><span class="sb">``</span> <span class="ow">and</span> <span class="n">the</span> <span class="sb">``</span><span class="n">size</span>
+<span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span><span class="mi">600</span><span class="p">)</span><span class="sb">``</span>
+<span class="o">-</span> <span class="sb">``</span><span class="n">v</span> <span class="o">=</span> <span class="n">ivtk</span><span class="o">.</span><span class="n">IVTK</span><span class="p">()</span><span class="sb">``</span>
+<span class="o">-</span> <span class="sb">``</span><span class="n">v</span> <span class="o">=</span> <span class="n">ivtk</span><span class="o">.</span><span class="n">IVTKWithCrust</span><span class="p">()</span><span class="sb">``</span>
+<span class="o">-</span> <span class="sb">``</span><span class="n">v</span> <span class="o">=</span> <span class="n">ivtk</span><span class="o">.</span><span class="n">IVTKWithBrowser</span><span class="p">()</span><span class="sb">``</span>
+<span class="o">-</span> <span class="sb">``</span><span class="n">v</span> <span class="o">=</span> <span class="n">ivtk</span><span class="o">.</span><span class="n">IVTKWithCrustAndBrowser</span><span class="p">)</span><span class="sb">``</span>
+
+<span class="n">For</span> <span class="n">viewers</span> <span class="k">with</span> <span class="sb">`Crust`</span> <span class="n">you</span> <span class="n">can</span> <span class="n">use</span> <span class="n">the</span> <span class="n">python</span> <span class="n">command</span> <span class="n">line</span> <span class="n">window</span> <span class="n">to</span> <span class="n">modify</span> <span class="n">th</span>
+<span class="n">e</span> <span class="n">pipeline</span><span class="o">.</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="MayaVi(2f)mlab.html"
+                        title="previous chapter">A Simple Example</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="MayaVi.html"
+                        title="next chapter">MayaVi2 topics</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/MayaVi(2f)tvtk.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="MayaVi.html" title="MayaVi2 topics"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)mlab.html" title="A Simple Example"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

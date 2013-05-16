@@ -1,0 +1,241 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Simple Plotting &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Installing python2.3/python2.4" href="MayaVi(2f)InstallPythonStuffFromSource.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="Matplotlib(2f)mplot3D.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)InstallPythonStuffFromSource.html" title="Installing python2.3/python2.4"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)mplot3D.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>The cookbook is a place for community contributions of recipes, howtos
+and examples.</p>
+<p>Complete documentation and tutorials for matplotlib can be found at
+<a class="reference external" href="http://matplotlib.sourceforge.net/">matplotlib&#8217;s webpage</a></p>
+<p>BR TableOfContents</p>
+<div class="section" id="simple-plotting">
+<h1>Simple Plotting<a class="headerlink" href="#simple-plotting" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/SigmoidalFunctions:Sigmoidal&nbsp;Functions]&nbsp;-&nbsp;plotting&nbsp;simple&nbsp;functions</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;.&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`..</span> <span class="pre">image::</span> <span class="pre">Matplotlib_attachments/sigmoids_small.png</span></tt> &lt;.. image:: Matplotlib_attachments/sigmoids_small.png&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/MultilinePlots:Multiline&nbsp;Plots]&nbsp;-&nbsp;how&nbsp;to&nbsp;plot&nbsp;multiple&nbsp;lines&nbsp;over&nbsp;one&nbsp;another</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;.&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`..</span> <span class="pre">image::</span> <span class="pre">Matplotlib_attachments/multiline.png</span></tt> &lt;.. image:: Matplotlib_attachments/multiline.png&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/BarCharts:Bar&nbsp;Charts]&nbsp;-&nbsp;how&nbsp;to&nbsp;make&nbsp;a&nbsp;bar&nbsp;chart</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;.&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`..</span> <span class="pre">image::</span> <span class="pre">Matplotlib_attachments/barchartscaled.png</span></tt> &lt;.. image:: Matplotlib_attachments/barchartscaled.png&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/Common&nbsp;Errors:Common&nbsp;Errors]&nbsp;-&nbsp;Compilation&nbsp;of&nbsp;common&nbsp;errors&nbsp;that&nbsp;can&nbsp;cause&nbsp;erroneous&nbsp;behavior.&nbsp;Check&nbsp;before&nbsp;emailing&nbsp;mailing&nbsp;lists.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[&quot;/Animations&quot;]&nbsp;-&nbsp;how&nbsp;to&nbsp;animate&nbsp;your&nbsp;figures.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/MulticoloredLine:Multicolored&nbsp;Line]&nbsp;-&nbsp;different&nbsp;colors&nbsp;for&nbsp;different&nbsp;parts&nbsp;of&nbsp;a&nbsp;line</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;.&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`..</span> <span class="pre">image::</span> <span class="pre">Matplotlib_attachments/colored_line.png</span></tt> &lt;.. image:: Matplotlib_attachments/colored_line.png&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/ShadedRegions:Shaded&nbsp;Regions]&nbsp;-&nbsp;how&nbsp;to&nbsp;plot&nbsp;grey&nbsp;shaded&nbsp;regions&nbsp;using&nbsp;transparency.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;.&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`..</span> <span class="pre">image::</span> <span class="pre">Matplotlib_attachments/shaded_small.png</span></tt> &lt;.. image:: Matplotlib_attachments/shaded_small.png&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[&quot;/Arrows&quot;]&nbsp;-&nbsp;how&nbsp;to&nbsp;plot&nbsp;arrows</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;.&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`..</span> <span class="pre">image::</span> <span class="pre">Matplotlib_attachments/plot_arrow_small.png</span></tt> &lt;.. image:: Matplotlib_attachments/plot_arrow_small.png&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/UnfilledHistograms:Unfilled&nbsp;Histograms]&nbsp;-&nbsp;how&nbsp;to&nbsp;plot&nbsp;histograms&nbsp;that&nbsp;are&nbsp;un-filled&nbsp;and&nbsp;don't&nbsp;look&nbsp;like&nbsp;bar&nbsp;charts.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;.&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`..</span> <span class="pre">image::</span> <span class="pre">Matplotlib_attachments/hist_outline_small.png</span></tt> &lt;.. image:: Matplotlib_attachments/hist_outline_small.png&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[&quot;Cookbook/Histograms&quot;]&nbsp;-&nbsp;2D&nbsp;histograms&nbsp;with&nbsp;variable&nbsp;bin&nbsp;width.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;.&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`..</span> <span class="pre">image::</span> <span class="pre">Matplotlib_attachments/Cookbook/Histograms/histogram2d.png</span></tt> &lt;.. image:: Matplotlib_attachments/Cookbook/Histograms/histogram2d.png&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/CustomLogLabels:Custom&nbsp;Log&nbsp;Plot&nbsp;Labels]&nbsp;-&nbsp;plotting&nbsp;log&nbsp;plots&nbsp;with&nbsp;custom&nbsp;tick&nbsp;labels&nbsp;that&nbsp;are&nbsp;formatted&nbsp;as&nbsp;integer&nbsp;numbers&nbsp;rather&nbsp;than&nbsp;exponents&nbsp;as&nbsp;is&nbsp;the&nbsp;default.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;.&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`..</span> <span class="pre">image::</span> <span class="pre">Matplotlib_attachments/log_labels_small.png</span></tt> &lt;.. image:: Matplotlib_attachments/log_labels_small.png&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/ThickAxes:Thick&nbsp;Axes]&nbsp;-&nbsp;how&nbsp;to&nbsp;make&nbsp;thick&nbsp;axes&nbsp;lines&nbsp;and&nbsp;bold&nbsp;fonts.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;.&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`..</span> <span class="pre">image::</span> <span class="pre">Matplotlib_attachments/thick_axes.png</span></tt> &lt;.. image:: Matplotlib_attachments/thick_axes.png&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[&quot;/Maps&quot;]&nbsp;-&nbsp;how&nbsp;to&nbsp;plot&nbsp;data&nbsp;on&nbsp;map&nbsp;projections</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;.&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`..</span> <span class="pre">image::</span> <span class="pre">Matplotlib_attachments/basemap1.png</span></tt> &lt;.. image:: Matplotlib_attachments/basemap1.png&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/Plotting&nbsp;values&nbsp;with&nbsp;masked&nbsp;arrays:Plotting&nbsp;values&nbsp;with&nbsp;masked&nbsp;arrays]&nbsp;-&nbsp;How&nbsp;to&nbsp;plot&nbsp;only&nbsp;selected&nbsp;values&nbsp;of&nbsp;an&nbsp;array,&nbsp;because&nbsp;some&nbsp;values&nbsp;are&nbsp;meaningless&nbsp;(detector&nbsp;malfunction),&nbsp;out&nbsp;of&nbsp;range,&nbsp;etc.&nbsp;etc.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[&quot;/Transformations&quot;]&nbsp;-&nbsp;Using&nbsp;transformations&nbsp;to&nbsp;convert&nbsp;between&nbsp;different&nbsp;coordinate&nbsp;systems.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;TreeMap&nbsp;-&nbsp;classic&nbsp;treemap&nbsp;style&nbsp;plots</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[&quot;/Legend&quot;]&nbsp;-&nbsp;Adding&nbsp;a&nbsp;legend&nbsp;to&nbsp;your&nbsp;plot</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/HintonDiagrams:Hinton&nbsp;Diagrams]&nbsp;-&nbsp;A&nbsp;way&nbsp;of&nbsp;visualizing&nbsp;weight&nbsp;matrices</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;.&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`..</span> <span class="pre">image::</span> <span class="pre">Matplotlib_attachments/hinton-small.png</span></tt> &lt;.. image:: Matplotlib_attachments/hinton-small.png&gt;`__</div>
+</div>
+</div>
+<div class="section" id="pseudo-color-plots">
+<h1>Pseudo Color Plots<a class="headerlink" href="#pseudo-color-plots" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/Loading&nbsp;a&nbsp;colormap&nbsp;dynamically:Loading&nbsp;a&nbsp;colormap&nbsp;dynamically]&nbsp;-&nbsp;How&nbsp;to&nbsp;load&nbsp;a&nbsp;color&nbsp;map&nbsp;from&nbsp;a&nbsp;GMT&nbsp;(Generic&nbsp;Mapping&nbsp;Tools)&nbsp;file.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/Show&nbsp;colormaps:Show&nbsp;colormaps]&nbsp;-&nbsp;Small&nbsp;script&nbsp;to&nbsp;display&nbsp;all&nbsp;of&nbsp;the&nbsp;Matplotlib&nbsp;colormaps,&nbsp;and&nbsp;an&nbsp;exampleshowing&nbsp;how&nbsp;to&nbsp;create&nbsp;a&nbsp;new&nbsp;one.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/converting&nbsp;a&nbsp;matrix&nbsp;to&nbsp;a&nbsp;raster&nbsp;image:Converting&nbsp;a&nbsp;matrix&nbsp;to&nbsp;a&nbsp;raster&nbsp;image]&nbsp;-&nbsp;A&nbsp;replacement&nbsp;for&nbsp;scipy's&nbsp;imsave&nbsp;command</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/Gridding&nbsp;irregularly&nbsp;spaced&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`data:Gridding</span></tt> &lt;<a class="reference external" href="data:Gridding">data:Gridding</a>&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;irregularly&nbsp;spaced&nbsp;data]&nbsp;-&nbsp;how&nbsp;to&nbsp;grid&nbsp;scattered&nbsp;data&nbsp;points&nbsp;in&nbsp;order&nbsp;to&nbsp;make&nbsp;a&nbsp;contour&nbsp;or&nbsp;image&nbsp;plot.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/Plotting&nbsp;Images&nbsp;with&nbsp;Special&nbsp;Values:Plotting&nbsp;Images&nbsp;with&nbsp;Special&nbsp;Values]&nbsp;-&nbsp;how&nbsp;to&nbsp;plot&nbsp;an&nbsp;image&nbsp;with&nbsp;special&nbsp;values&nbsp;mapped&nbsp;to&nbsp;specific&nbsp;colors,&nbsp;e.g.&nbsp;missing&nbsp;values&nbsp;or&nbsp;data&nbsp;extrema</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;.&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`..</span> <span class="pre">image::</span> <span class="pre">Matplotlib_attachments/sentinel.png</span></tt> &lt;.. image:: Matplotlib_attachments/sentinel.png&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/ColormapTransformations:Transformations&nbsp;on&nbsp;Colormaps]&nbsp;-&nbsp;how&nbsp;to&nbsp;apply&nbsp;a&nbsp;function&nbsp;to&nbsp;the&nbsp;look&nbsp;up&nbsp;table&nbsp;of&nbsp;a&nbsp;colormap&nbsp;and&nbsp;turn&nbsp;it&nbsp;into&nbsp;another&nbsp;one.</span></tt></div>
+</div>
+</div>
+<div class="section" id="typesetting">
+<h1>Typesetting<a class="headerlink" href="#typesetting" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/UsingTex:Using&nbsp;TeX]&nbsp;-&nbsp;formatting&nbsp;matplotlib&nbsp;text&nbsp;with&nbsp;LaTeX</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;.&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`..</span> <span class="pre">image::</span> <span class="pre">Matplotlib_attachments/tex_demo.png</span></tt> &lt;.. image:: Matplotlib_attachments/tex_demo.png&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/LaTeX&nbsp;Examples:LaTeX&nbsp;Examples]&nbsp;-&nbsp;Complete&nbsp;examples&nbsp;for&nbsp;generating&nbsp;publication&nbsp;quality&nbsp;figures&nbsp;using&nbsp;LaTeX.</span></tt></div>
+</div>
+</div>
+<div class="section" id="d-plotting">
+<h1>3D Plotting<a class="headerlink" href="#d-plotting" title="Permalink to this headline">¶</a></h1>
+<p>||<strong>NOTE:</strong> <strong>*Experimental work has been going on to integrate 3D
+plotting functionality into matplotlib*</strong>. Please see the related
+<a class="reference external" href="http://matplotlib.sourceforge.net/mpl_toolkits/mplot3d/index.html?highlight=mplot3d">mplot3d
+documentation</a>
+or take a look at <a class="reference external" href="http://matplotlib.sourceforge.net/gallery.html">matplotlib
+gallery</a> for example
+3D plots. For a more sophisticated 3D visualization and plotting
+interface, you can try
+<a class="reference external" href="http://code.enthought.com/projects/mayavi/">Mayavi</a> which is
+actively maintained and features an &#8216;mlab&#8217; interface similar to
+matplotlib&#8217;s &#8216;pylab&#8217;. || * [:Cookbook/Matplotlib/mplot3D:3D plots] -
+Simple 3D plots using matplotlibs built-in 3D functions (which were
+originally provided by John Porter&#8217;s mplot3d add-on module). .
+.. image:: Matplotlib_attachments/contourf3D.jpg * [:Cookbook/Matplotlib/VTK Integration:VTK
+Integration] - How to import plots into VTK. . .. image:: Matplotlib_attachments/mpl_vtk.png</p>
+</div>
+<div class="section" id="embedding-plots-in-apps">
+<h1>Embedding Plots in Apps<a class="headerlink" href="#embedding-plots-in-apps" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/EmbeddingInWx:Embedding&nbsp;in&nbsp;WX]&nbsp;-&nbsp;Advice&nbsp;on&nbsp;how&nbsp;to&nbsp;embed&nbsp;matplotlib&nbsp;figures&nbsp;in&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`wxPython</span></tt> &lt;<a class="reference external" href="http://www.wxpython.org">http://www.wxpython.org</a>&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;applications.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`WxMpl</span></tt> &lt;<a class="reference external" href="http://agni.phys.iit.edu/~kmcivor/wxmpl">http://agni.phys.iit.edu/~kmcivor/wxmpl</a>&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;-&nbsp;Python&nbsp;module&nbsp;for&nbsp;integrating&nbsp;matplotlib&nbsp;into&nbsp;wxPython&nbsp;GUIs.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[&quot;Cookbook/Matplotlib/ScrollingPlot&quot;]&nbsp;-&nbsp;Demonstrates&nbsp;how&nbsp;to&nbsp;control&nbsp;a&nbsp;matplotlib&nbsp;plot&nbsp;embedded&nbsp;in&nbsp;a&nbsp;wxPython&nbsp;application&nbsp;with&nbsp;scrollbars.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Gael</span></tt> <tt class="docutils literal"><span class="pre">Varoquax's</span></tt> <tt class="docutils literal"><span class="pre">scientific</span></tt> <tt class="docutils literal"><span class="pre">GUI</span></tt></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">tutorial</span></tt> &lt;<a class="reference external" href="http://code.enthought.com/projects/traits/docs/html/tutorials/traits_ui_scientific_app.html">http://code.enthought.com/projects/traits/docs/html/tutorials/traits_ui_scientific_app.html</a>&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;-&nbsp;Includes&nbsp;an&nbsp;instructive&nbsp;example&nbsp;of&nbsp;embedding&nbsp;matplotlib&nbsp;in&nbsp;a&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Traits</span></tt>
+<tt class="docutils literal"><span class="pre">GUI</span></tt> &lt;<a class="reference external" href="http://code.enthought.com/projects/traits_gui/">http://code.enthought.com/projects/traits_gui/</a>&gt;`__<tt class="docutils literal"><span class="pre">.</span></tt>
+| <tt class="docutils literal"><span class="pre">*&nbsp;[&quot;Cookbook/Matplotlib/PySide&quot;]&nbsp;-&nbsp;Demonstrates&nbsp;how&nbsp;to&nbsp;display&nbsp;a&nbsp;matplotlib&nbsp;plot&nbsp;embedded&nbsp;in&nbsp;a&nbsp;PySide&nbsp;(Qt)&nbsp;application</span></tt></p>
+</div>
+<div class="section" id="misc">
+<h1>Misc<a class="headerlink" href="#misc" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/LoadImage:Load&nbsp;and&nbsp;display&nbsp;an&nbsp;image]&nbsp;-&nbsp;shows&nbsp;a&nbsp;simple&nbsp;way&nbsp;to&nbsp;import&nbsp;a&nbsp;PNG&nbsp;image&nbsp;to&nbsp;a&nbsp;numpy&nbsp;array</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/Interactive&nbsp;Plotting:Interactive&nbsp;Plotting]&nbsp;-&nbsp;Adding&nbsp;mouse&nbsp;interaction&nbsp;to&nbsp;identify&nbsp;data&nbsp;annotations.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/Matplotlib&nbsp;and&nbsp;Zope:Matplotlib&nbsp;and&nbsp;Zope]&nbsp;-&nbsp;How&nbsp;to&nbsp;use&nbsp;Matplotlib&nbsp;within&nbsp;the&nbsp;application&nbsp;server&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Zope</span></tt> &lt;<a class="reference external" href="http://www.zope.org">http://www.zope.org</a>&gt;`__<tt class="docutils literal"><span class="pre">.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/Qt&nbsp;with&nbsp;IPython&nbsp;and&nbsp;Designer:Qt&nbsp;with&nbsp;IPython&nbsp;and&nbsp;Designer]&nbsp;-&nbsp;How&nbsp;to&nbsp;design&nbsp;a&nbsp;GUI&nbsp;using&nbsp;Qt's&nbsp;Designer&nbsp;tool&nbsp;using&nbsp;Matplotlib&nbsp;widgets,&nbsp;and&nbsp;that&nbsp;can&nbsp;be&nbsp;interactively&nbsp;controlled&nbsp;from&nbsp;the&nbsp;IPython&nbsp;command&nbsp;line.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/CompilingMatPlotLibOnSolaris10:Compiling&nbsp;Matplotlib&nbsp;on&nbsp;Solaris&nbsp;10]&nbsp;-&nbsp;how&nbsp;to&nbsp;compile&nbsp;the&nbsp;thing&nbsp;on&nbsp;Solaris&nbsp;10,&nbsp;using&nbsp;gcc/g++</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/Using&nbsp;MatPlotLib&nbsp;in&nbsp;a&nbsp;CGI&nbsp;script:Using&nbsp;MatPlotLib&nbsp;in&nbsp;a&nbsp;CGI&nbsp;script]&nbsp;-&nbsp;steps&nbsp;needed&nbsp;to&nbsp;be&nbsp;able&nbsp;to&nbsp;use&nbsp;matplotlib&nbsp;from&nbsp;a&nbsp;python&nbsp;cgi&nbsp;script</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Making</span></tt> <tt class="docutils literal"><span class="pre">Dynamic</span></tt> <tt class="docutils literal"><span class="pre">Charts</span></tt> <tt class="docutils literal"><span class="pre">for</span></tt> <tt class="docutils literal"><span class="pre">your</span></tt></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">Webpage</span></tt> &lt;<a class="reference external" href="http://www.answermysearches.com/index.php/making-dynamic-charts-and-graphs-for-your-webpage/135/">http://www.answermysearches.com/index.php/making-dynamic-charts-and-graphs-for-your-webpage/135/</a>&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;-&nbsp;Complete&nbsp;CGI&nbsp;script&nbsp;example.</span></tt>
+| <tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`matplotlib</span></tt> <tt class="docutils literal"><span class="pre">without</span></tt>
+<tt class="docutils literal"><span class="pre">GUI</span></tt> &lt;<a class="reference external" href="http://www.dalkescientific.com/writings/diary/archive/2005/04/23/matplotlib_without_gui.html">http://www.dalkescientific.com/writings/diary/archive/2005/04/23/matplotlib_without_gui.html</a>&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;by&nbsp;Andrew&nbsp;Dalke.</span></tt>
+| <tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Andrew</span></tt> <tt class="docutils literal"><span class="pre">Straw's</span></tt> <tt class="docutils literal"><span class="pre">Apt</span></tt>
+<tt class="docutils literal"><span class="pre">Repository</span></tt> &lt;<a class="reference external" href="http://debs.astraw.com/dapper/">http://debs.astraw.com/dapper/</a>&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;-&nbsp;Bleeding&nbsp;edge&nbsp;deb&nbsp;packages&nbsp;for&nbsp;Debian,&nbsp;Ubuntu&nbsp;(also&nbsp;has&nbsp;packages&nbsp;for&nbsp;numpy/scipy&nbsp;etc.).</span></tt>
+| <tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/AdjustingImageSize:Adjusting&nbsp;Image&nbsp;Size]&nbsp;-&nbsp;a&nbsp;brief&nbsp;discussion&nbsp;of&nbsp;how&nbsp;to&nbsp;adjust&nbsp;the&nbsp;size&nbsp;of&nbsp;figures&nbsp;--&nbsp;for&nbsp;printing,&nbsp;web,&nbsp;etc.</span></tt>
+| <tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/DeletingAnExistingDataSeries:Deleting&nbsp;An&nbsp;Existing&nbsp;Data&nbsp;Series]&nbsp;-&nbsp;a&nbsp;quick&nbsp;example&nbsp;showing&nbsp;how&nbsp;to&nbsp;remove&nbsp;one&nbsp;data&nbsp;series&nbsp;from&nbsp;an&nbsp;already&nbsp;existing&nbsp;plot.</span></tt>
+| <tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/Django:Embedding&nbsp;in&nbsp;Django]&nbsp;-&nbsp;example&nbsp;on&nbsp;how&nbsp;to&nbsp;use&nbsp;matplotlib&nbsp;with&nbsp;Django.</span></tt>
+| <tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`timeseries</span></tt>
+<tt class="docutils literal"><span class="pre">scikit</span></tt> &lt;<a class="reference external" href="http://pytseries.sourceforge.net">http://pytseries.sourceforge.net</a>&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;-&nbsp;The&nbsp;documentation&nbsp;contains&nbsp;a&nbsp;section&nbsp;on&nbsp;plotting&nbsp;`TimeSeries`&nbsp;objects&nbsp;using&nbsp;matplotlib</span></tt>
+| <tt class="docutils literal"><span class="pre">*&nbsp;/TreeMap&nbsp;-&nbsp;A&nbsp;compact&nbsp;way&nbsp;of&nbsp;showing&nbsp;weighted&nbsp;tree&nbsp;information.</span></tt>
+| <tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/Matplotlib/Multiple&nbsp;Subplots&nbsp;with&nbsp;One&nbsp;Axis&nbsp;Label:Multiple&nbsp;Subplots&nbsp;with&nbsp;One&nbsp;Axis&nbsp;Label]&nbsp;-&nbsp;how&nbsp;to&nbsp;use&nbsp;one&nbsp;centered&nbsp;label&nbsp;to&nbsp;annotate&nbsp;several&nbsp;subplots</span></tt>
+| <tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Multiple</span></tt>
+<tt class="docutils literal"><span class="pre">Y-axis</span></tt> &lt;<a class="reference external" href="http://www.nabble.com/Multiple-Y-axis-td10734643.html">http://www.nabble.com/Multiple-Y-axis-td10734643.html</a>&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;-&nbsp;How&nbsp;to&nbsp;plot&nbsp;different&nbsp;variables&nbsp;on&nbsp;the&nbsp;same&nbsp;plot&nbsp;but&nbsp;different&nbsp;Y-Axis&nbsp;(one&nbsp;left&nbsp;and&nbsp;one&nbsp;right)</span></tt>
+| <tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Creating</span></tt> <tt class="docutils literal"><span class="pre">video</span></tt> <tt class="docutils literal"><span class="pre">of</span></tt> <tt class="docutils literal"><span class="pre">3D</span></tt> <tt class="docutils literal"><span class="pre">graph</span></tt> <tt class="docutils literal"><span class="pre">plotting</span></tt>
+<tt class="docutils literal"><span class="pre">using</span></tt> <tt class="docutils literal"><span class="pre">matplotlib</span></tt> <tt class="docutils literal"><span class="pre">and</span></tt>
+<tt class="docutils literal"><span class="pre">mencoder</span></tt> &lt;<a class="reference external" href="http://debtechandstuff.blogspot.com/2009/10/creating-video-of-3d-graph-plotting.html">http://debtechandstuff.blogspot.com/2009/10/creating-video-of-3d-graph-plotting.html</a>&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;by&nbsp;Ilya&nbsp;Zakreuski</span></tt></p>
+<hr class="docutils" />
+<p><tt class="docutils literal"><span class="pre">.&nbsp;CategoryCookbookMatplotlib&nbsp;CategoryCookbook</span></tt></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Simple Plotting</a></li>
+<li><a class="reference internal" href="#pseudo-color-plots">Pseudo Color Plots</a></li>
+<li><a class="reference internal" href="#typesetting">Typesetting</a></li>
+<li><a class="reference internal" href="#d-plotting">3D Plotting</a></li>
+<li><a class="reference internal" href="#embedding-plots-in-apps">Embedding Plots in Apps</a></li>
+<li><a class="reference internal" href="#misc">Misc</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)mplot3D.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="MayaVi(2f)InstallPythonStuffFromSource.html"
+                        title="next chapter">Installing python2.3/python2.4</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Matplotlib.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)InstallPythonStuffFromSource.html" title="Installing python2.3/python2.4"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)mplot3D.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

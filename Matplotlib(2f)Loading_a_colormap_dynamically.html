@@ -1,0 +1,194 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="Matplotlib(2f)Maps.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="Matplotlib(2f)LoadImage.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Maps.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)LoadImage.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>In a
+<a class="reference external" href="http://thread.gmane.org/gmane.comp.python.matplotlib.general/1536">thread</a>
+on the matplotlib mailling list, James Boyle posted a way to load
+colormaps from a file. Here it is slightly modified.</p>
+<p><strong>gmtColormap.py</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">gmtColormap</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span><span class="n">GMTPath</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+      <span class="kn">import</span> <span class="nn">colorsys</span>
+      <span class="kn">import</span> <span class="nn">Numeric</span>
+      <span class="n">N</span> <span class="o">=</span> <span class="n">Numeric</span>
+      <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">GMTPath</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="bp">None</span><span class="p">):</span>
+          <span class="n">filePath</span> <span class="o">=</span> <span class="s">&quot;/usr/local/cmaps/&quot;</span><span class="o">+</span> <span class="n">fileName</span><span class="o">+</span><span class="s">&quot;.cpt&quot;</span>
+      <span class="k">else</span><span class="p">:</span>
+          <span class="n">filePath</span> <span class="o">=</span> <span class="n">GMTPath</span><span class="o">+</span><span class="s">&quot;/&quot;</span><span class="o">+</span> <span class="n">fileName</span> <span class="o">+</span><span class="s">&quot;.cpt&quot;</span>
+      <span class="k">try</span><span class="p">:</span>
+          <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span>
+      <span class="k">except</span><span class="p">:</span>
+          <span class="k">print</span> <span class="s">&quot;file &quot;</span><span class="p">,</span><span class="n">filePath</span><span class="p">,</span> <span class="s">&quot;not found&quot;</span>
+          <span class="k">return</span> <span class="bp">None</span>
+
+      <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+      <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+      <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+      <span class="n">r</span> <span class="o">=</span> <span class="p">[]</span>
+      <span class="n">g</span> <span class="o">=</span> <span class="p">[]</span>
+      <span class="n">b</span> <span class="o">=</span> <span class="p">[]</span>
+      <span class="n">colorModel</span> <span class="o">=</span> <span class="s">&quot;RGB&quot;</span>
+      <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+          <span class="n">ls</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+          <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;#&quot;</span><span class="p">:</span>
+             <span class="k">if</span> <span class="n">ls</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;HSV&quot;</span><span class="p">:</span>
+                 <span class="n">colorModel</span> <span class="o">=</span> <span class="s">&quot;HSV&quot;</span>
+                 <span class="k">continue</span>
+             <span class="k">else</span><span class="p">:</span>
+                 <span class="k">continue</span>
+          <span class="k">if</span> <span class="n">ls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;B&quot;</span> <span class="ow">or</span> <span class="n">ls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;F&quot;</span> <span class="ow">or</span> <span class="n">ls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;N&quot;</span><span class="p">:</span>
+             <span class="k">pass</span>
+          <span class="k">else</span><span class="p">:</span>
+              <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">ls</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+              <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">ls</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+              <span class="n">g</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">ls</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+              <span class="n">b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">ls</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+              <span class="n">xtemp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ls</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+              <span class="n">rtemp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ls</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+              <span class="n">gtemp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ls</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span>
+              <span class="n">btemp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ls</span><span class="p">[</span><span class="mi">7</span><span class="p">])</span>
+
+      <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xtemp</span><span class="p">)</span>
+      <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rtemp</span><span class="p">)</span>
+      <span class="n">g</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gtemp</span><span class="p">)</span>
+      <span class="n">b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">btemp</span><span class="p">)</span>
+
+      <span class="n">nTable</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+      <span class="n">x</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">x</span> <span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">Float</span><span class="p">)</span>
+      <span class="n">r</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">r</span> <span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">Float</span><span class="p">)</span>
+      <span class="n">g</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">g</span> <span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">Float</span><span class="p">)</span>
+      <span class="n">b</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">b</span> <span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">Float</span><span class="p">)</span>
+      <span class="k">if</span> <span class="n">colorModel</span> <span class="o">==</span> <span class="s">&quot;HSV&quot;</span><span class="p">:</span>
+         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+             <span class="n">rr</span><span class="p">,</span><span class="n">gg</span><span class="p">,</span><span class="n">bb</span> <span class="o">=</span> <span class="n">colorsys</span><span class="o">.</span><span class="n">hsv_to_rgb</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="mf">360.</span><span class="p">,</span><span class="n">g</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+             <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">rr</span> <span class="p">;</span> <span class="n">g</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">gg</span> <span class="p">;</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">bb</span>
+      <span class="k">if</span> <span class="n">colorModel</span> <span class="o">==</span> <span class="s">&quot;HSV&quot;</span><span class="p">:</span>
+         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+             <span class="n">rr</span><span class="p">,</span><span class="n">gg</span><span class="p">,</span><span class="n">bb</span> <span class="o">=</span> <span class="n">colorsys</span><span class="o">.</span><span class="n">hsv_to_rgb</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="mf">360.</span><span class="p">,</span><span class="n">g</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+             <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">rr</span> <span class="p">;</span> <span class="n">g</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">gg</span> <span class="p">;</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">bb</span>
+      <span class="k">if</span> <span class="n">colorModel</span> <span class="o">==</span> <span class="s">&quot;RGB&quot;</span><span class="p">:</span>
+          <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">/</span><span class="mf">255.</span>
+          <span class="n">g</span> <span class="o">=</span> <span class="n">g</span><span class="o">/</span><span class="mf">255.</span>
+          <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">/</span><span class="mf">255.</span>
+      <span class="n">xNorm</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+      <span class="n">red</span> <span class="o">=</span> <span class="p">[]</span>
+      <span class="n">blue</span> <span class="o">=</span> <span class="p">[]</span>
+      <span class="n">green</span> <span class="o">=</span> <span class="p">[]</span>
+      <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)):</span>
+          <span class="n">red</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">xNorm</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+          <span class="n">green</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">xNorm</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">g</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">g</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+          <span class="n">blue</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">xNorm</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+      <span class="n">colorDict</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;red&quot;</span><span class="p">:</span><span class="n">red</span><span class="p">,</span> <span class="s">&quot;green&quot;</span><span class="p">:</span><span class="n">green</span><span class="p">,</span> <span class="s">&quot;blue&quot;</span><span class="p">:</span><span class="n">blue</span><span class="p">}</span>
+      <span class="k">return</span> <span class="p">(</span><span class="n">colorDict</span><span class="p">)</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>CategoryCookbookMatplotlib</p>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)LoadImage.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)Maps.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Matplotlib(2f)Loading_a_colormap_dynamically.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Maps.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)LoadImage.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,638 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Introduction" href="MayaVi(2f)ScriptingMayavi2.html" />
+    <link rel="prev" title="Introduction" href="MayaVi(2f)ScriptingMayavi2(2f)Filters.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)ScriptingMayavi2.html" title="Introduction"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)ScriptingMayavi2(2f)Filters.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>TableOfContents</p>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>Here&#8217;s the real stuff ;-)</p>
+<p>You&#8217;ll be learned here how you can use the various modules in !MayaVi2.</p>
+<p>Note: Some modules can&#8217;t be added for any type of data set. Some work
+only for !StructuredGrid or !StructuredPoints for example (see
+<a class="reference external" href="http://www.vtk.org/pdf/file-formats.pdf">http://www.vtk.org/pdf/file-formats.pdf</a> for more information about VTK
+data type). It will be specified each time is needed.</p>
+<p>Note2: In the !MayaVi2 tree view, the &#8220;Main Modules&#8221; (called &#8220;Modules&#8221;)
+have been separated from the &#8220;Basic Modules&#8221; loading the !ModuleManager.
+Of coutse, you can load all your modules and filters without using the
+!ModuleManager.</p>
+</div>
+<div class="section" id="imageplanewidget-scalarcutplane-sliceunstructuredgrid-module">
+<h1>ImagePlaneWidget/ScalarCutPlane/SliceUnstructuredGrid module<a class="headerlink" href="#imageplanewidget-scalarcutplane-sliceunstructuredgrid-module" title="Permalink to this headline">¶</a></h1>
+<p>The simpliest (and easiest, but not the most impressive ;-) ) way to
+display 3D data is doubtless to slice it on some planes, normal to Ox,
+Oy or Oz axis, or oblique.</p>
+<p>One of the modules you can use to do this is called !ScalarCutPlane. It
+works for any data.</p>
+<p>Note: As the !ImagePlaneWidget module also display scalars data on a
+plane (but it does not &#8220;cut&#8221; data), please see
+[:Cookbook/MayaVi/Examples: Example with a 3D array as numerical source
+(numeric_source.py)] or [:Cookbook/MayaVi/Examples: Example using
+ImagePlaneWidget Module (test.py)] to get more information on how you
+can use this module.</p>
+<p>You have to set several parameters:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;plane&nbsp;normal;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;its&nbsp;origin;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;widget&nbsp;enabled&nbsp;or&nbsp;not:&nbsp;if&nbsp;enabled,&nbsp;you&nbsp;can&nbsp;play&nbsp;with&nbsp;the&nbsp;mouse&nbsp;to&nbsp;modify&nbsp;normal&nbsp;orientation,&nbsp;position,&nbsp;etc.;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;some&nbsp;colors&nbsp;properties.</span></tt></div>
+</div>
+<p>Thus, you have to type:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.scalar_cut_plane</span> <span class="kn">import</span> <span class="n">ScalarCutPlane</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">scp</span> <span class="o">=</span> <span class="n">ScalarCutPlane</span><span class="p">()</span> <span class="c"># set scp as ScalarCutPlane() module</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">scp</span><span class="p">)</span> <span class="c"># add module to the scene</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">normal</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c"># set normal to Ox axis</span>
+<span class="c"># set origin to (i=10, j=25, k=25) i.e. integers for a structured grid</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="c"># set origin to (x=1.0, y=2.5, z=2.5) i.e. reals for unstructured grids</span>
+<span class="c"># scp.implicit_plane.origin = (1.0, 2.5, 2.5)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">diffuse</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="c"># set some color properties</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">ambient</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c">#</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c">#</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">data_range</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_scp.png" src="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_scp.png" />
+<p>Note that if you enable widget, you will be able to translate (move the
+mouse to the red frame), change the normal (move the mouse to the grey
+arrow) of the cutplanes in &#8220;real-time&#8221; :</p>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_scp_widg_en.png" src="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_scp_widg_en.png" />
+<p>You can also display the cutplanes as &#8220;warped surfaces&#8221;, just adding a
+few lines, setting the scale factor and the normals to be computed
+(smoother surface) or not:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">scp</span><span class="o">.</span><span class="n">enable_warp_scalar</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">compute_normals</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">warp_scalar</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">scale_factor</span> <span class="o">=</span> <span class="mi">20</span>
+</pre></div>
+</div>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_scp_warp.png" src="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_scp_warp.png" />
+<p>Of course, you can add as many cutplanes as you want, oblique or not.</p>
+<p>Let&#8217;s see now a little more complex example : we want opacity to be set
+to 0.2 for each cutplane, and contours (#10) for the same cutplanes
+added. Lines above have been changed as below:</p>
+<p>Note: I agree, this is not the best way to write such a code. You can
+obviously write a method to do the same suff. But this is not the
+purpose here.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">### cutplane #1, normal to Ox, opacity = 0.2, representation = surface</span>
+<span class="n">scp</span> <span class="o">=</span> <span class="n">ScalarCutPlane</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">scp</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">normal</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">diffuse</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">ambient</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">data_range</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="c">### cutplane #2, normal to Oy, opacity = 0.2, representation = surface</span>
+<span class="n">scp</span> <span class="o">=</span> <span class="n">ScalarCutPlane</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">scp</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">normal</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">diffuse</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">ambient</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">data_range</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="c">### cutplane #3, normal to Oz, opacity = 0.2, representation = surface</span>
+<span class="n">scp</span> <span class="o">=</span> <span class="n">ScalarCutPlane</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">scp</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">normal</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">diffuse</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">ambient</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">data_range</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="c">### cutplane #4, normal to Ox, representation = contour</span>
+<span class="n">scp</span> <span class="o">=</span> <span class="n">ScalarCutPlane</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">scp</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">normal</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">diffuse</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">ambient</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">enable_contours</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">number_of_contours</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">minimum_contour</span><span class="p">,</span> <span class="n">scp</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">maximum_contour</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">data_range</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="c">### cutplane #5, normal to Oy, representation = contour</span>
+<span class="n">scp</span> <span class="o">=</span> <span class="n">ScalarCutPlane</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">scp</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">normal</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">diffuse</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">ambient</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">enable_contours</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">number_of_contours</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">minimum_contour</span><span class="p">,</span> <span class="n">scp</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">maximum_contour</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">data_range</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="c">### cutplane #6, normal to Oz, representation = contour</span>
+<span class="n">scp</span> <span class="o">=</span> <span class="n">ScalarCutPlane</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">scp</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">normal</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">diffuse</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">ambient</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">enable_contours</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">number_of_contours</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">minimum_contour</span><span class="p">,</span> <span class="n">scp</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">maximum_contour</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">scp</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">data_range</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>which looks like this:</p>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_scp2.png" src="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_scp2.png" />
+<p>Another module that slices grid is called !SliceUnstructuredGrid. As it
+is called, it should work only for unstructured grids. But, because it
+has been tested on a structured grid, even !MayaVi2 complains about it
+with a warning message, it &#8220;works&#8221; even for structured grid (happily for
+our example ;-) )</p>
+<p>In fact, its interest is not really slicing grid, but even more showing
+the structure of your mesh, i.e. your mesh cells. Thus you can see if
+there is not any problem (holes, etc.).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.slice_unstructured_grid</span> <span class="kn">import</span> <span class="n">SliceUnstructuredGr</span>
+<span class="nb">id</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sug</span> <span class="o">=</span> <span class="n">SliceUnstructuredGrid</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">sug</span><span class="p">)</span>
+<span class="c"># unstructured grid so origin coordinates are reals</span>
+<span class="n">sug</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="p">(</span><span class="mf">25.</span><span class="p">,</span> <span class="mf">25.</span><span class="p">,</span> <span class="mf">25.</span><span class="p">)</span>
+<span class="n">sug</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">normal</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">sug</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">sug</span><span class="o">.</span><span class="n">extract_geometry</span><span class="o">.</span><span class="n">extract_boundary_cells</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">sug</span><span class="o">.</span><span class="n">extract_geometry</span><span class="o">.</span><span class="n">extract_inside</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">sug</span><span class="o">.</span><span class="n">extract_geometry</span><span class="o">.</span><span class="n">extract_only_boundary_cells</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">sug</span><span class="o">.</span><span class="n">geom_filter</span><span class="o">.</span><span class="n">cell_clipping</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">sug</span><span class="o">.</span><span class="n">geom_filter</span><span class="o">.</span><span class="n">extent_clipping</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">sug</span><span class="o">.</span><span class="n">geom_filter</span><span class="o">.</span><span class="n">merging</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">sug</span><span class="o">.</span><span class="n">geom_filter</span><span class="o">.</span><span class="n">point_clipping</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">sug</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">representation</span> <span class="o">=</span> <span class="s">&#39;wireframe&#39;</span>
+<span class="n">sug</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">diffuse</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">sug</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">ambient</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">sug</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">sug</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">data_range</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The scene should look like this:</p>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_sug.png" src="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_sug.png" />
+</div>
+<div class="section" id="gridplane-structuredgridoutline-module">
+<h1>GridPlane/StructuredGridOutline module<a class="headerlink" href="#gridplane-structuredgridoutline-module" title="Permalink to this headline">¶</a></h1>
+<p>Using !GridPlane module cuts also your grid, but quite differently from
+!ScalarCutPlane module. You can&#8217;t get normal plane only along Ox, Oy and
+Oz axis, and it works only for structured grids. But unlike
+!ScalarCutPlane module, which always cuts your mesh in a plane,
+!GridPlane cuts through your mesh: if it&#8217;s a conformal mesh, the cut
+won&#8217;t be a plane, but something following the curvature of your mesh.</p>
+<p>The !StructuredGridOutline module does the same as Outline module, but
+for conformal mesh.</p>
+<p>To illustrate how can we use these modules, let&#8217;s consider a example
+provided in the VTKData directory, combxyz.bin &amp; combq.bin files (Plot3D
+format) from the tarball vtkdata-5.0.3.tar.gz you can download
+<a class="reference external" href="http://www.vtk.org/get-software.php#latest">here</a>.</p>
+<p>So, type:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.strucured_grid_outline</span> <span class="kn">import</span> <span class="n">StructuredGridOutlin</span>
+<span class="n">e</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.grid_plane</span> <span class="kn">import</span> <span class="n">GridPlane</span>
+
+<span class="c"># to load Plot3D files format</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.sources.plot3d_reader</span> <span class="kn">import</span> <span class="n">PLOT3DReader</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">src</span> <span class="o">=</span> <span class="n">PLOT3DReader</span><span class="p">()</span>
+<span class="n">src</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="s">&#39;combxyz.bin&#39;</span><span class="p">,</span> <span class="s">&#39;combq.bin&#39;</span><span class="p">)</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+
+<span class="n">sgo</span> <span class="o">=</span> <span class="n">StructuredGridOutline</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">sgo</span><span class="p">)</span>
+
+<span class="n">gp</span> <span class="o">=</span> <span class="n">GridPlane</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;x&#39;</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">scalar_visibility</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">representation</span> <span class="o">=</span> <span class="s">&#39;surface&#39;</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">diffuse</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">ambient</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">gp</span> <span class="o">=</span> <span class="n">GridPlane</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;x&#39;</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">scalar_visibility</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">representation</span> <span class="o">=</span> <span class="s">&#39;surface&#39;</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">diffuse</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">ambient</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">gp</span> <span class="o">=</span> <span class="n">GridPlane</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;x&#39;</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="mi">55</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">scalar_visibility</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">representation</span> <span class="o">=</span> <span class="s">&#39;surface&#39;</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">diffuse</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">ambient</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>The scene is rendered as this:</p>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_sgo_gp.png" src="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_sgo_gp.png" />
+</div>
+<div class="section" id="surface-isosurface-module">
+<h1>Surface/IsoSurface module<a class="headerlink" href="#surface-isosurface-module" title="Permalink to this headline">¶</a></h1>
+<p>Others modules are Surface and !IsoSurface. These modules work with any
+data.</p>
+<p>Surface module does the same as !IsoSurface but displays, automatically,
+several isosurfaces for a given number of values in a given range.</p>
+<p>In fact, you can get the same result with !IsoSurface module, but you
+will have to set each isovalue.</p>
+<p>When several isosurfaces are displayed, using Surface or !IsoSurface
+module, you should set opacity to a value below 1, in order to see all
+isosurfaces.</p>
+<p>Using Surface module is straightforward:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.surface</span> <span class="kn">import</span> <span class="n">Surface</span>
+</pre></div>
+</div>
+<p>then</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">s</span> <span class="o">=</span> <span class="n">Surface</span><span class="p">()</span>
+<span class="n">s</span><span class="o">.</span><span class="n">enable_contours</span> <span class="o">=</span> <span class="bp">True</span> <span class="c"># we want contours enabled</span>
+<span class="n">s</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">auto_contours</span> <span class="o">=</span> <span class="bp">True</span> <span class="c"># we want isovalues automatically well-defined</span>
+<span class="n">s</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">number_of_contours</span> <span class="o">=</span> <span class="mi">10</span> <span class="c"># self-explanatory ;-)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">minimum_contour</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">s</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">maximum_contour</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">s</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">data_range</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The scene should look like this:</p>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_surface.png" src="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_surface.png" />
+<p>Using the !IsoSurface module is not more difficult. As an example, say
+that we want the same result as the Surface module displays.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.iso_surface</span> <span class="kn">import</span> <span class="n">IsoSurface</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">isosurf</span> <span class="o">=</span> <span class="n">IsoSurface</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">isosurf</span><span class="p">)</span>
+<span class="n">isosurf</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">contours</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1111</span><span class="p">,</span> <span class="mf">0.2222</span><span class="p">,</span> <span class="mf">0.3333</span><span class="p">,</span> <span class="mf">0.4444</span><span class="p">,</span> <span class="mf">0.5555</span><span class="p">,</span> <span class="mf">0.6666</span><span class="p">,</span> <span class="mf">0.77</span>
+<span class="mi">77</span><span class="p">,</span> <span class="mf">0.8888</span><span class="p">]</span>
+<span class="n">isosurf</span><span class="o">.</span><span class="n">compute_normals</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">isosurf</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">isosurf</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">data_range</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This yelds the same scene as previous, of course, but now, you can
+control each isovalue separately.</p>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_isosurface.png" src="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_isosurface.png" />
+<p>The funny part is that you can set the minimum/maximum contour for
+Surface or Contours for !IsoSurface in &#8220;real-time&#8221;, moving the
+slide-bar. This is a very useful feature. And can render very nice
+&#8220;dynamic&#8221; scene ! :-)</p>
+</div>
+<div class="section" id="volume-module">
+<h1>Volume module<a class="headerlink" href="#volume-module" title="Permalink to this headline">¶</a></h1>
+<p>It is still quite experimental for me (you can set a lot of parameters),
+so this section will be very short ;-)</p>
+<p>Instead of viewing surfaces, data are displayed in the whole volume.</p>
+<p>Begin to import the required module:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.volume</span> <span class="kn">import</span> <span class="n">Volume</span>
+</pre></div>
+</div>
+<p>and then, add it to the source as usual:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">v</span> <span class="o">=</span> <span class="n">Volume</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">lut_manager</span><span class="o">.</span><span class="n">show_scalar_bar</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">v</span><span class="o">.</span><span class="n">lut_manager</span><span class="o">.</span><span class="n">scalar_bar</span><span class="o">.</span><span class="n">orientation</span> <span class="o">=</span> <span class="s">&#39;vertical&#39;</span>
+<span class="n">v</span><span class="o">.</span><span class="n">lut_manager</span><span class="o">.</span><span class="n">scalar_bar</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">v</span><span class="o">.</span><span class="n">lut_manager</span><span class="o">.</span><span class="n">scalar_bar</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="n">v</span><span class="o">.</span><span class="n">lut_manager</span><span class="o">.</span><span class="n">scalar_bar</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">lut_manager</span><span class="o">.</span><span class="n">scalar_bar</span><span class="o">.</span><span class="n">label_text_property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>
+<span class="n">v</span><span class="o">.</span><span class="n">lut_manager</span><span class="o">.</span><span class="n">scalar_bar</span><span class="o">.</span><span class="n">title_text_property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>
+<span class="n">v</span><span class="o">.</span><span class="n">lut_manager</span><span class="o">.</span><span class="n">number_of_labels</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">v</span><span class="o">.</span><span class="n">lut_manager</span><span class="o">.</span><span class="n">data_name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+</pre></div>
+</div>
+<p>Note that the Volume module has a &#8220;Color Transfer Function&#8221;, which is
+quite different from the !LookUp Table used by the others modules.</p>
+<p>The rendered scene should look like this (thanks to Prabhu to have made
+the CTF similar to the LUT) :</p>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_volume.png" src="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_volume.png" />
+</div>
+<div class="section" id="vectors-glyph-vectorcutplane-warpvectorcutplane-module">
+<h1>Vectors/Glyph/VectorCutPlane/WarpVectorCutPlane module<a class="headerlink" href="#vectors-glyph-vectorcutplane-warpvectorcutplane-module" title="Permalink to this headline">¶</a></h1>
+<p>Until now, we have only dealt with scalar values. You can also display
+values as vectors. You can use one of the three following modules:</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;Vectors&nbsp;module:&nbsp;scale&nbsp;and&nbsp;color&nbsp;are&nbsp;set&nbsp;by&nbsp;vectors&nbsp;data,&nbsp;i.e.&nbsp;a&nbsp;3D&nbsp;array&nbsp;vectors&nbsp;field;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;Glyph&nbsp;module:&nbsp;scale&nbsp;and&nbsp;color&nbsp;are&nbsp;set&nbsp;by&nbsp;scalar&nbsp;data;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;!VectorCutPlane&nbsp;module;&nbsp;in&nbsp;this&nbsp;case,&nbsp;vectors&nbsp;are&nbsp;not&nbsp;diplayed&nbsp;in&nbsp;the&nbsp;whole&nbsp;volume,&nbsp;but&nbsp;only&nbsp;on&nbsp;cutplanes,&nbsp;as&nbsp;!ScalarCutPlane&nbsp;module&nbsp;does&nbsp;with&nbsp;scalar&nbsp;values.</span></tt></p>
+<p>You can set several parameters for these modules, in concern with arrows
+shape, etc.</p>
+<p>First, it depends of the number of points in your volume, but you are
+advised to decimate your data. If you don&#8217;t, you should see nothing all
+but a lot of arrows everywhere, and thus loss the pertinent information.
+You can choose a randomly, or not, decimation.</p>
+<p>Second, you can choose the shape of your vectors, amongst the following
+list: 2D Glyph or Arrow, Cone, Cylinder, Sphere and Cube 3D vector
+shapes.</p>
+<p>Third, you can set some parameters for the choosen shape. For example,
+using the Arrow shape, you can set the following properties for the
+shaft and the tip:</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;the&nbsp;shaft&nbsp;radius;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;the&nbsp;shaft&nbsp;resolution&nbsp;(number&nbsp;of&nbsp;polygons);</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;the&nbsp;tip&nbsp;length;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;the&nbsp;tip&nbsp;radius;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;the&nbsp;tip&nbsp;resolution;</span></tt></p>
+<p>You can also set the vector position, between &#8220;tail&#8221;, &#8220;centered&#8221; and
+&#8220;head&#8221;, the scale mode, the color mode, the scale factor (how big your
+vectors will be displayed), etc.</p>
+<p>Let&#8217;s see now how one can do this.</p>
+<p>First, import the required module.</p>
+<p>For Vectors module,</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.vectors</span> <span class="kn">import</span> <span class="n">Vectors</span>
+</pre></div>
+</div>
+<p>For Glyph module,</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.glyph</span> <span class="kn">import</span> <span class="n">Glyph</span>
+</pre></div>
+</div>
+<p>For !VectorCutPlane module,</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.vector_cut_plane</span> <span class="kn">import</span> <span class="n">VectorCutPlane</span>
+</pre></div>
+</div>
+<p>In fact, you will see that these three modules use the same objects and
+methods. Only default values differ.</p>
+<p>For instance, for Vectors module, you can type:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">v</span> <span class="o">=</span> <span class="n">Vectors</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">mask_input_points</span> <span class="o">=</span> <span class="bp">True</span>             <span class="c"># we want to decimate our data...</span>
+<span class="n">v</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">mask_points</span><span class="o">.</span><span class="n">on_ratio</span> <span class="o">=</span> <span class="mi">100</span>           <span class="c"># ...by a ratio of 100</span>
+<span class="n">v</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">mask_points</span><span class="o">.</span><span class="n">random_mode</span> <span class="o">=</span> <span class="bp">True</span>       <span class="c"># I want a randomly decimation</span>
+<span class="n">v</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_source</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c"># I like ArrowSource ;-)</span>
+<span class="c"># following values are the default values: tweak your own !</span>
+<span class="n">v</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_source</span><span class="o">.</span><span class="n">shaft_radius</span> <span class="o">=</span> <span class="mf">0.03</span>
+<span class="n">v</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_source</span><span class="o">.</span><span class="n">shaft_resolution</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">v</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_source</span><span class="o">.</span><span class="n">tip_length</span> <span class="o">=</span> <span class="mf">0.35</span>
+<span class="n">v</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_source</span><span class="o">.</span><span class="n">tip_radius</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">v</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_source</span><span class="o">.</span><span class="n">tip_resolution</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">v</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">scale_factor</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">v</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_position</span> <span class="o">=</span> <span class="s">&#39;tail&#39;</span>
+<span class="n">v</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">scale_mode</span> <span class="o">=</span> <span class="s">&#39;scale_by_vector&#39;</span>
+<span class="n">v</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">color_mode</span> <span class="o">=</span> <span class="s">&#39;color_by_vector&#39;</span>
+<span class="c">### if you use Glyph module, here are the default values</span>
+<span class="c"># v.glyph.glyph_position = &#39;center&#39;</span>
+<span class="c"># v.glyph.scale_mode = &#39;scale_by_scalar&#39;</span>
+<span class="c"># v.glyph.color_mode = &#39;color_by_scalar&#39;</span>
+</pre></div>
+</div>
+<p>If we consider, once again ;-), the same 3D data already shown before,
+but this time, with vectors instead of scalars data, the scene should
+look like this:</p>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_vectors.png" src="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_vectors.png" />
+<p>For the !VectorCutPlane module, you can set the same properties as above
+plus the properties of the !ScalarCutPlane module such as
+implicit_plane.normal, implicit_plane.origin,
+implicit_plane.widget.enabled, etc:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">vcp</span> <span class="o">=</span> <span class="n">VectorCutPlane</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">vcp</span><span class="p">)</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">mask_input_points</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">mask_points</span><span class="o">.</span><span class="n">on_ratio</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">mask_points</span><span class="o">.</span><span class="n">random_mode</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_source</span> <span class="o">=</span> <span class="n">vcp</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_source</span><span class="o">.</span><span class="n">shaft_radius</span> <span class="o">=</span> <span class="mf">0.03</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_source</span><span class="o">.</span><span class="n">shaft_resolution</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_source</span><span class="o">.</span><span class="n">tip_length</span> <span class="o">=</span> <span class="mf">0.35</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_source</span><span class="o">.</span><span class="n">tip_radius</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_source</span><span class="o">.</span><span class="n">tip_resolution</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">scale_factor</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_position</span> <span class="o">=</span> <span class="s">&#39;tail&#39;</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">scale_mode</span> <span class="o">=</span> <span class="s">&#39;scale_by_vector&#39;</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">color_mode</span> <span class="o">=</span> <span class="s">&#39;color_by_vector&#39;</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">normal</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c"># set normal to Ox axis</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span> <span class="c"># set origin to (i=10, j=25, k=25) for</span>
+<span class="n">a</span> <span class="n">structured</span> <span class="n">grid</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">diffuse</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="c"># set some color properties</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">ambient</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c">#</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c">#</span>
+<span class="n">vcp</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">vector_lut_manager</span><span class="o">.</span><span class="n">data_range</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This should render this scene:</p>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_vcp.png" src="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_vcp.png" />
+<p>You can also warp a cutplane according to the vectors field. To do this,
+you have to load another module, instead of !VectorCutPlane, called
+!WarpVectorCutPlane.</p>
+<p>Type:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.warp_vector_cut_plane</span> <span class="kn">import</span> <span class="n">WarpVectorCutPlane</span>
+</pre></div>
+</div>
+<p>then</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">wvcp</span> <span class="o">=</span> <span class="n">WarpVectorCutPlane</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">wvcp</span><span class="p">)</span>
+<span class="n">wvcp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">normal</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c"># set normal to Ox axis</span>
+<span class="n">wvcp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span> <span class="c"># set origin to (i=10, j=25, k=25) for</span>
+ <span class="n">a</span> <span class="n">structured</span> <span class="n">grid</span>
+<span class="n">wvcp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">wvcp</span><span class="o">.</span><span class="n">compute_normals</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">wvcp</span><span class="o">.</span><span class="n">warp_vector</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">scale_factor</span> <span class="o">=</span> <span class="mi">10</span>
+</pre></div>
+</div>
+<p>You should get this (compare to the warped surface with !ScalarCutPlane
+module):</p>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_warpvcp.png" src="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_warpvcp.png" />
+</div>
+<div class="section" id="streamline-module">
+<h1>Streamline module<a class="headerlink" href="#streamline-module" title="Permalink to this headline">¶</a></h1>
+<p>Another way to display vectors fields is to use the Streamline module.</p>
+<p>We consider here others Plot3D files: postxyz.bin &amp; postq.bin that you
+can download <a class="reference external" href="http://www.vtk.org/files/VTKTextbook/Data.tgz">here</a>.
+You can find some screenshots using these files on the VTK home page
+<a class="reference external" href="http://www.vtk.org">here</a>.</p>
+<p>You can set several parameters for this module: for instance, the type
+of the streamline (tube, ribbon or line) with its properties, and the
+&#8220;seed&#8221;.</p>
+<p>We also use the !GridPlane module in this example:</p>
+<p>Begin to import the required module:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.sources.plot3d_reader</span> <span class="kn">import</span> <span class="n">PLOT3DReader</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.streamline</span> <span class="kn">import</span> <span class="n">Streamline</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.grid_plane</span> <span class="kn">import</span> <span class="n">GridPlane</span>
+</pre></div>
+</div>
+<p>In this example, we want streamlines displayed as tubes, with 10 sides,
+and the seed set to the line seed. We also choose to display the
+&#8220;Kinetic Energy&#8221; part of the Plot3D files.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">src</span> <span class="o">=</span> <span class="n">PLOT3DReader</span><span class="p">()</span>
+<span class="n">src</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="s">&#39;postxyz.bin&#39;</span><span class="p">,</span> <span class="s">&#39;postq.bin&#39;</span><span class="p">)</span>
+<span class="n">src</span><span class="o">.</span><span class="n">scalars_name</span> <span class="o">=</span> <span class="s">&quot;kinetic energy&quot;</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+
+<span class="n">gp</span> <span class="o">=</span> <span class="n">GridPlane</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;x&#39;</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">scalar_visibility</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">representation</span> <span class="o">=</span> <span class="s">&#39;surface&#39;</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">diffuse</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">ambient</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">gp</span> <span class="o">=</span> <span class="n">GridPlane</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;z&#39;</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">scalar_visibility</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">representation</span> <span class="o">=</span> <span class="s">&#39;wireframe&#39;</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">diffuse</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">ambient</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">strl</span> <span class="o">=</span> <span class="n">Streamline</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">strl</span><span class="p">)</span>
+<span class="n">strl</span><span class="o">.</span><span class="n">streamline_type</span> <span class="o">=</span> <span class="s">&quot;tube&quot;</span> <span class="c"># tube, ribbon or line</span>
+<span class="n">strl</span><span class="o">.</span><span class="n">tube_filter</span><span class="o">.</span><span class="n">number_of_sides</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">strl</span><span class="o">.</span><span class="n">tube_filter</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">strl</span><span class="o">.</span><span class="n">seed</span><span class="o">.</span><span class="n">widget</span> <span class="o">=</span> <span class="n">strl</span><span class="o">.</span><span class="n">seed</span><span class="o">.</span><span class="n">widget_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c"># [Sphere, Line, Plane, Point]</span>
+<span class="n">strl</span><span class="o">.</span><span class="n">seed</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">align</span> <span class="o">=</span> <span class="s">&quot;z_axis&quot;</span> <span class="c"># or &quot;x_axis&quot;, &quot;y_axis&quot;</span>
+<span class="n">strl</span><span class="o">.</span><span class="n">seed</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">point1</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">strl</span><span class="o">.</span><span class="n">seed</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">point2</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">4.82</span><span class="p">)</span>
+<span class="n">strl</span><span class="o">.</span><span class="n">seed</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">strl</span><span class="o">.</span><span class="n">seed</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">False</span>
+</pre></div>
+</div>
+<p>This should look like:</p>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_streamline.png" src="MayaVi(2f)ScriptingMayavi2(2f)MainModules_attachments/module_streamline.png" />
+<p>Note: you can also see an example of using the Streamline module in
+[:Cookbook/MayaVi/Examples: Cookbook/MayaVi/Examples].</p>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a></li>
+<li><a class="reference internal" href="#imageplanewidget-scalarcutplane-sliceunstructuredgrid-module">ImagePlaneWidget/ScalarCutPlane/SliceUnstructuredGrid module</a></li>
+<li><a class="reference internal" href="#gridplane-structuredgridoutline-module">GridPlane/StructuredGridOutline module</a></li>
+<li><a class="reference internal" href="#surface-isosurface-module">Surface/IsoSurface module</a></li>
+<li><a class="reference internal" href="#volume-module">Volume module</a></li>
+<li><a class="reference internal" href="#vectors-glyph-vectorcutplane-warpvectorcutplane-module">Vectors/Glyph/VectorCutPlane/WarpVectorCutPlane module</a></li>
+<li><a class="reference internal" href="#streamline-module">Streamline module</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="MayaVi(2f)ScriptingMayavi2(2f)Filters.html"
+                        title="previous chapter">Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="MayaVi(2f)ScriptingMayavi2.html"
+                        title="next chapter">Introduction</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/MayaVi(2f)ScriptingMayavi2(2f)MainModules.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)ScriptingMayavi2.html" title="Introduction"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)ScriptingMayavi2(2f)Filters.html" title="Introduction"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,199 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Cookbook/Matplotlib/Legend &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="Matplotlib(2f)LoadImage.html" />
+    <link rel="prev" title="Producing Graphs for Publication using LaTeX" href="Matplotlib(2f)LaTeX_Examples.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)LoadImage.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)LaTeX_Examples.html" title="Producing Graphs for Publication using LaTeX"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="cookbook-matplotlib-legend">
+<h1>Cookbook/Matplotlib/Legend<a class="headerlink" href="#cookbook-matplotlib-legend" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="legends-for-overlaid-lines-and-markers">
+<h2>Legends for overlaid lines and markers<a class="headerlink" href="#legends-for-overlaid-lines-and-markers" title="Permalink to this headline">¶</a></h2>
+<p>If you have a lot of points to plot, you may want to set a marker only
+once every <em>n</em> points, e.g.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s">&#39;-r&#39;</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[::</span><span class="mi">20</span><span class="p">],</span> <span class="n">y</span><span class="p">[::</span><span class="mi">20</span><span class="p">],</span> <span class="s">&#39;ro&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then the automatic legend sees this as two different plots. One approach
+is to create an extra line object that is not plotted anywhere but used
+only for the legend:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <span class="n">Line2D</span>
+<span class="n">line</span> <span class="o">=</span> <span class="n">Line2D</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">linestyle</span><span class="o">=</span><span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s">&#39;o&#39;</span><span class="p">)</span>
+<span class="n">legend</span><span class="p">((</span><span class="n">line</span><span class="p">,),</span> <span class="p">(</span><span class="n">label</span><span class="p">,))</span>
+</pre></div>
+</div>
+<p>Another possibility is to modify the line object within the legend:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">line</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s">&#39;-r&#39;</span><span class="p">)</span>
+<span class="n">markers</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[::</span><span class="mi">20</span><span class="p">],</span> <span class="n">y</span><span class="p">[::</span><span class="mi">20</span><span class="p">],</span> <span class="s">&#39;ro&#39;</span><span class="p">)</span>
+<span class="n">lgd</span> <span class="o">=</span> <span class="n">legend</span><span class="p">([</span><span class="n">line</span><span class="p">],</span> <span class="p">[</span><span class="s">&#39;data&#39;</span><span class="p">],</span> <span class="n">numpoints</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">lgd</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_marker</span><span class="p">(</span><span class="s">&#39;o&#39;</span><span class="p">)</span>
+<span class="n">draw</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="legend-outside-plot">
+<h2>Legend outside plot<a class="headerlink" href="#legend-outside-plot" title="Permalink to this headline">¶</a></h2>
+<p>There is no nice easy way to add a legend outside (to the right of) your
+plot, but if you set the axes right in the first place, it works OK:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">figure</span><span class="p">()</span>
+<span class="n">axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.71</span><span class="p">,</span><span class="mf">0.8</span><span class="p">])</span>
+<span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;line 1&quot;</span><span class="p">)</span>
+<span class="n">hold</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;line 2&quot;</span><span class="p">)</span>
+<span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="p">(</span><span class="mf">1.03</span><span class="p">,</span><span class="mf">0.2</span><span class="p">))</span>
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="removing-a-legend-from-a-plot">
+<h2>Removing a legend from a plot<a class="headerlink" href="#removing-a-legend-from-a-plot" title="Permalink to this headline">¶</a></h2>
+<p>One can simply set the attribute of the axes to and redraw:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ax</span> <span class="o">=</span> <span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend_</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">draw</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If you find yourself doing this often use a function such as</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">remove_legend</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Remove legend for ax or the current axes.&quot;&quot;&quot;</span>
+
+    <span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">gca</span><span class="p">,</span> <span class="n">draw</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">gca</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend_</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">draw</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(Source: <a class="reference external" href="http://osdir.com/ml/python.matplotlib.general/2005-07/msg00285.html">Re: How to delete legend with matplotlib OO from a
+graph?</a>)</p>
+</div>
+<div class="section" id="changing-the-font-size-of-legend-text">
+<h2>Changing the font size of legend text<a class="headerlink" href="#changing-the-font-size-of-legend-text" title="Permalink to this headline">¶</a></h2>
+<p>Note that to set the default font size, one can change the <em>legend.size</em>
+property in the matplotlib rc parameters file.</p>
+<p>To change the font size for just one plot, use the
+matplotlib.font_manager.FontProperties argument, <em>prop</em>, for the legend
+creation.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">x</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">handles</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;label1&quot;</span><span class="p">],</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;size&quot;</span><span class="p">:</span><span class="mi">12</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Cookbook/Matplotlib/Legend</a><ul>
+<li><a class="reference internal" href="#legends-for-overlaid-lines-and-markers">Legends for overlaid lines and markers</a></li>
+<li><a class="reference internal" href="#legend-outside-plot">Legend outside plot</a></li>
+<li><a class="reference internal" href="#removing-a-legend-from-a-plot">Removing a legend from a plot</a></li>
+<li><a class="reference internal" href="#changing-the-font-size-of-legend-text">Changing the font size of legend text</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)LaTeX_Examples.html"
+                        title="previous chapter">Producing Graphs for Publication using LaTeX</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)LoadImage.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Matplotlib(2f)Legend.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)LoadImage.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)LaTeX_Examples.html" title="Producing Graphs for Publication using LaTeX"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

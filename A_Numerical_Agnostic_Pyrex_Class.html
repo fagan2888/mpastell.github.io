@@ -1,0 +1,378 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Overview &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="A_Pyrex_Agnostic_Class.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="ASTER.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="A_Pyrex_Agnostic_Class.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ASTER.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p>Here is presented <em>!NumInd</em> (Numerical Independent Extension), an
+example of a class written in
+<a class="reference external" href="http://nz.cosc.canterbury.ac.nz/~greg/python/Pyrex/">Pyrex</a>. This
+class can wrap information from any object coming from Numeric, numarray
+or !NumPy without any dependency of those packages for compiling the
+extension. It lets you to create a uniform interface in both Python and
+C spaces. In addition, you can personalize it by adding new methods or
+properties.</p>
+<p>For this extension to work, you need a numerical package that supports
+the <a class="reference external" href="http://numpy.scipy.org/array_interface.shtml">array interface</a>.
+Any of these versions would be good enough:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;!NumPy&nbsp;(all&nbsp;versions)</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Numeric&nbsp;(&gt;=24.2)</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;numarray&nbsp;(&gt;=1.5.1)</span></tt></div>
+</div>
+</div>
+<div class="section" id="numind-a-numerical-independent-pyrex-based-extension">
+<h1>NumInd: a Numerical Independent Pyrex-based extension<a class="headerlink" href="#numind-a-numerical-independent-pyrex-based-extension" title="Permalink to this headline">¶</a></h1>
+<p>The !NumInd class shown below takes a Numeric/numarray/!NumPy object and
+creates another object that can be accessed in an uniform way from both
+Python and Pyrex (and hence, C) space. Moreover, it exposes an array
+interface so that you can re-wrap this object with any
+Numeric/numarray/!NumPy. All of these features are achieved without
+actually copying the data itself. This opens the door to the possibility
+to develop applications that supports the Numeric/numarray/!NumPy triad
+without a need to compile against any of them.</p>
+<p><strong>Warning</strong>: This class supports mainly homogeneous datasets, but it
+wouldn&#8217;t be difficult to support recarrays as well. This is a work
+in-progress anyway.</p>
+<ol class="arabic simple">
+<li><ol class="first arabic">
+<li>pyrex should pass through python parser:</li>
+</ol>
+</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># This Pyrex extension class can take a numpy/numarray/Numeric object</span>
+<span class="c"># as a parameter and wrap it so that its information can be accessed</span>
+<span class="c"># in a standard way, both in Python space and C space.</span>
+<span class="c">#</span>
+<span class="c"># Heavily based on an idea of Andrew Straw. See</span>
+<span class="c"># http://www.scipy.org/Cookbook/ArrayStruct_and_Pyrex</span>
+<span class="c"># Very inspiring! :-)</span>
+<span class="c">#</span>
+<span class="c"># First version: 2006-03-25</span>
+<span class="c"># Last update: 2006-03-25</span>
+<span class="c"># Author: Francesc Altet</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">cdef</span> <span class="n">extern</span> <span class="kn">from</span> <span class="s">&quot;Python.h&quot;</span><span class="p">:</span>
+    <span class="n">ctypedef</span> <span class="nb">int</span> <span class="n">Py_intptr_t</span>
+    <span class="nb">long</span> <span class="n">PyInt_AsLong</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+    <span class="n">void</span> <span class="n">Py_INCREF</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+    <span class="n">void</span> <span class="n">Py_DECREF</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+    <span class="nb">object</span> <span class="n">PyCObject_FromVoidPtrAndDesc</span><span class="p">(</span><span class="n">void</span><span class="o">*</span> <span class="n">cobj</span><span class="p">,</span> <span class="n">void</span><span class="o">*</span> <span class="n">desc</span><span class="p">,</span>
+                                        <span class="n">void</span> <span class="p">(</span><span class="o">*</span><span class="n">destr</span><span class="p">)(</span><span class="n">void</span> <span class="o">*</span><span class="p">,</span> <span class="n">void</span> <span class="o">*</span><span class="p">))</span>
+
+<span class="n">cdef</span> <span class="n">extern</span> <span class="kn">from</span> <span class="s">&quot;stdlib.h&quot;</span><span class="p">:</span>
+    <span class="n">ctypedef</span> <span class="nb">long</span> <span class="n">size_t</span>
+    <span class="n">ctypedef</span> <span class="nb">long</span> <span class="n">intptr_t</span>
+    <span class="n">void</span> <span class="o">*</span><span class="n">malloc</span><span class="p">(</span><span class="n">size_t</span> <span class="n">size</span><span class="p">)</span>
+    <span class="n">void</span> <span class="n">free</span><span class="p">(</span><span class="n">void</span><span class="o">*</span> <span class="n">ptr</span><span class="p">)</span>
+
+<span class="c"># for PyArrayInterface:</span>
+<span class="n">CONTIGUOUS</span><span class="o">=</span><span class="mh">0x01</span>
+<span class="n">FORTRAN</span><span class="o">=</span><span class="mh">0x02</span>
+<span class="n">ALIGNED</span><span class="o">=</span><span class="mh">0x100</span>
+<span class="n">NOTSWAPPED</span><span class="o">=</span><span class="mh">0x200</span>
+<span class="n">WRITEABLE</span><span class="o">=</span><span class="mh">0x400</span>
+
+<span class="c"># byteorder dictionary</span>
+<span class="n">byteorder</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;&lt;&#39;</span><span class="p">:</span><span class="s">&#39;little&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">:</span><span class="s">&#39;big&#39;</span><span class="p">}</span>
+
+<span class="n">ctypedef</span> <span class="n">struct</span> <span class="n">PyArrayInterface</span><span class="p">:</span>
+    <span class="nb">int</span> <span class="n">version</span>          <span class="c"># contains the integer 2 as a sanity check</span>
+    <span class="nb">int</span> <span class="n">nd</span>               <span class="c"># number of dimensions</span>
+    <span class="n">char</span> <span class="n">typekind</span>        <span class="c"># kind in array --- character code of typestr</span>
+    <span class="nb">int</span> <span class="n">itemsize</span>         <span class="c"># size of each element</span>
+    <span class="nb">int</span> <span class="n">flags</span>            <span class="c"># flags indicating how the data should be interpreted</span>
+    <span class="n">Py_intptr_t</span> <span class="o">*</span><span class="n">shape</span>   <span class="c"># A length-nd array of shape information</span>
+    <span class="n">Py_intptr_t</span> <span class="o">*</span><span class="n">strides</span> <span class="c"># A length-nd array of stride information</span>
+    <span class="n">void</span> <span class="o">*</span><span class="n">data</span>           <span class="c"># A pointer to the first element of the array</span>
+
+<span class="n">cdef</span> <span class="n">void</span> <span class="n">free_array_interface</span><span class="p">(</span><span class="n">void</span> <span class="o">*</span><span class="n">ptr</span><span class="p">,</span> <span class="n">void</span> <span class="o">*</span><span class="n">arr</span><span class="p">):</span>
+    <span class="n">arrpy</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="n">arr</span>
+    <span class="n">Py_DECREF</span><span class="p">(</span><span class="n">arrpy</span><span class="p">)</span>
+
+
+<span class="n">cdef</span> <span class="k">class</span> <span class="nc">NumInd</span><span class="p">:</span>
+    <span class="n">cdef</span> <span class="n">void</span> <span class="o">*</span><span class="n">data</span>
+    <span class="n">cdef</span> <span class="nb">int</span> <span class="n">_nd</span>
+    <span class="n">cdef</span> <span class="n">Py_intptr_t</span> <span class="o">*</span><span class="n">_shape</span><span class="p">,</span> <span class="o">*</span><span class="n">_strides</span>
+    <span class="n">cdef</span> <span class="n">PyArrayInterface</span> <span class="o">*</span><span class="n">inter</span>
+    <span class="n">cdef</span> <span class="nb">object</span> <span class="n">_t_shape</span><span class="p">,</span> <span class="n">_t_strides</span><span class="p">,</span> <span class="n">_undarray</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">object</span> <span class="n">undarray</span><span class="p">):</span>
+        <span class="n">cdef</span> <span class="nb">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">stride</span>
+        <span class="n">cdef</span> <span class="nb">object</span> <span class="n">array_shape</span><span class="p">,</span> <span class="n">array_strides</span>
+
+        <span class="c"># Keep a reference to the underlying object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_undarray</span> <span class="o">=</span> <span class="n">undarray</span>
+        <span class="c"># Get the shape and strides C arrays</span>
+        <span class="n">array_shape</span> <span class="o">=</span> <span class="n">undarray</span><span class="o">.</span><span class="n">__array_shape__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_t_shape</span> <span class="o">=</span> <span class="n">array_shape</span>
+        <span class="c"># The number of dimensions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nd</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">array_shape</span><span class="p">)</span>
+        <span class="c"># The shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Py_intptr_t</span> <span class="o">*&gt;</span><span class="n">malloc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nd</span><span class="o">*</span><span class="n">sizeof</span><span class="p">(</span><span class="n">Py_intptr_t</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="kn">from</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nd</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="c"># The strides (compute them if needed)</span>
+        <span class="n">array_strides</span> <span class="o">=</span> <span class="n">undarray</span><span class="o">.</span><span class="n">__array_strides__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_t_strides</span> <span class="o">=</span> <span class="n">array_strides</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_strides</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Py_intptr_t</span> <span class="o">*&gt;</span><span class="n">malloc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nd</span><span class="o">*</span><span class="n">sizeof</span><span class="p">(</span><span class="n">Py_intptr_t</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">array_strides</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="kn">from</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nd</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_strides</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">array_strides</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># strides is None. Compute them explicitely.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_t_strides</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nd</span>
+            <span class="n">stride</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">typestr</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="kn">from</span> <span class="nn">self._nd</span> <span class="o">&gt;</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_strides</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">stride</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_t_strides</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">stride</span>
+                <span class="n">stride</span> <span class="o">=</span> <span class="n">stride</span> <span class="o">*</span> <span class="n">array_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_t_strides</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_t_strides</span><span class="p">)</span>
+        <span class="c"># Populate the C array interface</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_array_interface</span><span class="p">()</span>
+
+    <span class="c"># Properties. This are visible from Python space.</span>
+    <span class="c"># Add as many as you want.</span>
+
+    <span class="nb">property</span> <span class="n">undarray</span><span class="p">:</span>  <span class="c"># Returns the underlying array</span>
+        <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_undarray</span>
+
+    <span class="nb">property</span> <span class="n">shape</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t_shape</span>
+
+    <span class="nb">property</span> <span class="n">strides</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t_strides</span>
+
+    <span class="nb">property</span> <span class="n">typestr</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_undarray</span><span class="o">.</span><span class="n">__array_typestr__</span>
+
+    <span class="nb">property</span> <span class="n">readonly</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_undarray</span><span class="o">.</span><span class="n">__array_data__</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nb">property</span> <span class="n">__array_struct__</span><span class="p">:</span>
+        <span class="s">&quot;Allows other numerical packages to obtain a new object.&quot;</span>
+        <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_undarray</span><span class="p">,</span> <span class="s">&quot;__array_struct__&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_undarray</span><span class="o">.</span><span class="n">__array_struct__</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># No an underlying array with __array_struct__</span>
+                <span class="c"># Deliver an equivalent PyCObject.</span>
+                <span class="n">Py_INCREF</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">PyCObject_FromVoidPtrAndDesc</span><span class="p">(</span><span class="o">&lt;</span><span class="n">void</span><span class="o">*&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">inter</span><span class="p">,</span>
+                                                    <span class="o">&lt;</span><span class="n">void</span><span class="o">*&gt;</span><span class="bp">self</span><span class="p">,</span>
+                                                    <span class="n">free_array_interface</span><span class="p">)</span>
+
+    <span class="n">cdef</span> <span class="n">PyArrayInterface</span> <span class="o">*</span><span class="n">_get_array_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">&quot;Populates the array interface&quot;</span>
+        <span class="n">cdef</span> <span class="n">PyArrayInterface</span> <span class="o">*</span><span class="n">inter</span>
+        <span class="n">cdef</span> <span class="nb">object</span> <span class="n">undarray</span><span class="p">,</span> <span class="n">data_address</span><span class="p">,</span> <span class="n">typestr</span>
+
+        <span class="n">undarray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_undarray</span>
+        <span class="n">typestr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">typestr</span>
+        <span class="n">inter</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">PyArrayInterface</span> <span class="o">*&gt;</span><span class="n">malloc</span><span class="p">(</span><span class="n">sizeof</span><span class="p">(</span><span class="n">PyArrayInterface</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">inter</span> <span class="ow">is</span> <span class="n">NULL</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">MemoryError</span><span class="p">()</span>
+
+        <span class="n">inter</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">inter</span><span class="o">.</span><span class="n">nd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nd</span>
+        <span class="n">inter</span><span class="o">.</span><span class="n">typekind</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="n">typestr</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">inter</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">typestr</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="n">inter</span><span class="o">.</span><span class="n">flags</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c"># initialize flags</span>
+        <span class="k">if</span> <span class="n">typestr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;|&#39;</span><span class="p">:</span>
+            <span class="n">inter</span><span class="o">.</span><span class="n">flags</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">flags</span> <span class="o">|</span> <span class="n">NOTSWAPPED</span>
+        <span class="k">elif</span> <span class="n">byteorder</span><span class="p">[</span><span class="n">typestr</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">==</span> <span class="n">sys</span><span class="o">.</span><span class="n">byteorder</span><span class="p">:</span>
+            <span class="n">inter</span><span class="o">.</span><span class="n">flags</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">flags</span> <span class="o">|</span> <span class="n">NOTSWAPPED</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly</span><span class="p">:</span>
+            <span class="n">inter</span><span class="o">.</span><span class="n">flags</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">flags</span> <span class="o">|</span> <span class="n">WRITEABLE</span>
+        <span class="c"># XXX how to determine the ALIGNED flag?</span>
+        <span class="n">inter</span><span class="o">.</span><span class="n">strides</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strides</span>
+        <span class="n">inter</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span>
+        <span class="c"># Get the data address</span>
+        <span class="n">data_address</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">undarray</span><span class="o">.</span><span class="n">__array_data__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
+        <span class="n">inter</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">void</span><span class="o">*&gt;</span><span class="n">PyInt_AsLong</span><span class="p">(</span><span class="n">data_address</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">inter</span>
+
+
+    <span class="c"># This is just an example on how to modify the data in C space</span>
+    <span class="c"># (and at C speed! :-)</span>
+    <span class="k">def</span> <span class="nf">modify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">&quot;Modify the values of the underlying array&quot;</span>
+        <span class="n">cdef</span> <span class="nb">int</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="n">i</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nb">int</span> <span class="o">*&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">inter</span><span class="o">.</span><span class="n">data</span>
+        <span class="c"># Modify just the first row</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="kn">from</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">inter</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">inter</span><span class="o">.</span><span class="n">nd</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">__dealloc__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">free</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">)</span>
+        <span class="n">free</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_strides</span><span class="p">)</span>
+        <span class="n">free</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inter</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="an-example-of-use">
+<h1>An example of use<a class="headerlink" href="#an-example-of-use" title="Permalink to this headline">¶</a></h1>
+<p>In order to get an idea of what the above extension offers, try to run
+this script against the !NumInd extension:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">Numeric</span>
+<span class="kn">import</span> <span class="nn">numarray</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">numind</span>
+
+<span class="c"># Create an arbitrary object for each package</span>
+<span class="n">nu</span><span class="o">=</span><span class="n">Numeric</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">nu</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">na</span><span class="o">=</span><span class="n">numarray</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">na</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">np</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c"># Wrap the different objects with the NumInd class</span>
+<span class="c"># and execute some actions on it</span>
+<span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="p">[</span><span class="n">nu</span><span class="p">,</span> <span class="n">na</span><span class="p">,</span> <span class="n">np</span><span class="p">]:</span>
+    <span class="n">ni</span> <span class="o">=</span> <span class="n">numind</span><span class="o">.</span><span class="n">NumInd</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;original object type--&gt;&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">ni</span><span class="o">.</span><span class="n">undarray</span><span class="p">)</span>
+    <span class="c"># Print some values</span>
+    <span class="k">print</span> <span class="s">&quot;typestr --&gt;&quot;</span><span class="p">,</span> <span class="n">ni</span><span class="o">.</span><span class="n">typestr</span>
+    <span class="k">print</span> <span class="s">&quot;shape --&gt;&quot;</span><span class="p">,</span> <span class="n">ni</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">print</span> <span class="s">&quot;strides --&gt;&quot;</span><span class="p">,</span> <span class="n">ni</span><span class="o">.</span><span class="n">strides</span>
+    <span class="n">npa</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ni</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;object after a numpy re-wrapping --&gt;&quot;</span><span class="p">,</span> <span class="n">npa</span>
+    <span class="n">ni</span><span class="o">.</span><span class="n">modify</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&quot;object after modification in C space --&gt;&quot;</span><span class="p">,</span> <span class="n">npa</span>
+</pre></div>
+</div>
+<p>You can check the output here <a class="reference external" href="..image::A_Numerical_Agnostic_Pyrex_Class_attachments/test_output.txt">1</a>.</p>
+</div>
+<div class="section" id="see-also">
+<h1>See also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[&quot;Cookbook/Pyrex_and_NumPy&quot;]</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;[&quot;Cookbook/ArrayStruct_and_Pyrex&quot;]&nbsp;(The&nbsp;inspiring&nbsp;recipe)</span></tt></div>
+</div>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Overview</a></li>
+<li><a class="reference internal" href="#numind-a-numerical-independent-pyrex-based-extension">NumInd: a Numerical Independent Pyrex-based extension</a></li>
+<li><a class="reference internal" href="#an-example-of-use">An example of use</a></li>
+<li><a class="reference internal" href="#see-also">See also</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ASTER.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="A_Pyrex_Agnostic_Class.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/A_Numerical_Agnostic_Pyrex_Class.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="A_Pyrex_Agnostic_Class.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ASTER.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

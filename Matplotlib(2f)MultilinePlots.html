@@ -1,0 +1,338 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Multiple line plots &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Using a single axis label to annotate multiple subplot axes" href="Matplotlib(2f)Multiple_Subplots_with_One_Axis_Label.html" />
+    <link rel="prev" title="Defining colors manually" href="Matplotlib(2f)MulticoloredLine.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Multiple_Subplots_with_One_Axis_Label.html" title="Using a single axis label to annotate multiple subplot axes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)MulticoloredLine.html" title="Defining colors manually"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>TableOfContents</p>
+<div class="section" id="multiple-line-plots">
+<h1>Multiple line plots<a class="headerlink" href="#multiple-line-plots" title="Permalink to this headline">¶</a></h1>
+<p>Often one wants to plot many signals over one another. There are a few
+ways to do this. The naive implementation is just to add a constant
+offset to each signal:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">plot</span><span class="p">,</span> <span class="n">show</span><span class="p">,</span> <span class="n">ylim</span><span class="p">,</span> <span class="n">yticks</span>
+<span class="kn">from</span> <span class="nn">matplotlib.numerix</span> <span class="kn">import</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">arange</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
+<span class="n">s1</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span><span class="p">)</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span><span class="p">)</span>
+<span class="n">s4</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s2</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s3</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s4</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">yticks</span><span class="p">(</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="p">[</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="s">&#39;S2&#39;</span><span class="p">,</span> <span class="s">&#39;S3&#39;</span><span class="p">,</span> <span class="s">&#39;S4&#39;</span><span class="p">])</span>
+
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>but then it is difficult to do change the y scale in a reasonable way.
+For example when you zoom in on y, the signals on top and bottom will go
+off the screen. Often what one wants is for the y location of each
+signal to remain in place and the gain of the signal to be changed.</p>
+</div>
+<div class="section" id="using-multiple-axes">
+<h1>Using multiple axes<a class="headerlink" href="#using-multiple-axes" title="Permalink to this headline">¶</a></h1>
+<p>If you have just a few signals, you could make each signal a separate
+axes and make the y label horizontal. This works fine for a small number
+of signals (4-10 say) except the extra horizontal lines and ticks around
+the axes may be annoying. It&#8217;s on our list of things to change the way
+these axes lines are draw so that you can remove it, but it isn&#8217;t done
+yet:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span><span class="p">,</span> <span class="n">setp</span>
+<span class="kn">from</span> <span class="nn">matplotlib.numerix</span> <span class="kn">import</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">arange</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
+<span class="n">s1</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span><span class="p">)</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span><span class="p">)</span>
+<span class="n">s4</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">()</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
+
+<span class="n">yprops</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+              <span class="n">horizontalalignment</span><span class="o">=</span><span class="s">&#39;right&#39;</span><span class="p">,</span>
+              <span class="n">verticalalignment</span><span class="o">=</span><span class="s">&#39;center&#39;</span><span class="p">,</span>
+              <span class="n">x</span><span class="o">=-</span><span class="mf">0.01</span><span class="p">)</span>
+
+<span class="n">axprops</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">yticks</span><span class="o">=</span><span class="p">[])</span>
+
+<span class="n">ax1</span> <span class="o">=</span><span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="o">**</span><span class="n">axprops</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;S1&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">yprops</span><span class="p">)</span>
+
+<span class="n">axprops</span><span class="p">[</span><span class="s">&#39;sharex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ax1</span>
+<span class="n">axprops</span><span class="p">[</span><span class="s">&#39;sharey&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ax1</span>
+<span class="c"># force x axes to remain in register, even with toolbar navigation</span>
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="o">**</span><span class="n">axprops</span><span class="p">)</span>
+
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;S2&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">yprops</span><span class="p">)</span>
+
+<span class="n">ax3</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="o">**</span><span class="n">axprops</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">s4</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;S3&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">yprops</span><span class="p">)</span>
+
+<span class="n">ax4</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="o">**</span><span class="n">axprops</span><span class="p">)</span>
+<span class="n">ax4</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">s4</span><span class="p">)</span>
+<span class="n">ax4</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;S4&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">yprops</span><span class="p">)</span>
+
+<span class="c"># turn off x ticklabels for all but the lower axes</span>
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">,</span> <span class="n">ax3</span><span class="p">:</span>
+    <span class="n">setp</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">(),</span> <span class="n">visible</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="Matplotlib(2f)MultilinePlots_attachments/multipleaxes.png" src="Matplotlib(2f)MultilinePlots_attachments/multipleaxes.png" />
+</div>
+<div class="section" id="manipulating-transforms">
+<h1>Manipulating transforms<a class="headerlink" href="#manipulating-transforms" title="Permalink to this headline">¶</a></h1>
+<p>For large numbers of lines the approach above is inefficient because
+creating a separate axes for each line creates a lot of useless
+overhead. The application that gave birth to matplotlib is an <a class="reference external" href="http://matplotlib.sourceforge.net/screenshots/eeg_small.png">EEG
+viewer</a>
+which must efficiently handle hundreds of lines; this is is available as
+part of the <a class="reference external" href="http://pbrain.sf.net">pbrain package</a>.</p>
+<p>Here is an example of how that application does multiline plotting with
+&#8220;in place&#8221; gain changes. Note that this will break the y behavior of the
+toolbar because we have changed all the default transforms. In my
+application I have a custom toolbar to increase or decrease the y scale.
+In this example, I bind the plus/minus keys to a function which
+increases or decreases the y gain. Perhaps I will take this and wrap it
+up into a function called plot_signals or something like that because
+the code is a bit hairy since it makes heavy use of the somewhat arcane
+matplotlib transforms. I suggest reading up on the <a class="reference external" href="http://matplotlib.sourceforge.net/matplotlib.transforms.html">transforms
+module</a>
+before trying to understand this example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">show</span><span class="p">,</span> <span class="n">setp</span><span class="p">,</span> <span class="n">connect</span><span class="p">,</span> <span class="n">draw</span>
+<span class="kn">from</span> <span class="nn">matplotlib.numerix</span> <span class="kn">import</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">arange</span>
+<span class="kn">from</span> <span class="nn">matplotlib.numerix.mlab</span> <span class="kn">import</span> <span class="n">mean</span>
+<span class="kn">from</span> <span class="nn">matplotlib.transforms</span> <span class="kn">import</span> <span class="n">Bbox</span><span class="p">,</span> <span class="n">Value</span><span class="p">,</span> <span class="n">Point</span><span class="p">,</span> \
+     <span class="n">get_bbox_transform</span><span class="p">,</span> <span class="n">unit_bbox</span>
+<span class="c"># load the data</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
+<span class="n">s1</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span><span class="p">)</span>
+<span class="n">s3</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span><span class="p">)</span>
+<span class="n">s4</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+<span class="n">s5</span> <span class="o">=</span> <span class="n">s1</span><span class="o">*</span><span class="n">s2</span>
+<span class="n">s6</span> <span class="o">=</span> <span class="n">s1</span><span class="o">-</span><span class="n">s4</span>
+<span class="n">s7</span> <span class="o">=</span> <span class="n">s3</span><span class="o">*</span><span class="n">s4</span><span class="o">-</span><span class="n">s1</span>
+
+<span class="n">signals</span> <span class="o">=</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">s3</span><span class="p">,</span> <span class="n">s4</span><span class="p">,</span> <span class="n">s5</span><span class="p">,</span> <span class="n">s6</span><span class="p">,</span> <span class="n">s7</span>
+<span class="k">for</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">signals</span><span class="p">:</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">sig</span><span class="o">-</span><span class="n">mean</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+
+<span class="n">lineprops</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s">&#39;-&#39;</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">()</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+
+<span class="c"># The normal matplotlib transformation is the view lim bounding box</span>
+<span class="c"># (ax.viewLim) to the axes bounding box (ax.bbox).  Where are going to</span>
+<span class="c"># define a new transform by defining a new input bounding box. See the</span>
+<span class="c"># matplotlib.transforms module helkp for more information on</span>
+<span class="c"># transforms</span>
+
+<span class="c"># This bounding reuses the x data of the viewLim for the xscale -10 to</span>
+<span class="c"># 10 on the y scale.  -10 to 10 means that a signal with a min/max</span>
+<span class="c"># amplitude of 10 will span the entire vertical extent of the axes</span>
+<span class="n">scale</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">boxin</span> <span class="o">=</span> <span class="n">Bbox</span><span class="p">(</span>
+    <span class="n">Point</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">viewLim</span><span class="o">.</span><span class="n">ll</span><span class="p">()</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">Value</span><span class="p">(</span><span class="o">-</span><span class="n">scale</span><span class="p">)),</span>
+    <span class="n">Point</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">viewLim</span><span class="o">.</span><span class="n">ur</span><span class="p">()</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">Value</span><span class="p">(</span><span class="n">scale</span><span class="p">)))</span>
+
+
+<span class="c"># height is a lazy value</span>
+<span class="n">height</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">bbox</span><span class="o">.</span><span class="n">ur</span><span class="p">()</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">-</span> <span class="n">ax</span><span class="o">.</span><span class="n">bbox</span><span class="o">.</span><span class="n">ll</span><span class="p">()</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+
+<span class="n">boxout</span> <span class="o">=</span> <span class="n">Bbox</span><span class="p">(</span>
+    <span class="n">Point</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">bbox</span><span class="o">.</span><span class="n">ll</span><span class="p">()</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">Value</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="n">height</span><span class="p">),</span>
+    <span class="n">Point</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">bbox</span><span class="o">.</span><span class="n">ur</span><span class="p">()</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">Value</span><span class="p">(</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="n">height</span><span class="p">))</span>
+
+
+<span class="c"># matplotlib transforms can accepts an offset, which is defined as a</span>
+<span class="c"># point and another transform to map that point to display.  This</span>
+<span class="c"># transform maps x as identity and maps the 0-1 y interval to the</span>
+<span class="c"># vertical extent of the yaxis.  This will be used to offset the lines</span>
+<span class="c"># and ticks vertically</span>
+<span class="n">transOffset</span> <span class="o">=</span> <span class="n">get_bbox_transform</span><span class="p">(</span>
+    <span class="n">unit_bbox</span><span class="p">(),</span>
+    <span class="n">Bbox</span><span class="p">(</span> <span class="n">Point</span><span class="p">(</span> <span class="n">Value</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">ax</span><span class="o">.</span><span class="n">bbox</span><span class="o">.</span><span class="n">ll</span><span class="p">()</span><span class="o">.</span><span class="n">y</span><span class="p">()),</span>
+          <span class="n">Point</span><span class="p">(</span> <span class="n">Value</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">ax</span><span class="o">.</span><span class="n">bbox</span><span class="o">.</span><span class="n">ur</span><span class="p">()</span><span class="o">.</span><span class="n">y</span><span class="p">())</span>
+          <span class="p">))</span>
+
+<span class="c"># now add the signals, set the transform, and set the offset of each</span>
+<span class="c"># line</span>
+<span class="n">ticklocs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">signals</span><span class="p">):</span>
+    <span class="n">trans</span> <span class="o">=</span> <span class="n">get_bbox_transform</span><span class="p">(</span><span class="n">boxin</span><span class="p">,</span> <span class="n">boxout</span><span class="p">)</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mf">1.</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">signals</span><span class="p">)</span><span class="o">+</span><span class="mf">1.</span><span class="p">)</span>
+    <span class="n">trans</span><span class="o">.</span><span class="n">set_offset</span><span class="p">(</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">offset</span><span class="p">),</span> <span class="n">transOffset</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">trans</span><span class="p">,</span> <span class="o">**</span><span class="n">lineprops</span><span class="p">)</span>
+    <span class="n">ticklocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">ticklocs</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([</span><span class="s">&#39;S</span><span class="si">%d</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">signals</span><span class="p">))])</span>
+
+<span class="c"># place all the y tick attributes in axes coords</span>
+<span class="nb">all</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">ticklocs</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">tick</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">get_major_ticks</span><span class="p">():</span>
+    <span class="nb">all</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span> <span class="n">tick</span><span class="o">.</span><span class="n">label1</span><span class="p">,</span> <span class="n">tick</span><span class="o">.</span><span class="n">label2</span><span class="p">,</span> <span class="n">tick</span><span class="o">.</span><span class="n">tick1line</span><span class="p">,</span>
+                 <span class="n">tick</span><span class="o">.</span><span class="n">tick2line</span><span class="p">,</span> <span class="n">tick</span><span class="o">.</span><span class="n">gridline</span><span class="p">))</span>
+    <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tick</span><span class="o">.</span><span class="n">label1</span><span class="p">)</span>
+
+<span class="n">setp</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+<span class="n">setp</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">x</span><span class="o">=-</span><span class="mf">0.01</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;time (s)&#39;</span><span class="p">)</span>
+
+
+<span class="c"># Because we have hacked the transforms, you need a special method to</span>
+<span class="c"># set the voltage gain; this is a naive implementation of how you</span>
+<span class="c"># might want to do this in real life (eg make the scale changes</span>
+<span class="c"># exponential rather than linear) but it gives you the idea</span>
+<span class="k">def</span> <span class="nf">set_ygain</span><span class="p">(</span><span class="n">direction</span><span class="p">):</span>
+    <span class="n">set_ygain</span><span class="o">.</span><span class="n">scale</span> <span class="o">+=</span> <span class="n">direction</span>
+    <span class="k">if</span> <span class="n">set_ygain</span><span class="o">.</span><span class="n">scale</span> <span class="o">&lt;=</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">set_ygain</span><span class="o">.</span><span class="n">scale</span> <span class="o">-=</span> <span class="n">direction</span>
+        <span class="k">return</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">lines</span><span class="p">:</span>
+        <span class="n">trans</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">get_transform</span><span class="p">()</span>
+        <span class="n">box1</span> <span class="o">=</span>  <span class="n">trans</span><span class="o">.</span><span class="n">get_bbox1</span><span class="p">()</span>
+        <span class="n">box1</span><span class="o">.</span><span class="n">intervaly</span><span class="p">()</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="o">-</span><span class="n">set_ygain</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span> <span class="n">set_ygain</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+    <span class="n">draw</span><span class="p">()</span>
+<span class="n">set_ygain</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span>
+
+<span class="k">def</span> <span class="nf">keypress</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;+&#39;</span><span class="p">,</span> <span class="s">&#39;=&#39;</span><span class="p">):</span> <span class="n">set_ygain</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">):</span> <span class="n">set_ygain</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">connect</span><span class="p">(</span><span class="s">&#39;key_press_event&#39;</span><span class="p">,</span> <span class="n">keypress</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">&#39;Use + / - to change y gain&#39;</span><span class="p">)</span>
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="Matplotlib(2f)MultilinePlots_attachments/multiline.png" src="Matplotlib(2f)MultilinePlots_attachments/multiline.png" />
+<hr class="docutils" />
+<p>CategoryCookbookMatplotlib</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Multiple line plots</a></li>
+<li><a class="reference internal" href="#using-multiple-axes">Using multiple axes</a></li>
+<li><a class="reference internal" href="#manipulating-transforms">Manipulating transforms</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)MulticoloredLine.html"
+                        title="previous chapter">Defining colors manually</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)Multiple_Subplots_with_One_Axis_Label.html"
+                        title="next chapter">Using a single axis label to annotate multiple subplot axes</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Matplotlib(2f)MultilinePlots.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Multiple_Subplots_with_One_Axis_Label.html" title="Using a single axis label to annotate multiple subplot axes"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)MulticoloredLine.html" title="Defining colors manually"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

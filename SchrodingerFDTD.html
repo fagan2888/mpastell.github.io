@@ -1,0 +1,405 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The One-Dimensional Finite-Difference Time-Domain (FDTD) Algorithm Applied to the Schrödinger Equation &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Convolution-like operations" href="SegmentAxis.html" />
+    <link rel="prev" title="Savitzky Golay Filtering" href="SavitzkyGolay.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="SegmentAxis.html" title="Convolution-like operations"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="SavitzkyGolay.html" title="Savitzky Golay Filtering"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="the-one-dimensional-finite-difference-time-domain-fdtd-algorithm-applied-to-the-schrodinger-equation">
+<h1>The One-Dimensional Finite-Difference Time-Domain (FDTD) Algorithm Applied to the Schrödinger Equation<a class="headerlink" href="#the-one-dimensional-finite-difference-time-domain-fdtd-algorithm-applied-to-the-schrodinger-equation" title="Permalink to this headline">¶</a></h1>
+<p>The code below illustrates the use of the FDTD algorithm to solve the
+one-dimensional Schrödinger equation for simple potentials. It only
+requires Numpy and Matplotlib.</p>
+<p>All the mathematical details are described in this PDF:
+<a class="reference external" href="..image::SchrodingerFDTD_attachments/Schrodinger%5FFDTD%5Fnew.pdf">Schrodinger_FDTD.pdf</a></p>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>In these figures the potential is shaded in arbitrary units in yellow,
+while the total energy of the wavepacket is plotted as a green line, in
+the same units as the potential. So while the energy units are <em>not</em>
+those on the left axis, both energy plots use the same units and can
+thus be validly compared relative to one another.</p>
+<p>Depending on the particle energy, the yellow region may be classically
+forbidden (when the green line is inside the yellow region).</p>
+<p>The wavepacket starts at t=0 as (step potential shown):</p>
+<img alt="SchrodingerFDTD_attachments/schrod_step_init_sm2.png" src="SchrodingerFDTD_attachments/schrod_step_init_sm2.png" />
+<p>And at the end of the simulation it can look like this, depending on the
+actual potential height:</p>
+<img alt="SchrodingerFDTD_attachments/schrod_step_lo_sm2.png..image::SchrodingerFDTD_attachments/schrod_step_hi_sm2.png" src="SchrodingerFDTD_attachments/schrod_step_lo_sm2.png..image::SchrodingerFDTD_attachments/schrod_step_hi_sm2.png" />
+<p>This illustrates the tunneling through a thin barrier, depending on the
+barrier height. In the second case, a classical particle would
+completely bounce off since its energy is lower than the potential
+barrier:</p>
+<img alt="SchrodingerFDTD_attachments/schrod_barrier_lo_sm2.png" src="SchrodingerFDTD_attachments/schrod_barrier_lo_sm2.png" />
+<img alt="SchrodingerFDTD_attachments/schrod_barrier_hi_sm2.png" src="SchrodingerFDTD_attachments/schrod_barrier_hi_sm2.png" />
+</div>
+<div class="section" id="code">
+<h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="c">#=============================================================================</span>
+<span class="c">#</span>
+<span class="c">#               Quantum Mechanical Simulation using Finite-Difference</span>
+<span class="c">#               Time-Domain (FDTD) Method</span>
+<span class="c">#</span>
+<span class="c">#       This script simulates a probability wave in the presence of multiple</span>
+<span class="c">#       potentials.  The simulation is c arried out by using the FDTD algorithm</span>
+<span class="c">#       applied to the Schrodinger equation.  The program is intended to act as</span>
+<span class="c">#       a demonstration of the FDTD algorithm and can be used as an educational</span>
+<span class="c">#       aid for quantum mechanics and numerical methods.  The simulation</span>
+<span class="c">#       parameters are defined in the code constants and can be freely</span>
+<span class="c">#       manipulated to see different behaviors.</span>
+<span class="c">#</span>
+<span class="c">#       NOTES</span>
+<span class="c">#</span>
+<span class="c">#       The probability density plots are amplified by a factor for visual</span>
+<span class="c">#       purposes.  The psi_p quanity contains the actual probability density</span>
+<span class="c">#       without any rescaling.</span>
+<span class="c">#</span>
+<span class="c">#       BEWARE: The time step, dt, has strict requirements or else the</span>
+<span class="c">#       simulation becomes unstable.</span>
+<span class="c">#</span>
+<span class="c">#       The code has three built-in potential functions for demonstration.</span>
+<span class="c">#</span>
+<span class="c">#       1) Constant potential: Demonstrates a free particle with dispersion.</span>
+<span class="c">#</span>
+<span class="c">#       2) Step potential: Demonstrates transmission and reflection.</span>
+<span class="c">#</span>
+<span class="c">#       3) Potential barrier: Demonstrates tunneling.</span>
+<span class="c">#</span>
+<span class="c">#       By tweaking the height of the potential (V0 below) as well as the</span>
+<span class="c">#       barrier thickness (THCK below), you can see different behaviors: full</span>
+<span class="c">#       reflection with no noticeable transmission, transmission and</span>
+<span class="c">#       reflection, or mostly transmission with tunneling.</span>
+<span class="c">#</span>
+<span class="c">#               This script requires pylab and numpy to be installed with</span>
+<span class="c">#               Python or else it will not run.</span>
+<span class="c">#</span>
+<span class="c">#============================================================================</span>
+<span class="c"># Author:  James Nagel &lt;nagel@mers.byu.edu&gt;</span>
+<span class="c">#          5/25/07</span>
+<span class="c">#</span>
+<span class="c"># Updates by Fernando Perez &lt;Fernando.Perez@colorado.edu&gt;, 7/28/07</span>
+<span class="c">#============================================================================</span>
+<span class="c">#  Numerical and plotting libraries</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pylab</span>
+<span class="c"># Set pylab to interactive mode so plots update when run outside ipython</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>
+<span class="c">#=============================================================================</span>
+<span class="c"># Utility functions</span>
+<span class="c">#  Defines a quick Gaussian pulse function to act as an envelope to the wave</span>
+<span class="c">#  function.</span>
+<span class="k">def</span> <span class="nf">Gaussian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">sigma</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;  A Gaussian curve.</span>
+<span class="sd">        x = Variable</span>
+<span class="sd">        t = time shift</span>
+<span class="sd">        sigma = standard deviation      &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">t</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">free</span><span class="p">(</span><span class="n">npts</span><span class="p">):</span>
+    <span class="s">&quot;Free particle.&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">npts</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="n">npts</span><span class="p">,</span><span class="n">v0</span><span class="p">):</span>
+    <span class="s">&quot;Potential step&quot;</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">free</span><span class="p">(</span><span class="n">npts</span><span class="p">)</span>
+    <span class="n">v</span><span class="p">[</span><span class="n">npts</span><span class="o">/</span><span class="mi">2</span><span class="p">:]</span> <span class="o">=</span> <span class="n">v0</span>
+    <span class="k">return</span> <span class="n">v</span>
+<span class="k">def</span> <span class="nf">barrier</span><span class="p">(</span><span class="n">npts</span><span class="p">,</span><span class="n">v0</span><span class="p">,</span><span class="n">thickness</span><span class="p">):</span>
+    <span class="s">&quot;Barrier potential&quot;</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">free</span><span class="p">(</span><span class="n">npts</span><span class="p">)</span>
+    <span class="n">v</span><span class="p">[</span><span class="n">npts</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span><span class="n">npts</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="n">thickness</span><span class="p">]</span> <span class="o">=</span> <span class="n">v0</span>
+    <span class="k">return</span> <span class="n">v</span>
+<span class="k">def</span> <span class="nf">fillax</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Fill the space between an array of y values and the x axis.</span>
+<span class="sd">    All args/kwargs are passed to the pylab.fill function.</span>
+<span class="sd">    Returns the value of the pylab.fill() call.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">)))</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">y</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">y</span><span class="o">.</span><span class="n">dtype</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">pylab</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+<span class="c">#=============================================================================</span>
+<span class="c">#</span>
+<span class="c">#  Simulation Constants.  Be sure to include decimal points on appropriate</span>
+<span class="c">#  variables so they become floats instead of integers.</span>
+<span class="c">#</span>
+<span class="n">N</span>    <span class="o">=</span> <span class="mi">1200</span>     <span class="c">#  Number of spatial points.</span>
+<span class="n">T</span>    <span class="o">=</span> <span class="mi">5</span><span class="o">*</span><span class="n">N</span>      <span class="c">#  Number of time steps.  5*N is a nice value for terminating</span>
+                <span class="c">#  before anything reaches the boundaries.</span>
+<span class="n">Tp</span>   <span class="o">=</span> <span class="mi">50</span>       <span class="c">#  Number of time steps to increment before updating the plot.</span>
+<span class="n">dx</span>   <span class="o">=</span> <span class="mf">1.0e0</span>    <span class="c">#  Spatial resolution</span>
+<span class="n">m</span>    <span class="o">=</span> <span class="mf">1.0e0</span>    <span class="c">#  Particle mass</span>
+<span class="n">hbar</span> <span class="o">=</span> <span class="mf">1.0e0</span>    <span class="c">#  Plank&#39;s constant</span>
+<span class="n">X</span>    <span class="o">=</span> <span class="n">dx</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>        <span class="c">#  Spatial axis.</span>
+<span class="c"># Potential parameters.  By playing with the type of potential and the height</span>
+<span class="c"># and thickness (for barriers), you&#39;ll see the various transmission/reflection</span>
+<span class="c"># regimes of quantum mechanical tunneling.</span>
+<span class="n">V0</span>   <span class="o">=</span> <span class="mf">1.0e-2</span>   <span class="c">#  Potential amplitude (used for steps and barriers)</span>
+<span class="n">THCK</span> <span class="o">=</span> <span class="mi">15</span>       <span class="c"># &quot;Thickness&quot; of the potential barrier (if appropriate</span>
+                <span class="c"># V-function is chosen)</span>
+<span class="c"># Uncomment the potential type you want to use here:</span>
+<span class="c"># Zero potential, packet propagates freely.</span>
+<span class="c">#POTENTIAL = &#39;free&#39;</span>
+<span class="c"># Potential step.  The height (V0) of the potential chosen above will determine</span>
+<span class="c"># the amount of reflection/transmission you&#39;ll observe</span>
+<span class="n">POTENTIAL</span> <span class="o">=</span> <span class="s">&#39;step&#39;</span>
+<span class="c"># Potential barrier.  Note that BOTH the potential height (V0) and thickness</span>
+<span class="c"># of the barrier (THCK) affect the amount of tunneling vs reflection you&#39;ll</span>
+<span class="c"># observe.</span>
+<span class="c">#POTENTIAL = &#39;barrier&#39;</span>
+<span class="c">#  Initial wave function constants</span>
+<span class="n">sigma</span> <span class="o">=</span> <span class="mf">40.0</span> <span class="c"># Standard deviation on the Gaussian envelope (remember Heisenberg</span>
+             <span class="c">#  uncertainty).</span>
+<span class="n">x0</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">5</span><span class="o">*</span><span class="n">sigma</span> <span class="c"># Time shift</span>
+<span class="n">k0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">20</span> <span class="c"># Wavenumber (note that energy is a function of k)</span>
+<span class="c"># Energy for a localized gaussian wavepacket interacting with a localized</span>
+<span class="c"># potential (so the interaction term can be neglected by computing the energy</span>
+<span class="c"># integral over a region where V=0)</span>
+<span class="n">E</span> <span class="o">=</span> <span class="p">(</span><span class="n">hbar</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mf">2.0</span><span class="o">/</span><span class="n">m</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">k0</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="mf">0.5</span><span class="o">/</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="c">#=============================================================================</span>
+<span class="c"># Code begins</span>
+<span class="c">#</span>
+<span class="c"># You shouldn&#39;t need to change anything below unless you want to actually play</span>
+<span class="c"># with the numerical algorithm or modify the plotting.</span>
+<span class="c">#</span>
+<span class="c">#  Fill in the appropriate potential function (is there a Python equivalent to</span>
+<span class="c">#  the SWITCH statement?).</span>
+<span class="k">if</span> <span class="n">POTENTIAL</span><span class="o">==</span><span class="s">&#39;free&#39;</span><span class="p">:</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">free</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">POTENTIAL</span><span class="o">==</span><span class="s">&#39;step&#39;</span><span class="p">:</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">step</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">V0</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">POTENTIAL</span><span class="o">==</span><span class="s">&#39;barrier&#39;</span><span class="p">:</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">barrier</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">V0</span><span class="p">,</span><span class="n">THCK</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Unrecognized potential type: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">POTENTIAL</span><span class="p">)</span>
+<span class="c">#  More simulation parameters.  The maximum stable time step is a function of</span>
+<span class="c">#  the potential, V.</span>
+<span class="n">Vmax</span> <span class="o">=</span> <span class="n">V</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>            <span class="c">#  Maximum potential of the domain.</span>
+<span class="n">dt</span>   <span class="o">=</span> <span class="n">hbar</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">hbar</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">m</span><span class="o">*</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">Vmax</span><span class="p">)</span>         <span class="c">#  Critical time step.</span>
+<span class="n">c1</span>   <span class="o">=</span> <span class="n">hbar</span><span class="o">*</span><span class="n">dt</span><span class="o">/</span><span class="p">(</span><span class="n">m</span><span class="o">*</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>                       <span class="c">#  Constant coefficient 1.</span>
+<span class="n">c2</span>   <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">dt</span><span class="o">/</span><span class="n">hbar</span>                               <span class="c">#  Constant coefficient 2.</span>
+<span class="n">c2V</span>  <span class="o">=</span> <span class="n">c2</span><span class="o">*</span><span class="n">V</span>  <span class="c"># pre-compute outside of update loop</span>
+<span class="c"># Print summary info</span>
+<span class="k">print</span> <span class="s">&#39;One-dimensional Schrodinger equation - time evolution&#39;</span>
+<span class="k">print</span> <span class="s">&#39;Wavepacket energy:   &#39;</span><span class="p">,</span><span class="n">E</span>
+<span class="k">print</span> <span class="s">&#39;Potential type:      &#39;</span><span class="p">,</span><span class="n">POTENTIAL</span>
+<span class="k">print</span> <span class="s">&#39;Potential height V0: &#39;</span><span class="p">,</span><span class="n">V0</span>
+<span class="k">print</span> <span class="s">&#39;Barrier thickness:   &#39;</span><span class="p">,</span><span class="n">THCK</span>
+<span class="c">#  Wave functions.  Three states represent past, present, and future.</span>
+<span class="n">psi_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="n">N</span><span class="p">))</span> <span class="c">#  Real</span>
+<span class="n">psi_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="n">N</span><span class="p">))</span> <span class="c">#  Imaginary</span>
+<span class="n">psi_p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,)</span>   <span class="c"># Observable probability (magnitude-squared</span>
+                          <span class="c">#  of the complex wave function).</span>
+<span class="c">#  Temporal indexing constants, used for accessing rows of the wavefunctions.</span>
+<span class="n">PA</span> <span class="o">=</span> <span class="mi">0</span>                 <span class="c">#  Past</span>
+<span class="n">PR</span> <span class="o">=</span> <span class="mi">1</span>                 <span class="c">#  Present</span>
+<span class="n">FU</span> <span class="o">=</span> <span class="mi">2</span>                 <span class="c">#  Future</span>
+<span class="c">#  Initialize wave function.  A present-only state will &quot;split&quot; with half the</span>
+<span class="c">#  wave function propagating to the left and the other half to the right.</span>
+<span class="c">#  Including a &quot;past&quot; state will cause it to propagate one way.</span>
+<span class="n">xn</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">N</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">xn</span><span class="p">]</span><span class="o">/</span><span class="n">dx</span>    <span class="c">#  Normalized position coordinate</span>
+<span class="n">gg</span> <span class="o">=</span> <span class="n">Gaussian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">x0</span><span class="p">,</span><span class="n">sigma</span><span class="p">)</span>
+<span class="n">cx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">k0</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>
+<span class="n">sx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">k0</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>
+<span class="n">psi_r</span><span class="p">[</span><span class="n">PR</span><span class="p">,</span><span class="n">xn</span><span class="p">]</span> <span class="o">=</span> <span class="n">cx</span><span class="o">*</span><span class="n">gg</span>
+<span class="n">psi_i</span><span class="p">[</span><span class="n">PR</span><span class="p">,</span><span class="n">xn</span><span class="p">]</span> <span class="o">=</span> <span class="n">sx</span><span class="o">*</span><span class="n">gg</span>
+<span class="n">psi_r</span><span class="p">[</span><span class="n">PA</span><span class="p">,</span><span class="n">xn</span><span class="p">]</span> <span class="o">=</span> <span class="n">cx</span><span class="o">*</span><span class="n">gg</span>
+<span class="n">psi_i</span><span class="p">[</span><span class="n">PA</span><span class="p">,</span><span class="n">xn</span><span class="p">]</span> <span class="o">=</span> <span class="n">sx</span><span class="o">*</span><span class="n">gg</span>
+<span class="c"># Initial normalization of wavefunctions</span>
+<span class="c">#   Compute the observable probability.</span>
+<span class="n">psi_p</span> <span class="o">=</span> <span class="n">psi_r</span><span class="p">[</span><span class="n">PR</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">psi_i</span><span class="p">[</span><span class="n">PR</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+<span class="c">#  Normalize the wave functions so that the total probability in the simulation</span>
+<span class="c">#  is equal to 1.</span>
+<span class="n">P</span>   <span class="o">=</span> <span class="n">dx</span> <span class="o">*</span> <span class="n">psi_p</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>                      <span class="c">#  Total probability.</span>
+<span class="n">nrm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
+<span class="n">psi_r</span> <span class="o">/=</span> <span class="n">nrm</span>
+<span class="n">psi_i</span> <span class="o">/=</span> <span class="n">nrm</span>
+<span class="n">psi_p</span> <span class="o">/=</span> <span class="n">P</span>
+<span class="c">#  Initialize the figure and axes.</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">xmin</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+<span class="n">xmax</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="n">ymax</span> <span class="o">=</span> <span class="mf">1.5</span><span class="o">*</span><span class="p">(</span><span class="n">psi_r</span><span class="p">[</span><span class="n">PR</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">axis</span><span class="p">([</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="o">-</span><span class="n">ymax</span><span class="p">,</span><span class="n">ymax</span><span class="p">])</span>
+<span class="c">#  Initialize the plots with their own line objects.  The figures plot MUCH</span>
+<span class="c">#  faster if you simply update the lines as opposed to redrawing the entire</span>
+<span class="c">#  figure.  For reference, include the potential function as well.</span>
+<span class="n">lineR</span><span class="p">,</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">psi_r</span><span class="p">[</span><span class="n">PR</span><span class="p">],</span><span class="s">&#39;b&#39;</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&#39;Real&#39;</span><span class="p">)</span>
+<span class="n">lineI</span><span class="p">,</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">psi_i</span><span class="p">[</span><span class="n">PR</span><span class="p">],</span><span class="s">&#39;r&#39;</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&#39;Imag&#39;</span><span class="p">)</span>
+<span class="n">lineP</span><span class="p">,</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="mi">6</span><span class="o">*</span><span class="n">psi_p</span><span class="p">,</span><span class="s">&#39;k&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&#39;Prob&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Potential height: </span><span class="si">%.2e</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">V0</span><span class="p">)</span>
+<span class="c"># For non-zero potentials, plot them and shade the classically forbidden region</span>
+<span class="c"># in light red, as well as drawing a green line at the wavepacket&#39;s total</span>
+<span class="c"># energy, in the same units the potential is being plotted.</span>
+<span class="k">if</span> <span class="n">Vmax</span> <span class="o">!=</span><span class="mi">0</span> <span class="p">:</span>
+    <span class="c"># Scaling factor for energies, so they fit in the same plot as the</span>
+    <span class="c"># wavefunctions</span>
+    <span class="n">Efac</span> <span class="o">=</span> <span class="n">ymax</span><span class="o">/</span><span class="mf">2.0</span><span class="o">/</span><span class="n">Vmax</span>
+    <span class="n">V_plot</span> <span class="o">=</span> <span class="n">V</span><span class="o">*</span><span class="n">Efac</span>
+    <span class="n">pylab</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">V_plot</span><span class="p">,</span><span class="s">&#39;:k&#39;</span><span class="p">,</span><span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>   <span class="c">#  Potential line.</span>
+    <span class="n">fillax</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">V_plot</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span><span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c"># Plot the wavefunction energy, in the same scale as the potential</span>
+    <span class="n">pylab</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">E</span><span class="o">*</span><span class="n">Efac</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;g&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">&#39;Energy&#39;</span><span class="p">,</span><span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s">&#39;lower right&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+<span class="c"># I think there&#39;s a problem with pylab, because it resets the xlim after</span>
+<span class="c"># plotting the E line.  Fix it back manually.</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">)</span>
+<span class="c">#  Direct index assignment is MUCH faster than using a spatial FOR loop, so</span>
+<span class="c">#  these constants are used in the update equations.  Remember that Python uses</span>
+<span class="c">#  zero-based indexing.</span>
+<span class="n">IDX1</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>                            <span class="c">#  psi [ k ]</span>
+<span class="n">IDX2</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>                              <span class="c">#  psi [ k + 1 ]</span>
+<span class="n">IDX3</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">N</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>                            <span class="c">#  psi [ k - 1 ]</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+    <span class="c"># Precompute a couple of indexing constants, this speeds up the computation</span>
+    <span class="n">psi_rPR</span> <span class="o">=</span> <span class="n">psi_r</span><span class="p">[</span><span class="n">PR</span><span class="p">]</span>
+    <span class="n">psi_iPR</span> <span class="o">=</span> <span class="n">psi_i</span><span class="p">[</span><span class="n">PR</span><span class="p">]</span>
+    <span class="c">#  Apply the update equations.</span>
+    <span class="n">psi_i</span><span class="p">[</span><span class="n">FU</span><span class="p">,</span><span class="n">IDX1</span><span class="p">]</span> <span class="o">=</span> <span class="n">psi_i</span><span class="p">[</span><span class="n">PA</span><span class="p">,</span><span class="n">IDX1</span><span class="p">]</span> <span class="o">+</span> \
+                      <span class="n">c1</span><span class="o">*</span><span class="p">(</span><span class="n">psi_rPR</span><span class="p">[</span><span class="n">IDX2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">psi_rPR</span><span class="p">[</span><span class="n">IDX1</span><span class="p">]</span> <span class="o">+</span>
+                          <span class="n">psi_rPR</span><span class="p">[</span><span class="n">IDX3</span><span class="p">])</span>
+    <span class="n">psi_i</span><span class="p">[</span><span class="n">FU</span><span class="p">]</span> <span class="o">-=</span> <span class="n">c2V</span><span class="o">*</span><span class="n">psi_r</span><span class="p">[</span><span class="n">PR</span><span class="p">]</span>
+
+    <span class="n">psi_r</span><span class="p">[</span><span class="n">FU</span><span class="p">,</span><span class="n">IDX1</span><span class="p">]</span> <span class="o">=</span> <span class="n">psi_r</span><span class="p">[</span><span class="n">PA</span><span class="p">,</span><span class="n">IDX1</span><span class="p">]</span> <span class="o">-</span> \
+                      <span class="n">c1</span><span class="o">*</span><span class="p">(</span><span class="n">psi_iPR</span><span class="p">[</span><span class="n">IDX2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">psi_iPR</span><span class="p">[</span><span class="n">IDX1</span><span class="p">]</span> <span class="o">+</span>
+                          <span class="n">psi_iPR</span><span class="p">[</span><span class="n">IDX3</span><span class="p">])</span>
+    <span class="n">psi_r</span><span class="p">[</span><span class="n">FU</span><span class="p">]</span> <span class="o">+=</span> <span class="n">c2V</span><span class="o">*</span><span class="n">psi_i</span><span class="p">[</span><span class="n">PR</span><span class="p">]</span>
+    <span class="c">#  Increment the time steps.  PR -&gt; PA and FU -&gt; PR</span>
+    <span class="n">psi_r</span><span class="p">[</span><span class="n">PA</span><span class="p">]</span> <span class="o">=</span> <span class="n">psi_rPR</span>
+    <span class="n">psi_r</span><span class="p">[</span><span class="n">PR</span><span class="p">]</span> <span class="o">=</span> <span class="n">psi_r</span><span class="p">[</span><span class="n">FU</span><span class="p">]</span>
+    <span class="n">psi_i</span><span class="p">[</span><span class="n">PA</span><span class="p">]</span> <span class="o">=</span> <span class="n">psi_iPR</span>
+    <span class="n">psi_i</span><span class="p">[</span><span class="n">PR</span><span class="p">]</span> <span class="o">=</span> <span class="n">psi_i</span><span class="p">[</span><span class="n">FU</span><span class="p">]</span>
+    <span class="c">#  Only plot after a few iterations to make the simulation run faster.</span>
+    <span class="k">if</span> <span class="n">t</span> <span class="o">%</span> <span class="n">Tp</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c">#  Compute observable probability for the plot.</span>
+        <span class="n">psi_p</span> <span class="o">=</span> <span class="n">psi_r</span><span class="p">[</span><span class="n">PR</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">psi_i</span><span class="p">[</span><span class="n">PR</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+        <span class="c">#  Update the plots.</span>
+        <span class="n">lineR</span><span class="o">.</span><span class="n">set_ydata</span><span class="p">(</span><span class="n">psi_r</span><span class="p">[</span><span class="n">PR</span><span class="p">])</span>
+        <span class="n">lineI</span><span class="o">.</span><span class="n">set_ydata</span><span class="p">(</span><span class="n">psi_i</span><span class="p">[</span><span class="n">PR</span><span class="p">])</span>
+        <span class="c"># Note: we plot the probability density amplified by a factor so it&#39;s a</span>
+        <span class="c"># bit easier to see.</span>
+        <span class="n">lineP</span><span class="o">.</span><span class="n">set_ydata</span><span class="p">(</span><span class="mi">6</span><span class="o">*</span><span class="n">psi_p</span><span class="p">)</span>
+
+        <span class="n">pylab</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+<span class="c"># So the windows don&#39;t auto-close at the end if run outside ipython</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">ioff</span><span class="p">()</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p><tt class="docutils literal"><span class="pre">CategoryCookbook</span></tt></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">The One-Dimensional Finite-Difference Time-Domain (FDTD) Algorithm Applied to the Schrödinger Equation</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#code">Code</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="SavitzkyGolay.html"
+                        title="previous chapter">Savitzky Golay Filtering</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="SegmentAxis.html"
+                        title="next chapter">Convolution-like operations</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/SchrodingerFDTD.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="SegmentAxis.html" title="Convolution-like operations"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="SavitzkyGolay.html" title="Savitzky Golay Filtering"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

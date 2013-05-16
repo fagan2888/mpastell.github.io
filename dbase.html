@@ -1,0 +1,181 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Update - 1/18/2007 &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Wrapping C codes using f2py" href="f2py_and_NumPy.html" />
+    <link rel="prev" title="Modeling a Zombie Apocalypse" href="Zombie_Apocalypse_ODEINT.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="f2py_and_NumPy.html" title="Wrapping C codes using f2py"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Zombie_Apocalypse_ODEINT.html" title="Modeling a Zombie Apocalypse"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="update-1-18-2007">
+<h1>Update - 1/18/2007<a class="headerlink" href="#update-1-18-2007" title="Permalink to this headline">¶</a></h1>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;Added&nbsp;a&nbsp;function&nbsp;to&nbsp;convert&nbsp;a&nbsp;data-dictionary&nbsp;to&nbsp;a&nbsp;rec-array&nbsp;(Pierre&nbsp;GM).</span></tt></p>
+</div>
+<div class="section" id="update-1-14-2007">
+<h1>Update - 1/14/2007<a class="headerlink" href="#update-1-14-2007" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Replaces&nbsp;missing&nbsp;values&nbsp;with&nbsp;'nan'</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Loads&nbsp;non-numeric&nbsp;data&nbsp;from&nbsp;csv</span></tt></div>
+</div>
+</div>
+<div class="section" id="dbase">
+<h1>Dbase<a class="headerlink" href="#dbase" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference external" href="..image::dbase_attachments/dbase.0.7.py">dbase.py</a> class, can be used to
+read/write/summarize/plot time-series data.</p>
+<p>To summarize the functionality:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;data&nbsp;and&nbsp;variable&nbsp;names&nbsp;stored&nbsp;in&nbsp;a&nbsp;dictionary&nbsp;-&nbsp;accessible&nbsp;using&nbsp;variable&nbsp;names</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;load/save&nbsp;from/to&nbsp;csv/pickle&nbsp;format,&nbsp;including&nbsp;date&nbsp;information&nbsp;(shelve&nbsp;format&nbsp;to&nbsp;be&nbsp;added)</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;plotting&nbsp;and&nbsp;descriptive&nbsp;statistics,&nbsp;with&nbsp;dates&nbsp;if&nbsp;provided</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;adding/deleting&nbsp;variables,&nbsp;including&nbsp;trends/(seasonal)dummies</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;selecting&nbsp;observations&nbsp;based&nbsp;on&nbsp;dates&nbsp;or&nbsp;other&nbsp;variable&nbsp;values&nbsp;(e.g.,&nbsp;&gt;&nbsp;1/1/2003)</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;copying&nbsp;instance&nbsp;data</span></tt></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">Attached&nbsp;also&nbsp;the&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`dbase_pydoc.txt</span></tt> &lt;.. image:: dbase_attachments/dbase_pydoc.0.2.txt&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;information&nbsp;for&nbsp;the&nbsp;class.</span></tt></p>
+<div class="section" id="example-usage">
+<h2>Example Usage<a class="headerlink" href="#example-usage" title="Permalink to this headline">¶</a></h2>
+<p>To see the class in action download the file and run it (python
+dbase.py). This will create an example data file
+(./dbase_test_files/data.csv) that will be processed by the class.</p>
+<p>To import the module:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="kn">import</span> <span class="nn">dbase</span>
+</pre></div>
+</div>
+<p>After running the class you can load the example data using</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">dbase</span><span class="o">.</span><span class="n">dbase</span><span class="p">(</span><span class="s">&quot;./dbase_test_files/data.csv&quot;</span><span class="p">,</span> <span class="n">date</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the above command &#8216;0&#8217; is the index of the column containing dates.</p>
+<p>You can plot series &#8216;b&#8217; and &#8216;c&#8217; in the file using</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="n">data</span><span class="o">.</span><span class="n">dataplot</span><span class="p">(</span><span class="s">&#39;b&#39;</span><span class="p">,</span><span class="s">&#39;c&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="dbase_attachments/ex_plot.0.1.png" src="dbase_attachments/ex_plot.0.1.png" />
+<p>You get descriptive statistics for series &#8216;a&#8217;,&#8217;b&#8217;, and &#8216;c&#8217; by using</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="n">data</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">,</span><span class="s">&#39;b&#39;</span><span class="p">,</span><span class="s">&#39;c&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Since there is date information in
+<a class="reference external" href="..image::dbase_attachments/data.0.3.csv">data.csv</a> this information will be added
+automatically when calling dataplot() or info().</p>
+<p>There is an extensive set of examples at the bottom of the code file
+that demonstrates the functionality of the class.</p>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Update - 1/18/2007</a></li>
+<li><a class="reference internal" href="#update-1-14-2007">Update - 1/14/2007</a></li>
+<li><a class="reference internal" href="#dbase">Dbase</a><ul>
+<li><a class="reference internal" href="#example-usage">Example Usage</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Zombie_Apocalypse_ODEINT.html"
+                        title="previous chapter">Modeling a Zombie Apocalypse</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="f2py_and_NumPy.html"
+                        title="next chapter">Wrapping C codes using f2py</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/dbase.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="f2py_and_NumPy.html" title="Wrapping C codes using f2py"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Zombie_Apocalypse_ODEINT.html" title="Modeling a Zombie Apocalypse"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

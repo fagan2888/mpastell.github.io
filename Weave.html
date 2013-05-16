@@ -1,0 +1,259 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Inline Weave With Basic Array Conversion (no Blitz) &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Modeling a Zombie Apocalypse" href="Zombie_Apocalypse_ODEINT.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="Watershed.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Zombie_Apocalypse_ODEINT.html" title="Modeling a Zombie Apocalypse"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Watershed.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="inline-weave-with-basic-array-conversion-no-blitz">
+<h1>Inline Weave With Basic Array Conversion (no Blitz)<a class="headerlink" href="#inline-weave-with-basic-array-conversion-no-blitz" title="Permalink to this headline">¶</a></h1>
+<p>Python and Numpy are designed to express general statements that work
+transparently on many sizes of incoming data. Using inline Weave with
+Blitz conversion can dramatically speed up many numerical operations
+(eg, addition of a series of arrays) because in some ways it bypasses
+generality. How can you speed up your algorithms with inline C code
+while maintaining generality? One tool provided by Numpy is the
+<strong>iterator</strong>. Because an iterator keeps track of memory indexing for
+you, its operation is very analogous to the concept of iteration in
+Python itself. You can write loop in C that simply says &#8220;take the next
+element in a serial object&#8211;the !PyArrayObject&#8211;and operate on it, until
+there are no more elements.&#8221;</p>
+<hr class="docutils" />
+<p>This is a very simple example of multi dimensional iterators, and their
+power to &#8220;broadcast&#8221; arrays of compatible shapes. It shows that the very
+same code that is entirely ignorant of dimensionality can achieve
+completely different computations based on the rules of broadcasting. I
+have assumed in this case that <strong>*a*</strong> has at least as many dimensions
+as <strong>*b*</strong>. It is important to know that the weave array conversion of
+<strong>*a*</strong> gives you access in C++ to: *py_a &#8211; !PyObject * *a_array
+&#8211; !PyArrayObject * *a &#8211; (c-type *) py_array-&gt;data</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">npy</span>
+<span class="kn">from</span> <span class="nn">scipy.weave</span> <span class="kn">import</span> <span class="n">inline</span>
+
+<span class="k">def</span> <span class="nf">multi_iter_example</span><span class="p">():</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">npy</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">npy</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="c"># for the sake of driving home the &quot;dynamic code&quot; approach...</span>
+    <span class="n">dtype2ctype</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">npy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">npy</span><span class="o">.</span><span class="n">float64</span><span class="p">):</span> <span class="s">&#39;double&#39;</span><span class="p">,</span>
+        <span class="n">npy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">npy</span><span class="o">.</span><span class="n">float32</span><span class="p">):</span> <span class="s">&#39;float&#39;</span><span class="p">,</span>
+        <span class="n">npy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">npy</span><span class="o">.</span><span class="n">int32</span><span class="p">):</span> <span class="s">&#39;int&#39;</span><span class="p">,</span>
+        <span class="n">npy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">npy</span><span class="o">.</span><span class="n">int16</span><span class="p">):</span> <span class="s">&#39;short&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">dtype2ctype</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="c"># this code does a = a*b inplace, broadcasting b to fit the shape of a</span>
+    <span class="n">code</span> <span class="o">=</span> \
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">%s *p1, *p2;</span>
+<span class="sd">PyObject *itr;</span>
+<span class="sd">itr = PyArray_MultiIterNew(2, a_array, b_array);</span>
+<span class="sd">while(PyArray_MultiIter_NOTDONE(itr)) {</span>
+<span class="sd">  p1 = (%s *) PyArray_MultiIter_DATA(itr, 0);</span>
+<span class="sd">  p2 = (%s *) PyArray_MultiIter_DATA(itr, 1);</span>
+<span class="sd">  *p1 = (*p1) * (*p2);</span>
+<span class="sd">  PyArray_MultiIter_NEXT(itr);</span>
+<span class="sd">}</span>
+<span class="sd">&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+
+    <span class="n">b</span> <span class="o">=</span> <span class="n">npy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">         A                  B     &#39;</span>
+    <span class="k">print</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span>
+    <span class="c"># this reshaping is redundant, it would be the default broadcast</span>
+    <span class="n">b</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">inline</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">])</span>
+    <span class="k">print</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">inline version of a*b[None,:],&quot;</span>
+    <span class="k">print</span> <span class="n">a</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">npy</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">npy</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">npy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">b</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">inline</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">])</span>
+    <span class="k">print</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">inline version of a*b[:,None],&quot;</span>
+    <span class="k">print</span> <span class="n">a</span>
+</pre></div>
+</div>
+<p>There are two other iterator applications in
+<a class="reference external" href="..image::Weave_attachments/iterators_example.py">iterators_example.py</a> and
+<a class="reference external" href="..image::Weave_attachments/iterators.py">iterators.py</a>.</p>
+<div class="section" id="deeper-into-the-inline-method">
+<h2>Deeper into the &#8220;inline&#8221; method<a class="headerlink" href="#deeper-into-the-inline-method" title="Permalink to this headline">¶</a></h2>
+<p>The
+<a class="reference external" href="http://www.scipy.org/scipy/scipy/browser/trunk/scipy/weave/inline_tools.py">docstring</a>
+for <strong>inline</strong> is enormous, and indicates that all kinds of compiling
+options are supported when integrating your inline code. I&#8217;ve taken
+advantage of this to make some specialized FFTW calls a lot more simple,
+and in only a few additional lines add support for inline FFTs. In this
+example, I read in a file of pure C code and use it as
+<strong>*support_code*</strong> in my inline statement. I also use a tool from
+Numpy&#8217;s distutils to locate my FFTW libraries and headers.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
+<span class="kn">from</span> <span class="nn">scipy.weave</span> <span class="kn">import</span> <span class="n">inline</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">split</span>
+<span class="kn">from</span> <span class="nn">numpy.distutils.system_info</span> <span class="kn">import</span> <span class="n">get_info</span>
+
+<span class="n">fft1_code</span> <span class="o">=</span> \
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">char *i, *o;</span>
+<span class="sd">i = (char *) a;</span>
+<span class="sd">o = inplace ? i : (char *) b;</span>
+<span class="sd">if(isfloat) {</span>
+<span class="sd">  cfft1d(reinterpret_cast&lt;fftwf_complex*&gt;(i),</span>
+<span class="sd">         reinterpret_cast&lt;fftwf_complex*&gt;(o),</span>
+<span class="sd">         xdim, len_array, direction, shift);</span>
+<span class="sd">} else {</span>
+<span class="sd">  zfft1d(reinterpret_cast&lt;fftw_complex*&gt;(i),</span>
+<span class="sd">         reinterpret_cast&lt;fftw_complex*&gt;(o),</span>
+<span class="sd">         xdim, len_array, direction, shift);</span>
+<span class="sd">}</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">extra_code</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">split</span><span class="p">(</span><span class="n">__file__</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span><span class="s">&#39;src/cmplx_fft.c&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="n">fftw_info</span> <span class="o">=</span> <span class="n">get_info</span><span class="p">(</span><span class="s">&#39;fftw3&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">fft1</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">inplace</span><span class="p">:</span>
+        <span class="n">_fft1_work</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">inplace</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_fft1_work</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">inplace</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">ifft1</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">inplace</span><span class="p">:</span>
+        <span class="n">_fft1_work</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">inplace</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_fft1_work</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">inplace</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_fft1_work</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">inplace</span><span class="p">):</span>
+    <span class="c"># to get correct C-code, b always must be an array (but if it&#39;s</span>
+    <span class="c"># not being used, it can be trivially small)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace</span> <span class="k">else</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1j</span><span class="p">],</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">inplace</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">inplace</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">shift</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">shift</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">isfloat</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="o">==</span><span class="mi">8</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">len_array</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">xdim</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">inline</span><span class="p">(</span><span class="n">fft1_code</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;isfloat&#39;</span><span class="p">,</span> <span class="s">&#39;inplace&#39;</span><span class="p">,</span>
+                       <span class="s">&#39;len_array&#39;</span><span class="p">,</span> <span class="s">&#39;xdim&#39;</span><span class="p">,</span> <span class="s">&#39;direction&#39;</span><span class="p">,</span> <span class="s">&#39;shift&#39;</span><span class="p">],</span>
+           <span class="n">support_code</span><span class="o">=</span><span class="n">extra_code</span><span class="p">,</span>
+           <span class="n">headers</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;&lt;fftw3.h&gt;&#39;</span><span class="p">],</span>
+           <span class="n">libraries</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;fftw3&#39;</span><span class="p">,</span> <span class="s">&#39;fftw3f&#39;</span><span class="p">],</span>
+           <span class="n">include_dirs</span><span class="o">=</span><span class="n">fftw_info</span><span class="p">[</span><span class="s">&#39;include_dirs&#39;</span><span class="p">],</span>
+           <span class="n">library_dirs</span><span class="o">=</span><span class="n">fftw_info</span><span class="p">[</span><span class="s">&#39;library_dirs&#39;</span><span class="p">],</span>
+           <span class="n">compiler</span><span class="o">=</span><span class="s">&#39;gcc&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">b</span>
+</pre></div>
+</div>
+<p>This code is available in <a class="reference external" href="..image::Weave_attachments/fftmod.tar.gz">fftmod.tar.gz</a>.</p>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Inline Weave With Basic Array Conversion (no Blitz)</a><ul>
+<li><a class="reference internal" href="#deeper-into-the-inline-method">Deeper into the &#8220;inline&#8221; method</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Watershed.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Zombie_Apocalypse_ODEINT.html"
+                        title="next chapter">Modeling a Zombie Apocalypse</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Weave.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Zombie_Apocalypse_ODEINT.html" title="Modeling a Zombie Apocalypse"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Watershed.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

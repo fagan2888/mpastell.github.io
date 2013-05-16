@@ -1,0 +1,405 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Example 1 &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Hinton diagrams with matplotlib" href="Matplotlib(2f)HintonDiagrams.html" />
+    <link rel="prev" title="Learning the Object-Oriented API" href="Matplotlib(2f)EmbeddingInWx.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)HintonDiagrams.html" title="Hinton diagrams with matplotlib"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)EmbeddingInWx.html" title="Learning the Object-Oriented API"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>A commonly asked question on the matplotlib mailing lists is &#8220;how do I
+make a contour plot of my irregularly spaced data?&#8221;. The answer is,
+first you interpolate it to a regular grid. As of version 0.98.3,
+matplotlib provides a griddata function that behaves similarly to the
+matlab version. It performs &#8220;natural neighbor interpolation&#8221; of
+irregularly spaced data a regular grid, which you can then plot with
+contour, imshow or pcolor.</p>
+<div class="section" id="example-1">
+<h1>Example 1<a class="headerlink" href="#example-1" title="Permalink to this headline">¶</a></h1>
+<p>This requires Scipy 0.9:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">griddata</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="kn">as</span> <span class="nn">ma</span>
+<span class="kn">from</span> <span class="nn">numpy.random</span> <span class="kn">import</span> <span class="n">uniform</span><span class="p">,</span> <span class="n">seed</span>
+<span class="c"># make up some randomly distributed data</span>
+<span class="n">seed</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+<span class="n">npts</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">npts</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">npts</span><span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">x</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="c"># define grid.</span>
+<span class="n">xi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.1</span><span class="p">,</span><span class="mf">2.1</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">yi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.1</span><span class="p">,</span><span class="mf">2.1</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+<span class="c"># grid the data.</span>
+<span class="n">zi</span> <span class="o">=</span> <span class="n">griddata</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">z</span><span class="p">,</span> <span class="p">(</span><span class="n">xi</span><span class="p">[</span><span class="bp">None</span><span class="p">,:],</span> <span class="n">yi</span><span class="p">[:,</span><span class="bp">None</span><span class="p">]),</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;cubic&#39;</span><span class="p">)</span>
+<span class="c"># contour the gridded data, plotting dots at the randomly spaced data points.</span>
+<span class="n">CS</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span><span class="n">yi</span><span class="p">,</span><span class="n">zi</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="n">linewidths</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">colors</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">CS</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span><span class="n">yi</span><span class="p">,</span><span class="n">zi</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span> <span class="c"># draw colorbar</span>
+<span class="c"># plot data points.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">marker</span><span class="o">=</span><span class="s">&#39;o&#39;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s">&#39;b&#39;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;griddata test (</span><span class="si">%d</span><span class="s"> points)&#39;</span> <span class="o">%</span> <span class="n">npts</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="Matplotlib(2f)Gridding_irregularly_spaced_data_attachments/griddataexample1.png" src="Matplotlib(2f)Gridding_irregularly_spaced_data_attachments/griddataexample1.png" />
+</div>
+<div class="section" id="example-2">
+<h1>Example 2<a class="headerlink" href="#example-2" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib.mlab</span> <span class="kn">import</span> <span class="n">griddata</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="kn">as</span> <span class="nn">ma</span>
+<span class="kn">from</span> <span class="nn">numpy.random</span> <span class="kn">import</span> <span class="n">uniform</span>
+<span class="c"># make up some randomly distributed data</span>
+<span class="n">npts</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">npts</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">npts</span><span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">x</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="c"># define grid.</span>
+<span class="n">xi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.1</span><span class="p">,</span><span class="mf">2.1</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">yi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">2.1</span><span class="p">,</span><span class="mf">2.1</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+<span class="c"># grid the data.</span>
+<span class="n">zi</span> <span class="o">=</span> <span class="n">griddata</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">xi</span><span class="p">,</span><span class="n">yi</span><span class="p">)</span>
+<span class="c"># contour the gridded data, plotting dots at the randomly spaced data points.</span>
+<span class="n">CS</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span><span class="n">yi</span><span class="p">,</span><span class="n">zi</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="n">linewidths</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">colors</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">CS</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span><span class="n">yi</span><span class="p">,</span><span class="n">zi</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span> <span class="c"># draw colorbar</span>
+<span class="c"># plot data points.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">marker</span><span class="o">=</span><span class="s">&#39;o&#39;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s">&#39;b&#39;</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;griddata test (</span><span class="si">%d</span><span class="s"> points)&#39;</span> <span class="o">%</span> <span class="n">npts</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>By default, griddata uses the scikits delaunay package (included in
+matplotlib) to do the natural neighbor interpolation. Unfortunately, the
+delaunay package is known to fail for some nearly pathological cases. If
+you run into one of those cases, you can install the matplotlib natgrid
+toolkit. Once that is installed, the griddata function will use it
+instead of delaunay to do the interpolation. The natgrid algorithm is a
+bit more robust, but cannot be included in matplotlib proper because of
+licensing issues.</p>
+<p>The radial basis function module in the scipy sandbox can also be used
+to interpolate/smooth scattered data in n dimensions. See
+[&#8220;Cookbook/RadialBasisFunctions&#8221;] for details.</p>
+</div>
+<div class="section" id="example-3">
+<h1>Example 3<a class="headerlink" href="#example-3" title="Permalink to this headline">¶</a></h1>
+<p>A less robust but perhaps more intuitive method is presented in the code
+below. This function takes three 1D arrays, namely two independent data
+arrays and one dependent data array and bins them into a 2D grid. On top
+of that, the code also returns two other grids, one where each binned
+value represents the number of points in that bin and another in which
+each bin contains the indices of the original dependent array which are
+contained in that bin. These can be further used for interpolation
+between bins if necessary.</p>
+<p>The is essentially an Occam&#8217;s Razor approach to the matplotlib.mlab
+griddata function, as both produce similar results.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># griddata.py - 2010-07-11 ccampo</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">griddata</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">binsize</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">retbin</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">retloc</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Place unevenly spaced 2D data on a grid by 2D binning (nearest</span>
+<span class="sd">    neighbor interpolation).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : ndarray (1D)</span>
+<span class="sd">        The idependent data x-axis of the grid.</span>
+<span class="sd">    y : ndarray (1D)</span>
+<span class="sd">        The idependent data y-axis of the grid.</span>
+<span class="sd">    z : ndarray (1D)</span>
+<span class="sd">        The dependent data in the form z = f(x,y).</span>
+<span class="sd">    binsize : scalar, optional</span>
+<span class="sd">        The full width and height of each bin on the grid.  If each</span>
+<span class="sd">        bin is a cube, then this is the x and y dimension.  This is</span>
+<span class="sd">        the step in both directions, x and y. Defaults to 0.01.</span>
+<span class="sd">    retbin : boolean, optional</span>
+<span class="sd">        Function returns `bins` variable (see below for description)</span>
+<span class="sd">        if set to True.  Defaults to True.</span>
+<span class="sd">    retloc : boolean, optional</span>
+<span class="sd">        Function returns `wherebins` variable (see below for description)</span>
+<span class="sd">        if set to True.  Defaults to True.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    grid : ndarray (2D)</span>
+<span class="sd">        The evenly gridded data.  The value of each cell is the median</span>
+<span class="sd">        value of the contents of the bin.</span>
+<span class="sd">    bins : ndarray (2D)</span>
+<span class="sd">        A grid the same shape as `grid`, except the value of each cell</span>
+<span class="sd">        is the number of points in that bin.  Returns only if</span>
+<span class="sd">        `retbin` is set to True.</span>
+<span class="sd">    wherebin : list (2D)</span>
+<span class="sd">        A 2D list the same shape as `grid` and `bins` where each cell</span>
+<span class="sd">        contains the indicies of `z` which contain the values stored</span>
+<span class="sd">        in the particular bin.</span>
+
+<span class="sd">    Revisions</span>
+<span class="sd">    ---------</span>
+<span class="sd">    2010-07-11  ccampo  Initial version</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># get extrema values.</span>
+    <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="c"># make coordinate arrays.</span>
+    <span class="n">xi</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="o">+</span><span class="n">binsize</span><span class="p">,</span> <span class="n">binsize</span><span class="p">)</span>
+    <span class="n">yi</span>      <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="o">+</span><span class="n">binsize</span><span class="p">,</span> <span class="n">binsize</span><span class="p">)</span>
+    <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span><span class="n">yi</span><span class="p">)</span>
+
+    <span class="c"># make the grid.</span>
+    <span class="n">grid</span>           <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">xi</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="n">retbin</span><span class="p">:</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+
+    <span class="c"># create list in same shape as grid to store indices</span>
+    <span class="k">if</span> <span class="n">retloc</span><span class="p">:</span>
+        <span class="n">wherebin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+        <span class="n">wherebin</span> <span class="o">=</span> <span class="n">wherebin</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="c"># fill in the grid.</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrow</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ncol</span><span class="p">):</span>
+            <span class="n">xc</span> <span class="o">=</span> <span class="n">xi</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span>    <span class="c"># x coordinate.</span>
+            <span class="n">yc</span> <span class="o">=</span> <span class="n">yi</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span>    <span class="c"># y coordinate.</span>
+
+            <span class="c"># find the position that xc and yc correspond to.</span>
+            <span class="n">posx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">xc</span><span class="p">)</span>
+            <span class="n">posy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">yc</span><span class="p">)</span>
+            <span class="n">ibin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">posx</span> <span class="o">&lt;</span> <span class="n">binsize</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span> <span class="n">posy</span> <span class="o">&lt;</span> <span class="n">binsize</span><span class="o">/</span><span class="mf">2.</span><span class="p">)</span>
+            <span class="n">ind</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ibin</span> <span class="o">==</span> <span class="bp">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c"># fill the bin.</span>
+            <span class="nb">bin</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="n">ibin</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">retloc</span><span class="p">:</span> <span class="n">wherebin</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">ind</span>
+            <span class="k">if</span> <span class="n">retbin</span><span class="p">:</span> <span class="n">bins</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bin</span><span class="o">.</span><span class="n">size</span>
+            <span class="k">if</span> <span class="nb">bin</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">binval</span>         <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="nb">bin</span><span class="p">)</span>
+                <span class="n">grid</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">binval</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">grid</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>   <span class="c"># fill empty bins with nans.</span>
+
+    <span class="c"># return the grid</span>
+    <span class="k">if</span> <span class="n">retbin</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">retloc</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">grid</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">wherebin</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">grid</span><span class="p">,</span> <span class="n">bins</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">retloc</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">grid</span><span class="p">,</span> <span class="n">wherebin</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">grid</span>
+</pre></div>
+</div>
+<p>The following example demonstrates a usage of this method.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">griddata</span>
+
+<span class="n">npr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span>
+<span class="n">npts</span> <span class="o">=</span> <span class="mf">3000.</span>                            <span class="c"># the total number of data points.</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">npr</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">npts</span><span class="p">)</span>            <span class="c"># create some normally distributed dependen</span>
+<span class="n">t</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">npr</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">npts</span><span class="p">)</span>            <span class="c"># ... do the same for y.</span>
+<span class="n">zorig</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span>                      <span class="c"># z is a function of the form z = f(x,</span>
+<span class="n">y</span><span class="p">)</span><span class="o">.</span>
+<span class="n">noise</span> <span class="o">=</span> <span class="n">npr</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">npts</span><span class="p">)</span> <span class="c"># add a good amount of noise</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">zorig</span> <span class="o">+</span> <span class="n">noise</span>                    <span class="c"># z = f(x, y) = x**2 + y**2</span>
+
+<span class="c"># plot some profiles / cross-sections for some visualization.  our</span>
+<span class="c"># function is a symmetric, upward opening paraboloid z = x**2 + y**2.</span>
+<span class="c"># We expect it to be symmetric about and and y, attain a minimum on</span>
+<span class="c"># the origin and display minor Gaussian noise.</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>   <span class="c"># pyplot interactive mode on</span>
+
+<span class="c"># x vs z cross-section.  notice the noise.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="s">&#39;.&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;X vs Z=F(X,Y=constant)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;X&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Z&#39;</span><span class="p">)</span>
+
+<span class="c"># y vs z cross-section.  notice the noise.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="s">&#39;.&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Y vs Z=F(Y,X=constant)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Y&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Z&#39;</span><span class="p">)</span>
+
+<span class="c"># now show the dependent data (x vs y).  we could represent the z data</span>
+<span class="c"># as a third axis by either a 3d plot or contour plot, but we need to</span>
+<span class="c"># grid it first....</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s">&#39;.&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;X vs Y&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;X&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Y&#39;</span><span class="p">)</span>
+
+<span class="c"># enter the gridding.  imagine drawing a symmetrical grid over the</span>
+<span class="c"># plot above.  the binsize is the width and height of one of the grid</span>
+<span class="c"># cells, or bins in units of x and y.</span>
+<span class="n">binsize</span> <span class="o">=</span> <span class="mf">0.3</span>
+<span class="n">grid</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">binloc</span> <span class="o">=</span> <span class="n">griddata</span><span class="o">.</span><span class="n">griddata</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">binsize</span><span class="o">=</span><span class="n">binsize</span><span class="p">)</span>  <span class="c"># see this rou</span>
+<span class="n">tine</span><span class="s">&#39;s docstring</span>
+
+
+<span class="c"># minimum values for colorbar. filter our nans which are in the grid</span>
+<span class="n">zmin</span>    <span class="o">=</span> <span class="n">grid</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span> <span class="o">==</span> <span class="bp">False</span><span class="p">)]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+<span class="n">zmax</span>    <span class="o">=</span> <span class="n">grid</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span> <span class="o">==</span> <span class="bp">False</span><span class="p">)]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+<span class="c"># colorbar stuff</span>
+<span class="n">palette</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">LinearSegmentedColormap</span><span class="p">(</span><span class="s">&#39;jet3&#39;</span><span class="p">,</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">datad</span><span class="p">[</span><span class="s">&#39;jet</span>
+<span class="s">&#39;],2048)</span>
+<span class="n">palette</span><span class="o">.</span><span class="n">set_under</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="c"># plot the results.  first plot is x, y vs z, where z is a filled level plot.</span>
+<span class="n">extent</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="c"># extent of the plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">palette</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">zmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">zm</span>
+<span class="n">ax</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;bilinear&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;X values&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Y values&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Z = F(X, Y)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+
+<span class="c"># now show the number of points in each bin.  since the independent data are</span>
+<span class="c"># Gaussian distributed, we expect a 2D Gaussian.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">palette</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">bins</span><span class="o">.</span>
+<span class="nb">max</span><span class="p">(),</span> <span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;bilinear&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;X values&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Y values&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;X, Y vs The No. of Pts Per Bin&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The</p>
+<p>binned</p>
+<p>data:</p>
+<img alt="Matplotlib(2f)Gridding_irregularly_spaced_data_attachments/bin_small.png" src="Matplotlib(2f)Gridding_irregularly_spaced_data_attachments/bin_small.png" />
+<p>Raw</p>
+<p>data</p>
+<p>superimposed</p>
+<p>on</p>
+<p>top</p>
+<p>of</p>
+<p>binned</p>
+<p>data:</p>
+<img alt="Matplotlib(2f)Gridding_irregularly_spaced_data_attachments/raw_small.png" src="Matplotlib(2f)Gridding_irregularly_spaced_data_attachments/raw_small.png" />
+<hr class="docutils" />
+<p>CategoryCookbookMatplotlib</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Example 1</a></li>
+<li><a class="reference internal" href="#example-2">Example 2</a></li>
+<li><a class="reference internal" href="#example-3">Example 3</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)EmbeddingInWx.html"
+                        title="previous chapter">Learning the Object-Oriented API</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)HintonDiagrams.html"
+                        title="next chapter">Hinton diagrams with matplotlib</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Matplotlib(2f)Gridding_irregularly_spaced_data.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)HintonDiagrams.html" title="Hinton diagrams with matplotlib"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)EmbeddingInWx.html" title="Learning the Object-Oriented API"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

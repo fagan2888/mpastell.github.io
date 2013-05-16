@@ -1,0 +1,374 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Using B-splines in scipy.signal" href="Interpolation.html" />
+    <link rel="prev" title="Indexing numpy arrays" href="Indexing.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Interpolation.html" title="Using B-splines in scipy.signal"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Indexing.html" title="Indexing numpy arrays"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>TableOfContents</p>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>This page gives examples how to read or write a !NumPy array to or from
+a file, be it ascii or binary. The various methods demonstrated all have
+copious and sometimes sophisticated options, call help to get details.</p>
+<p>We will consider a trivial example where we create an array of zeros
+called `data`, write it to a file `myfile.txt` (myfile.dat for the
+binary case), and read it into `read_data`.</p>
+<p>This documentation could be improved by discussing more sophisticated
+cases (e.g. multiple arrays), and discussing the costs/benefits of the
+various approaches presented.</p>
+</div>
+<div class="section" id="text-files">
+<h1>Text files<a class="headerlink" href="#text-files" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="scipy">
+<h2>SciPy<a class="headerlink" href="#scipy" title="Permalink to this headline">¶</a></h2>
+<p>Writing files can be accomplished using `savetxt`. By far the easiest
+way to read text data is via genfromtxt, (or derivative convenience
+functions recfromtxt and recfromcsv).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="go">&gt;&gt;&gt;#Write data:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">savetxt</span><span class="p">(</span><span class="s">&quot;myfile.txt&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;#Read:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">genfromtxt</span><span class="p">(</span><span class="s">&quot;myfile.txt&quot;</span><span class="p">)</span> <span class="p">}}}</span>
+
+<span class="go">== Matplotlib (pylab) ==</span>
+
+<span class="go">Matplotlib  provides an easy solution which seems to load data faster than read_</span>
+<span class="go">array:</span>
+
+<span class="go">{{{#!python numbers=disable</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">load</span>           <span class="c"># warning, the load() function of numpy wil</span>
+<span class="go">l be shadowed</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">save</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">save</span><span class="p">(</span><span class="s">&#39;myfile.txt&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">read_data</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="s">&quot;myfile.txt&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="numpy">
+<h2>numPy<a class="headerlink" href="#numpy" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">savetxt</span><span class="p">(</span><span class="s">&#39;myfile.txt&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&quot;</span><span class="si">%12.6G</span><span class="s">&quot;</span><span class="p">)</span>    <span class="c"># save to file</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">genfromtxt</span><span class="p">(</span><span class="s">&#39;table.dat&#39;</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="csv-files">
+<h2>csv files<a class="headerlink" href="#csv-files" title="Permalink to this headline">¶</a></h2>
+<p>Note that csv stands for &#8220;comma separated value&#8221;. This means that the
+separator (also called a delimiter), i.e. the character which is used to
+separate individual values in a file, is a comma. In the examples above,
+the default delimiter is a space, but all of the above methods have an
+option (see their respective help for details), which can be set to a
+comma in order to read or write a csv file instead.</p>
+</div>
+<div class="section" id="a-more-sophisticated-example">
+<h2>A more sophisticated example<a class="headerlink" href="#a-more-sophisticated-example" title="Permalink to this headline">¶</a></h2>
+<p>Or, assuming you have imported numpy as N, you may want to read
+arbitrary column types. You can also return a recarray, which let&#8217;s you
+assign &#8216;column headings&#8217; to your array.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">read_array</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Read a file with an arbitrary number of columns.</span>
+<span class="sd">        The type of data in each column is arbitrary</span>
+<span class="sd">        It will be cast to the given dtype at runtime</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cast</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">cast</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">dummy</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dtype</span><span class="p">))]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">):</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">separator</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">number</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fields</span><span class="p">):</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dtype</span><span class="p">)):</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cast</span><span class="p">[</span><span class="n">dtype</span><span class="p">[</span><span class="n">i</span><span class="p">]](</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">rec</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This can then be called with the corresponding dtype:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">mydescr</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s">&#39;column1&#39;</span><span class="p">,</span> <span class="s">&#39;int32&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;column2Name&#39;</span><span class="p">,</span> <span class="s">&#39;uint32&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;col3&#39;</span><span class="p">,</span> <span class="s">&#39;ui</span>
+<span class="n">nt64</span><span class="s">&#39;), (&#39;</span><span class="n">c4</span><span class="s">&#39;, &#39;</span><span class="n">float32</span><span class="s">&#39;)])</span>
+<span class="n">myrecarray</span> <span class="o">=</span> <span class="n">read_array</span><span class="p">(</span><span class="s">&#39;file.csv&#39;</span><span class="p">,</span> <span class="n">mydescr</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="binary-files">
+<h1>Binary Files<a class="headerlink" href="#binary-files" title="Permalink to this headline">¶</a></h1>
+<p>The advantage of binary files is the huge reduction in file size. The
+price paid is losing human readability, and in some formats, losing
+portability.</p>
+<p>Let us consider the array in the previous example.</p>
+<div class="section" id="file-format-with-metadata">
+<h2>File format with metadata<a class="headerlink" href="#file-format-with-metadata" title="Permalink to this headline">¶</a></h2>
+<p>The simplest possibility is to use &#8216;s own binary file format. See , and
+.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">numpy</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&#39;test.npy&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data2</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">&#39;test.npy&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can save several arrays in a single file using . When loading an
+file you get an object of type . You can obtain a list of arrays and
+load individual arrays like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">numpy</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="s">&#39;foo.npz&#39;</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">foo</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">&#39;foo.npz&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">foo</span><span class="o">.</span><span class="n">files</span>
+<span class="go">[&#39;a&#39;, &#39;b&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a2</span> <span class="o">=</span> <span class="n">foo</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b2</span> <span class="o">=</span> <span class="n">foo</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>On older systems, the standard was to use python&#8217;s pickle module to
+pickle the arrays.</p>
+</div>
+<div class="section" id="raw-binary">
+<h2>Raw binary<a class="headerlink" href="#raw-binary" title="Permalink to this headline">¶</a></h2>
+<p>These file formats simply write out the internal representation of the
+arrays. This is platform-dependent and includes no information about
+array shape or datatype, but is quick and easy.</p>
+<p>SciPy provides fwrite() from scipy.io.numpyio. You have to set the size
+of your data, and optionally, its type (integer, short, float, etc; see
+<a class="reference external" href="http://docs.neuroinf.de/api/scipy/scipy.io.numpyio-module.html">1</a>).</p>
+<p>For reading binary files, scipy.io.numpyio provides fread(). You have to
+know the datatype of your array, its size and its shape.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy.io.numpyio</span> <span class="kn">import</span> <span class="n">fwrite</span><span class="p">,</span> <span class="n">fread</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="go">&gt;&gt;&gt;#write:  fd = open(&#39;myfile.dat&#39;, &#39;wb&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fwrite</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fd</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="go">&gt;&gt;&gt;#read:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fd</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;myfile.dat&#39;</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datatype</span> <span class="o">=</span> <span class="s">&#39;i&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">size</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">read_data</span> <span class="o">=</span> <span class="n">fread</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">datatype</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">read_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or, you can simply use and . Following the previous example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="s">&#39;myfile.dat&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fd</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;myfile.dat&#39;</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">read_data</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="n">fd</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">numpy</span> <span class="n">data</span> <span class="nb">type</span><span class="o">.</span> <span class="n">The</span> <span class="n">option</span> <span class="p">{{{</span><span class="n">fromfile</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">count</span><span class="o">=&lt;</span><span class="n">number</span><span class="o">&gt;</span><span class="p">)}}}</span> <span class="n">specifies</span> <span class="n">the</span> <span class="n">nu</span>
+<span class="n">mber</span> <span class="n">of</span> <span class="n">data</span> <span class="n">entries</span> <span class="n">of</span> <span class="n">that</span> <span class="nb">type</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="n">read</span> <span class="ow">in</span> <span class="p">(</span><span class="n">the</span> <span class="n">default</span> <span class="o">-</span><span class="mi">1</span> <span class="n">means</span> <span class="n">read</span>
+ <span class="ow">in</span> <span class="n">the</span> <span class="n">whole</span> <span class="nb">file</span><span class="p">,</span> <span class="n">which</span> <span class="ow">is</span> <span class="n">what</span> <span class="n">you</span> <span class="n">usually</span> <span class="n">want</span><span class="p">)</span><span class="o">.</span> <span class="n">However</span><span class="p">,</span> <span class="n">the</span> <span class="n">method</span> <span class="ow">is</span> <span class="ow">not</span>
+<span class="n">recommended</span> <span class="k">for</span> <span class="n">data</span> <span class="n">storage</span> <span class="ow">and</span> <span class="n">transfer</span> <span class="n">between</span> <span class="n">different</span> <span class="n">platforms</span><span class="p">,</span> <span class="n">since</span> <span class="n">no</span>
+<span class="n">byteorder</span> <span class="ow">and</span> <span class="n">datatype</span> <span class="n">information</span> <span class="ow">is</span> <span class="n">stored</span> <span class="p">(</span><span class="n">see</span> <span class="n">also</span> <span class="n">the</span> <span class="n">docstrings</span><span class="p">)</span><span class="o">.</span>
+<span class="n">If</span> <span class="n">you</span> <span class="n">want</span> <span class="n">that</span><span class="p">,</span> <span class="n">use</span> <span class="p">{{{</span><span class="n">numpy</span><span class="p">}}}</span><span class="s">&#39;s own binary file format. See {{{numpy.save}}}</span>
+<span class="p">,</span> <span class="p">{{{</span><span class="n">numpy</span><span class="o">.</span><span class="n">savez</span><span class="p">}}}</span> <span class="ow">and</span> <span class="p">{{{</span><span class="n">numpy</span><span class="o">.</span><span class="n">load</span><span class="p">}}}</span><span class="o">.</span>
+<span class="p">{{{</span><span class="c">#! python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&#39;test.npy&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">data2</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">&#39;test.npy&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Another, but deprecated, way to fully control endianness (byteorder),
+storage order (row-major, column-major) for rank &gt; 1 arrays and
+datatypes that are written and read back is . Writing:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">npfile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">npf</span> <span class="o">=</span> <span class="n">npfile</span><span class="p">(</span><span class="s">&#39;test.dat&#39;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s">&#39;F&#39;</span><span class="p">,</span> <span class="n">endian</span><span class="o">=</span><span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="n">permission</span><span class="o">=</span><span class="s">&#39;wb&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">npf</span><span class="o">.</span><span class="n">write_array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">npf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>And reading back:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">npf</span> <span class="o">=</span> <span class="n">npfile</span><span class="p">(</span><span class="s">&#39;test.dat&#39;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s">&#39;F&#39;</span><span class="p">,</span> <span class="n">endian</span><span class="o">=</span><span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="n">permission</span><span class="o">=</span><span class="s">&#39;rb&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data2</span> <span class="o">=</span> <span class="n">npf</span><span class="o">.</span><span class="n">read_array</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">npf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="write-a-fortran-or-c-array-to-a-binary-file-with-metadata">
+<h2>Write a Fortran or C array to a binary file with metadata<a class="headerlink" href="#write-a-fortran-or-c-array-to-a-binary-file-with-metadata" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://www.maths.unsw.edu.au/~mclean/libnpy-0.5.tgz">libnpy</a> is a
+small library that provides simple routines for saving a C or Fortran
+array to a data file using NumPy&#8217;s own binary format. For a description
+of this format, do</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">numpy.lib</span> <span class="kn">import</span> <span class="n">format</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">help</span><span class="p">(</span><span class="n">format</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is a minimal C example `cex.c`:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#include&quot;npy.h&quot;</span>
+<span class="nb">int</span> <span class="n">main</span><span class="p">(){</span>
+    <span class="n">double</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span> <span class="p">},</span>
+                       <span class="p">{</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span> <span class="p">}</span> <span class="p">};</span>
+    <span class="nb">int</span> <span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span> <span class="p">},</span> <span class="n">fortran_order</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="n">npy_save_double</span><span class="p">(</span><span class="s">&quot;ca.npy&quot;</span><span class="p">,</span> <span class="n">fortran_order</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The program creates a file `ca.npy` that you can load into python in
+the usual way.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ca</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">&#39;ca.npy&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">ca</span>
+<span class="go">[[ 1.  2.  3.  4.]</span>
+<span class="go"> [ 5.  6.  7.  8.]]</span>
+</pre></div>
+</div>
+<p>The corresponding Fortran program, `fex.f95`, looks like</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">program</span> <span class="n">fex</span>
+    <span class="n">use</span> <span class="n">fnpy</span>
+    <span class="n">use</span> <span class="n">iso_c_binding</span>
+    <span class="n">implicit</span> <span class="n">none</span>
+
+    <span class="n">integer</span>  <span class="p">::</span> <span class="n">i</span>
+    <span class="n">real</span><span class="p">(</span><span class="n">C_DOUBLE</span><span class="p">)</span> <span class="p">::</span> <span class="n">a</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span> <span class="o">=</span> <span class="n">reshape</span><span class="p">([(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">)],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
+
+    <span class="n">call</span> <span class="n">save_double</span><span class="p">(</span><span class="s">&quot;fa.npy&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">a</span><span class="p">)</span>
+<span class="n">end</span> <span class="n">program</span> <span class="n">fex</span>
+</pre></div>
+</div>
+<p>but the entries of the NumPy array now follow the Fortran (column-major)
+ordering.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">fa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">&#39;fa.npy&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">fa</span>
+<span class="go">[[ 1.  3.  5.  7.]</span>
+<span class="go"> [ 2.  4.  6.  8.]]</span>
+</pre></div>
+</div>
+<p>The `README` file in the source distribution explains how to compile
+the library using `make`.</p>
+<p>If you put `npy.h` and `libnpy.a` in the same directory as
+`cex.c`, then you can build the executable `cex` with the command</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">gcc</span> <span class="o">-</span><span class="n">o</span> <span class="n">cex</span> <span class="n">cex</span><span class="o">.</span><span class="n">c</span> <span class="n">libnpy</span><span class="o">.</span><span class="n">a</span>
+</pre></div>
+</div>
+<p>Similarly, with `npy.mod` and `libnpy.a` in the same directory as
+`fex.f95`, build `fex` with the command</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">gfortran</span> <span class="o">-</span><span class="n">o</span> <span class="n">fex</span> <span class="n">fex</span><span class="o">.</span><span class="n">f95</span> <span class="n">libnpy</span><span class="o">.</span><span class="n">a</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>CategoryCookbook CategoryCookbook</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a></li>
+<li><a class="reference internal" href="#text-files">Text files</a><ul>
+<li><a class="reference internal" href="#scipy">SciPy</a></li>
+<li><a class="reference internal" href="#numpy">numPy</a></li>
+<li><a class="reference internal" href="#csv-files">csv files</a></li>
+<li><a class="reference internal" href="#a-more-sophisticated-example">A more sophisticated example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#binary-files">Binary Files</a><ul>
+<li><a class="reference internal" href="#file-format-with-metadata">File format with metadata</a></li>
+<li><a class="reference internal" href="#raw-binary">Raw binary</a></li>
+<li><a class="reference internal" href="#write-a-fortran-or-c-array-to-a-binary-file-with-metadata">Write a Fortran or C array to a binary file with metadata</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Indexing.html"
+                        title="previous chapter">Indexing numpy arrays</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Interpolation.html"
+                        title="next chapter">Using B-splines in scipy.signal</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/InputOutput.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Interpolation.html" title="Using B-splines in scipy.signal"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Indexing.html" title="Indexing numpy arrays"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

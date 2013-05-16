@@ -1,0 +1,393 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Basics &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="ButterworthBandpass.html" />
+    <link rel="prev" title="Brownian Motion" href="BrownianMotion.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ButterworthBandpass.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="BrownianMotion.html" title="Brownian Motion"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>This is a brief introduction to array objects, their declaration and use
+in scipy. A comprehensive list of examples of Numpy functions for arrays
+can be found at [&#8220;Numpy Example List With Doc&#8221;]</p>
+<div class="section" id="basics">
+<h1>Basics<a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h1>
+<p>Numerical arrays are not yet defined in the standard python language. To
+load the array object and its methods into the namespace, the numpy
+package must be imported:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>Arrays can be created from the usual python lists and tuples using the
+array function. For example,</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>returns a one dimensional array of integers. The array instance has a
+large set of methods and properties attached to it. For example, is the
+dimension of the array. In this case, it would simply be .</p>
+<p>One big difference between array objects and python&#8217;s sequences object
+is the definition of the mathematical operators. Whereas the addition of
+two lists concatenates those list, the addition of two arrays adds the
+arrays element-wise. For example :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">array</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">11</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">15</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Subtraction, multiplication and division are defined similarly.</p>
+<p>A common gotcha for beginners is the type definition of arrays. Unless
+otherwise instructed, the array construct uses the type of its argument.
+Since was created from a list of integers, it is defined as an integer
+array, more precisely :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span>
+<span class="n">dtype</span><span class="p">(</span><span class="s">&#39;&lt;i4&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Accordingly, mathematical operations such as division will operate as
+usual in python, that is, will return an integer answer :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span><span class="o">/</span><span class="mi">3</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>To obtain the expected answer, one solution is to force the casting of
+integers into real numbers by dividing by a real number . A more careful
+approach is to define the type at initialization time :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Another way to cast is by using Numpy&#8217;s built-in cast functions astype
+and cast. These allow you to change the type of data you&#8217;re working
+with:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&#39;float&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The elements of an array are accessed using the bracket notation where
+is an integer index starting at 0. Sub-arrays can be accessed by using
+general indexes of the form &#8216;&#8217;start:stop:step. &#8216;&#8217;a[start:stop:step] will
+return a reference to a sub-array of array a starting with (including)
+the element at index &#8216;&#8217;start &#8216;&#8217;going up to (but not including) the
+element at index stop in steps of <em>step</em>. e.g.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">,</span> <span class="mf">3.4</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="mf">3.4</span><span class="p">,</span> <span class="mf">3.4</span><span class="p">,</span> <span class="mf">3.4</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">t</span>  <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;float&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">t</span><span class="p">[:]</span>              <span class="c"># get all t-values</span>
+<span class="n">array</span><span class="p">([</span> <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">0.8975979</span> <span class="p">,</span>  <span class="mf">1.7951958</span> <span class="p">,</span>  <span class="mf">2.6927937</span> <span class="p">,</span>  <span class="mf">3.5903916</span> <span class="p">,</span>
+        <span class="mf">4.48798951</span><span class="p">,</span>  <span class="mf">5.38558741</span><span class="p">,</span>  <span class="mf">6.28318531</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>            <span class="c"># get sub-array with the elements at the indexes 2,3</span>
+<span class="n">array</span><span class="p">([</span> <span class="mf">1.7951958</span><span class="p">,</span>  <span class="mf">2.6927937</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">t</span><span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">)]</span>     <span class="c"># the same using slice</span>
+<span class="n">array</span><span class="p">([</span> <span class="mf">1.7951958</span><span class="p">,</span>  <span class="mf">2.6927937</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">6</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>          <span class="c"># every even-indexed value up to but excluding 6</span>
+<span class="n">array</span><span class="p">([</span> <span class="mf">0.</span>       <span class="p">,</span>  <span class="mf">1.7951958</span><span class="p">,</span>  <span class="mf">3.5903916</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Furthermore, there is the possibility to access array-elements using
+bool-arrays. The bool-array has the indexes of elements which are to be
+accessed set to <em>True.</em></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">i</span><span class="o">=</span><span class="n">array</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="p">[</span><span class="bp">False</span><span class="p">],</span><span class="nb">bool</span><span class="p">)</span>   <span class="c"># create an bool-array for indexing</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">i</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="bp">True</span><span class="p">;</span><span class="n">i</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">=</span><span class="bp">True</span><span class="p">;</span><span class="n">i</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">=</span><span class="bp">True</span>  <span class="c"># we want elements with indexes 2,4 and 6</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span> <span class="mf">1.7951958</span> <span class="p">,</span>  <span class="mf">3.5903916</span> <span class="p">,</span>  <span class="mf">5.38558741</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>&#8216;&#8217; &#8216;&#8217;</p>
+<p>We can use this syntax to make slightly more elaborate constructs.
+Consider the data[:] and t[:] arrays defined before. Suppose we want to
+get the four (t[i]/data[i])-pairs with the four t[i]-values being
+closest to a point p=1.8. We could proceed as follows:</p>
+<div class="highlight-python"><pre>#!python numbers=disable
+&gt;&gt;&gt;p=1.8                            # set our point
+&gt;&gt;&gt;abs(t-p)                         # how much do the t[:]-values differ from p?
+
+array([ 1.8       ,  0.9024021 ,  0.0048042 ,  0.8927937 ,  1.7903916 ,
+        2.68798951,  3.58558741,  4.48318531])
+&gt;&gt;&gt;dt_m = sort(abs(t-p))[3]         # how large is the 4-th largest absolute dis
+tance between the
+&gt;&gt;&gt;                                 # t[:]-values and p
+&gt;&gt;&gt;
+&gt;&gt;&gt;abs(t-p)&lt;=dt_m                   # where are the four elements of t[:]closest
+ to p ?
+array([False, True, True, True, True, False, False, False], dtype=bool)
+&gt;&gt;&gt;y_p = data[abs(t-p)&lt;=dt_m]       # construct the sub-arrays; (1) get the 4 t[
+:]-values
+&gt;&gt;&gt;t_p = t[abs(t-p)&lt;=dt_m]          # (2) get the data t[:]-values corresponding
+ to the 4 t[:] values
+&gt;&gt;&gt;y_p
+array([ 1.2,  2.2,  3.4,  3.5])
+&gt;&gt;&gt;t_p
+array([ 0.8975979,  1.7951958,  2.6927937,  3.5903916])</pre>
+</div>
+<p>It has to be kept in mind that slicing returns a reference to the data.
+As a consequence, changes in the returned sub-array cause changes in the
+original array and vice versa. If one wants to copy only the values one
+can use the copy()-method of the matrix object. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="c"># first lets define a 2-d matrix</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span> <span class="o">=</span> <span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span>   <span class="mi">1</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span>  <span class="mi">3</span><span class="p">],</span>   <span class="c"># initialize 2-d array</span>
+<span class="o">...</span>            <span class="p">[</span><span class="mi">4</span><span class="p">,</span>   <span class="mi">5</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span>  <span class="mi">7</span><span class="p">],</span>
+<span class="o">...</span>            <span class="p">[</span><span class="mi">8</span><span class="p">,</span>   <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">],</span>
+<span class="o">...</span>            <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">A</span>
+<span class="n">array</span><span class="p">([[</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span>  <span class="mi">3</span><span class="p">],</span>
+       <span class="p">[</span> <span class="mi">4</span><span class="p">,</span>  <span class="mi">5</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span>  <span class="mi">7</span><span class="p">],</span>
+       <span class="p">[</span> <span class="mi">8</span><span class="p">,</span>  <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">b</span><span class="o">=</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>                    <span class="c"># let&#39;s get a sub-matrix containing the cross</span>
+<span class="o">-</span><span class="n">section</span> <span class="n">of</span>
+<span class="o">&gt;&gt;&gt;</span>                                <span class="c"># rows 1,2 and columns 0,1</span>
+<span class="o">&gt;&gt;&gt;</span>                                <span class="c"># !attention! this assigns to b a reference t</span>
+<span class="n">o</span> <span class="n">the</span>
+<span class="o">&gt;&gt;&gt;</span>                                <span class="c"># sub-matrix of A</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">b</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">c</span><span class="o">=</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>             <span class="c"># copy the entries</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">c</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>                 <span class="c"># we can also assign by slicing (this also ch</span>
+<span class="n">anges</span> <span class="n">shallow</span> <span class="n">copies</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">b</span>                               <span class="c"># b also affected (only a reference to sub ma</span>
+<span class="n">trix</span><span class="p">)</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">42</span><span class="p">,</span> <span class="mi">42</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">42</span><span class="p">,</span> <span class="mi">42</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">c</span>                               <span class="c"># still the same (deep copy)</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="matrix-dot-product">
+<h1>Matrix dot product<a class="headerlink" href="#matrix-dot-product" title="Permalink to this headline">¶</a></h1>
+<p>The next example creates two matrices: a and b, and computes the dot
+product axb (in other words, the standard matrix product)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">array</span><span class="p">([[</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="automatic-array-creation">
+<h1>Automatic array creation<a class="headerlink" href="#automatic-array-creation" title="Permalink to this headline">¶</a></h1>
+<p>Scipy (via Numpy) provides numerous ways to create arrays automatically.
+For example, to create a vector of evenly spaced numbers, the linspace
+function can be called. This is often useful to compute the result of a
+function on some domain. For example, to compute the value of the
+function on one period, we would define a vector going from 0 to 2 pi
+and compute the value of the function for all values in this vector :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The same can be done on a N dimensional grid using the class and some of
+its object creation methods and . For example,</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">mgrid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">:</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">:</span><span class="o">.</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>returns two matrices, x and y, whose elements range from 0 to 10
+(non-inclusively) in .1 and .2 increments respectively. These matrices
+can be used to compute the value of a function at the points (x_i,
+y_i) defined by those grids :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+</pre></div>
+</div>
+<p>The ogrid object has the exact same behavior, but instead of storing an
+N-D matrix into memory, it stores only the 1-D vector that defines it.
+For large matrices, this can lead to significant economy of memory
+space.</p>
+<p>Other useful functions to create matrices are and who initialize arrays
+full of zeros and ones. Note that those will be float arrays by default.
+This may lead to curious behaviour for the unawares. For example, let&#8217;s
+initialize a matrix with zeros, and then place values in it element by
+element.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="n">mz</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">mz</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">.</span><span class="mi">5</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">mz</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.6</span><span class="o">**</span><span class="mi">2</span>
+</pre></div>
+</div>
+<p>In this example, we are trying to store floating point numbers in an
+integer array. Thus, the numbers are then recast to integers, so that if
+we print the matrix, we obtain :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span>
+</pre></div>
+</div>
+<p>To create real number arrays, one simply need to state the type
+explicitly in the call to the function :</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="n">mz</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="repeating-array-segments">
+<h1>Repeating array segments<a class="headerlink" href="#repeating-array-segments" title="Permalink to this headline">¶</a></h1>
+<p>The ndarray.repeat() method returns a new array with dimensions repeated
+from the old one.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="o">...</span>            <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="c"># repeats each row twice in succession</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c"># repeats each column 3 times in succession</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="c"># flattens (ravels), then repeats each element twice</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>These can be combined to do some useful things, like enlarging image
+data stored in a 2D array:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="k">def</span> <span class="nf">enlarge</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Enlarges 2D image array a using simple pixel repetition in both dimension</span>
+<span class="sd">s.</span>
+<span class="sd">    Enlarges by factor x horizontally and factor y vertically.</span>
+<span class="sd">    If y is left as None, uses factor x for both dimensions.&quot;&quot;&quot;</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="k">for</span> <span class="n">factor</span> <span class="ow">in</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">factor</span><span class="o">.</span><span class="n">__class__</span> <span class="o">==</span> <span class="nb">int</span>
+        <span class="k">assert</span> <span class="n">factor</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">enlarge</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p><tt class="docutils literal"><span class="pre">.&nbsp;CategoryCookbook</span></tt></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Basics</a></li>
+<li><a class="reference internal" href="#matrix-dot-product">Matrix dot product</a></li>
+<li><a class="reference internal" href="#automatic-array-creation">Automatic array creation</a></li>
+<li><a class="reference internal" href="#repeating-array-segments">Repeating array segments</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="BrownianMotion.html"
+                        title="previous chapter">Brownian Motion</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ButterworthBandpass.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/BuildingArrays.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ButterworthBandpass.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="BrownianMotion.html" title="Brownian Motion"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

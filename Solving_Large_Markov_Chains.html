@@ -1,0 +1,249 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Power Method &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="SphericalBesselZeros.html" />
+    <link rel="prev" title="Smoothing of a 1D signal" href="SignalSmooth.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="SphericalBesselZeros.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="SignalSmooth.html" title="Smoothing of a 1D signal"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>This page shows how to compute the stationary distribution pi of a large
+Markov chain. The example is a tandem of two M/M/1 queues. Generally the
+transition matrix P of the Markov chain is sparse, so that we can either
+use scipy.sparse or Pysparse. Here we demonstrate how to use both of
+these tools.</p>
+<div class="section" id="power-method">
+<h1>Power Method<a class="headerlink" href="#power-method" title="Permalink to this headline">¶</a></h1>
+<p>In this section we find pi by means of iterative methods called the
+Power method. More specifically, given a (stochastic) transition matrix
+P, and an initial vector pi_0, compute iteratively pi_n = pi_{n-1} P
+until the distance (in some norm) between pi_n and pi_{n-1} is small
+enough.</p>
+<p>Fist we build the generator matrix Q for the related Markov chain. Then
+we turn Q into a transition matrix P by the method of uniformization,
+that is, we define P as I - Q/l, where I is the identity matrix (of the
+same size as Q) and l is the smallest element on the diagonal of Q. Once
+we have P, we approximate pi (the left eigenvector of P that satisfies
+pi = pi P) by the iterates pi_n = pi_0 P^n, for some initial vector
+pi_0.</p>
+<p>More details of the above approach can be found in (more or less) any
+book on probability and Markov Chains. A fine example, with many nice
+examples and attention to the numerical solution of Markov chains, is
+`Queueing networks and Markov Chains&#8217; by G. Bolch et al., John Wiley,
+2nd edition, 2006.</p>
+<p>You can get the source code for this tutorial here:
+.. image:: Solving_Large_Markov_Chains_attachments/tandemqueue.py</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+
+<span class="n">labda</span><span class="p">,</span> <span class="n">mu1</span><span class="p">,</span> <span class="n">mu2</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.01</span><span class="p">,</span> <span class="mf">1.001</span>
+<span class="n">N1</span><span class="p">,</span> <span class="n">N2</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span>
+<span class="n">size</span> <span class="o">=</span> <span class="n">N1</span><span class="o">*</span><span class="n">N2</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ones</span><span class="p">,</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">empty</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="kn">as</span> <span class="nn">sp</span>
+<span class="kn">import</span>  <span class="nn">pysparse</span>
+<span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">matshow</span><span class="p">,</span> <span class="n">savefig</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">norm</span>
+<span class="kn">import</span> <span class="nn">time</span>
+</pre></div>
+</div>
+<p>This simple function converts the state (i,j), which represents that the
+first queue contains i jobs and the second queue j jobs, to a more
+suitable form to define a transition matrix.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">j</span><span class="o">*</span><span class="n">N1</span> <span class="o">+</span> <span class="n">i</span>
+</pre></div>
+</div>
+<p>Build the off-diagonal elements of the generator matrix Q.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">fillOffDiagonal</span><span class="p">(</span><span class="n">Q</span><span class="p">):</span>
+    <span class="c"># labda</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">N1</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">N2</span><span class="p">):</span>
+            <span class="n">Q</span><span class="p">[(</span><span class="n">state</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">),</span><span class="n">state</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">))]</span><span class="o">=</span> <span class="n">labda</span>
+    <span class="c"># mu2</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">N1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">N2</span><span class="p">):</span>
+            <span class="n">Q</span><span class="p">[(</span><span class="n">state</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">),</span><span class="n">state</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">))]</span><span class="o">=</span> <span class="n">mu2</span>
+    <span class="c"># mu1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">N1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">N2</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">Q</span><span class="p">[(</span><span class="n">state</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">),</span><span class="n">state</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">))]</span><span class="o">=</span> <span class="n">mu1</span>
+    <span class="k">print</span> <span class="s">&quot;ready filling&quot;</span>
+</pre></div>
+</div>
+<p>In this function we use scipy.sparse</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">computePiMethod1</span><span class="p">():</span>
+    <span class="n">e0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">dok_matrix</span><span class="p">((</span><span class="n">size</span><span class="p">,</span><span class="n">size</span><span class="p">))</span>
+    <span class="n">fillOffDiagonal</span><span class="p">(</span><span class="n">Q</span><span class="p">)</span>
+    <span class="c"># Set the diagonal of Q such that the row sums are zero</span>
+    <span class="n">Q</span><span class="o">.</span><span class="n">setdiag</span><span class="p">(</span> <span class="o">-</span><span class="n">Q</span><span class="o">*</span><span class="n">ones</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="p">)</span>
+    <span class="c"># Compute a suitable stochastic matrix by means of uniformization</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="o">*</span><span class="mf">1.001</span>  <span class="c"># avoid periodicity, see the book of Bolch et al.</span>
+
+    <span class="n">P</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">speye</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span> <span class="o">-</span> <span class="n">Q</span><span class="o">/</span><span class="n">l</span>
+    <span class="c"># compute Pi</span>
+    <span class="n">P</span> <span class="o">=</span>  <span class="n">P</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
+    <span class="n">pi</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>  <span class="n">pi1</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">pi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">pi</span> <span class="o">-</span> <span class="n">pi1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">while</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mf">1e-3</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mf">1e5</span><span class="p">:</span>
+        <span class="n">pi1</span> <span class="o">=</span> <span class="n">pi</span><span class="o">*</span><span class="n">P</span>
+        <span class="n">pi</span> <span class="o">=</span> <span class="n">pi1</span><span class="o">*</span><span class="n">P</span>   <span class="c"># avoid copying pi1 to pi</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">pi</span> <span class="o">-</span> <span class="n">pi1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span> <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">print</span> <span class="s">&quot;Method 1: &quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">e0</span><span class="p">,</span> <span class="n">i</span>
+    <span class="k">return</span> <span class="n">pi</span>
+</pre></div>
+</div>
+<p>Now use Pysparse.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">computePiMethod2</span><span class="p">():</span>
+    <span class="n">e0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="n">pysparse</span><span class="o">.</span><span class="n">spmatrix</span><span class="o">.</span><span class="n">ll_mat</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">fillOffDiagonal</span><span class="p">(</span><span class="n">Q</span><span class="p">)</span>
+    <span class="c"># fill diagonal</span>
+    <span class="n">x</span> <span class="o">=</span>  <span class="n">empty</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">Q</span><span class="o">.</span><span class="n">matvec</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">size</span><span class="p">),</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">Q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">)</span>
+    <span class="c"># uniformize</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="o">*</span><span class="mf">1.001</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">pysparse</span><span class="o">.</span><span class="n">spmatrix</span><span class="o">.</span><span class="n">ll_mat</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">ones</span><span class="p">(</span><span class="n">size</span><span class="p">))</span>
+    <span class="n">P</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="mf">1.</span><span class="o">/</span><span class="n">l</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>
+    <span class="c"># Compute pi</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">to_csr</span><span class="p">()</span>
+    <span class="n">pi</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>  <span class="n">pi1</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">pi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">pi</span> <span class="o">-</span> <span class="n">pi1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">while</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mf">1e-3</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mf">1e5</span><span class="p">:</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">matvec_transp</span><span class="p">(</span><span class="n">pi</span><span class="p">,</span><span class="n">pi1</span><span class="p">)</span>
+        <span class="n">P</span><span class="o">.</span><span class="n">matvec_transp</span><span class="p">(</span><span class="n">pi1</span><span class="p">,</span><span class="n">pi</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">pi</span> <span class="o">-</span> <span class="n">pi1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span> <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">print</span> <span class="s">&quot;Method 2: &quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">e0</span><span class="p">,</span> <span class="n">i</span>
+    <span class="k">return</span> <span class="n">pi</span>
+</pre></div>
+</div>
+<p>Output the results.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">plotPi</span><span class="p">(</span><span class="n">pi</span><span class="p">):</span>
+    <span class="n">pi</span> <span class="o">=</span> <span class="n">pi</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N2</span><span class="p">,</span><span class="n">N1</span><span class="p">)</span>
+    <span class="n">matshow</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span>
+    <span class="n">savefig</span><span class="p">(</span><span class="s">&quot;pi.eps&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">pi</span> <span class="o">=</span> <span class="n">computePiMethod1</span><span class="p">()</span>
+    <span class="n">pi</span> <span class="o">=</span> <span class="n">computePiMethod2</span><span class="p">()</span>
+    <span class="n">plotPi</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is the result:</p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`..</span> <span class="pre">image::</span> <span class="pre">Solving_Large_Markov_Chains_attachments/pi.png</span></tt> &lt;.. image:: Solving_Large_Markov_Chains_attachments/pi.png&gt;`__</p>
+</div>
+<div class="section" id="improvements-of-this-tutorial">
+<h1>Improvements of this Tutorial<a class="headerlink" href="#improvements-of-this-tutorial" title="Permalink to this headline">¶</a></h1>
+<p>Include other methods such as Jacobi&#8217;s method or Gauss Seidel.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Power Method</a></li>
+<li><a class="reference internal" href="#improvements-of-this-tutorial">Improvements of this Tutorial</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="SignalSmooth.html"
+                        title="previous chapter">Smoothing of a 1D signal</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="SphericalBesselZeros.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Solving_Large_Markov_Chains.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="SphericalBesselZeros.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="SignalSmooth.html" title="Smoothing of a 1D signal"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,345 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Example 1 &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Addressing Array Columns by Name" href="Recarray.html" />
+    <link rel="prev" title="Matlab 7.3 and greater" href="Reading_mat_files.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Recarray.html" title="Addressing Array Columns by Name"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Reading_mat_files.html" title="Matlab 7.3 and greater"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>Examples showing how to rebin data to produce a smaller or bigger array
+without (and with) using interpolation.</p>
+<div class="section" id="example-1">
+<h1>Example 1<a class="headerlink" href="#example-1" title="Permalink to this headline">¶</a></h1>
+<p>Here we deal with the simplest case where any desired new shape is valid
+and no interpolation is done on the data to determine the new values. *
+First, floating slices objects are created for each dimension. *
+Second, the coordinates of the new bins are computed from the slices
+using mgrid. * Then, coordinates are transformed to integer indices. *
+And, finally, &#8216;fancy indexing&#8217; is used to evaluate the original array at
+the desired indices.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">rebin</span><span class="p">(</span> <span class="n">a</span><span class="p">,</span> <span class="n">newshape</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Rebin an array to a new shape.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">newshape</span><span class="p">)</span>
+
+        <span class="n">slices</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">old</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">old</span><span class="p">)</span><span class="o">/</span><span class="n">new</span><span class="p">)</span> <span class="k">for</span> <span class="n">old</span><span class="p">,</span><span class="n">new</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">newsh</span>
+<span class="n">ape</span><span class="p">)</span> <span class="p">]</span>
+        <span class="n">coordinates</span> <span class="o">=</span> <span class="n">mgrid</span><span class="p">[</span><span class="n">slices</span><span class="p">]</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">coordinates</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&#39;i&#39;</span><span class="p">)</span>   <span class="c">#choose the biggest smaller integer</span>
+<span class="n">index</span>
+        <span class="k">return</span> <span class="n">a</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">indices</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>If we were only interested in reducing the sizes by some integer factor
+then we could use:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">rebin_factor</span><span class="p">(</span> <span class="n">a</span><span class="p">,</span> <span class="n">newshape</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Rebin an array to a new shape.</span>
+<span class="sd">        newshape must be a factor of a.shape.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">newshape</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">sometrue</span><span class="p">(</span><span class="n">mod</span><span class="p">(</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">newshape</span> <span class="p">))</span>
+
+        <span class="n">slices</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span> <span class="n">old</span><span class="o">/</span><span class="n">new</span><span class="p">)</span> <span class="k">for</span> <span class="n">old</span><span class="p">,</span><span class="n">new</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">newshape</span>
+<span class="p">)</span> <span class="p">]</span>
+        <span class="k">return</span> <span class="n">a</span><span class="p">[</span><span class="n">slices</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-2">
+<h1>Example 2<a class="headerlink" href="#example-2" title="Permalink to this headline">¶</a></h1>
+<p>Here is an other way to deal with the reducing case for ndarrays. This
+acts identically to IDL&#8217;s rebin command where all values in the original
+array are summed and divided amongst the entries in the new array. As in
+IDL, the new shape must be a factor of the old one. The ugly &#8216;evList
+trick&#8217; builds and executes a python command of the form</p>
+<p>a.reshape(args[0],factor[0],).sum(1)/factor[0]
+a.reshape(args[0],factor[0],args[1],factor[1],).sum(1).sum(2)/factor[0]/factor[1]</p>
+<p>etc. This general form is extended to cover the number of required
+dimensions.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">rebin</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;rebin ndarray data into a smaller ndarray of the same rank whose dimensio</span>
+<span class="sd">ns</span>
+<span class="sd">    are factors of the original dimensions. eg. An array with 6 columns and 4 ro</span>
+<span class="sd">ws</span>
+<span class="sd">    can be reduced to have 6,3,2 or 1 columns and 4,2 or 1 rows.</span>
+<span class="sd">    example usages:</span>
+<span class="sd">    &gt;&gt;&gt; a=rand(6,4); b=rebin(a,3,2)</span>
+<span class="sd">    &gt;&gt;&gt; a=rand(6); b=rebin(a,2)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">lenShape</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">factor</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span><span class="o">/</span><span class="n">asarray</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">evList</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;a.reshape(&#39;</span><span class="p">]</span> <span class="o">+</span> \
+             <span class="p">[</span><span class="s">&#39;args[</span><span class="si">%d</span><span class="s">],factor[</span><span class="si">%d</span><span class="s">],&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lenShape</span><span class="p">)]</span> <span class="o">+</span> \
+             <span class="p">[</span><span class="s">&#39;)&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s">&#39;.sum(</span><span class="si">%d</span><span class="s">)&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lenShape</span><span class="p">)]</span> <span class="o">+</span> \
+             <span class="p">[</span><span class="s">&#39;/factor[</span><span class="si">%d</span><span class="s">]&#39;</span><span class="o">%</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lenShape</span><span class="p">)]</span>
+    <span class="k">print</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">evList</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">evList</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The above code returns an array of the same type as the input array. If
+the input is an integer array, the output values will be rounded down.
+If you want a float array which correctly averages the input values
+without rounding, you can do the following instead.</p>
+<p>a.reshape(args[0],factor[0],).mean(1) BR
+a.reshape(args[0],factor[0],args[1],factor[1],).mean(1).mean(2)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">rebin</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">lenShape</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">factor</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span><span class="o">/</span><span class="n">asarray</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">evList</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;a.reshape(&#39;</span><span class="p">]</span> <span class="o">+</span> \
+             <span class="p">[</span><span class="s">&#39;args[</span><span class="si">%d</span><span class="s">],factor[</span><span class="si">%d</span><span class="s">],&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lenShape</span><span class="p">)]</span> <span class="o">+</span> \
+             <span class="p">[</span><span class="s">&#39;)&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s">&#39;.mean(</span><span class="si">%d</span><span class="s">)&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lenShape</span><span class="p">)]</span>
+    <span class="k">print</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">evList</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">evList</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Some test cases:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># 2-D case</span>
+<span class="n">a</span><span class="o">=</span><span class="n">rand</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">a</span>
+<span class="n">b</span><span class="o">=</span><span class="n">rebin</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">b</span>
+<span class="n">b</span><span class="o">=</span><span class="n">rebin</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">b</span>
+<span class="n">b</span><span class="o">=</span><span class="n">rebin</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">b</span>
+<span class="n">b</span><span class="o">=</span><span class="n">rebin</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c"># 1-D case</span>
+<span class="k">print</span> <span class="n">b</span>
+<span class="n">a</span><span class="o">=</span><span class="n">rand</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">a</span>
+<span class="n">b</span><span class="o">=</span><span class="n">rebin</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">b</span>
+<span class="n">b</span><span class="o">=</span><span class="n">rebin</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">b</span>
+<span class="n">b</span><span class="o">=</span><span class="n">rebin</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">b</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-3">
+<h1>Example 3<a class="headerlink" href="#example-3" title="Permalink to this headline">¶</a></h1>
+<p>A python version of congrid, used in IDL, for resampling of data to
+arbitrary sizes, using a variety of nearest-neighbour and interpolation
+routines.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">n</span>
+<span class="kn">import</span> <span class="nn">scipy.interpolate</span>
+<span class="kn">import</span> <span class="nn">scipy.ndimage</span>
+
+<span class="k">def</span> <span class="nf">congrid</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">newdims</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;linear&#39;</span><span class="p">,</span> <span class="n">centre</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">minusone</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Arbitrary resampling of source array to new dimension sizes.</span>
+<span class="sd">    Currently only supports maintaining the same number of dimensions.</span>
+<span class="sd">    To use 1-D arrays, first promote them to shape (x,1).</span>
+
+<span class="sd">    Uses the same parameters and creates the same co-ordinate lookup points</span>
+<span class="sd">    as IDL&#39;&#39;s congrid routine, which apparently originally came from a VAX/VMS</span>
+<span class="sd">    routine of the same name.</span>
+
+<span class="sd">    method:</span>
+<span class="sd">    neighbour - closest value from original data</span>
+<span class="sd">    nearest and linear - uses n x 1-D interpolations using</span>
+<span class="sd">                         scipy.interpolate.interp1d</span>
+<span class="sd">    (see Numerical Recipes for validity of use of n 1-D interpolations)</span>
+<span class="sd">    spline - uses ndimage.map_coordinates</span>
+
+<span class="sd">    centre:</span>
+<span class="sd">    True - interpolation points are at the centres of the bins</span>
+<span class="sd">    False - points are at the front edge of the bin</span>
+
+<span class="sd">    minusone:</span>
+<span class="sd">    For example- inarray.shape = (i,j) &amp; new dimensions = (x,y)</span>
+<span class="sd">    False - inarray is resampled by factors of (i/x) * (j/y)</span>
+<span class="sd">    True - inarray is resampled by(i-1)/(x-1) * (j-1)/(y-1)</span>
+<span class="sd">    This prevents extrapolation one element beyond bounds of input array.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">in</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">float32</span><span class="p">]:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="nb">float</span><span class="p">](</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="n">m1</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="nb">int</span><span class="p">](</span><span class="n">minusone</span><span class="p">)</span>
+    <span class="n">ofs</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="nb">int</span><span class="p">](</span><span class="n">centre</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span>
+    <span class="n">old</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span>
+    <span class="n">ndims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">newdims</span> <span class="p">)</span> <span class="o">!=</span> <span class="n">ndims</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;[congrid] dimensions error. &quot;</span> \
+              <span class="s">&quot;This routine currently only support &quot;</span> \
+              <span class="s">&quot;rebinning to the same number of dimensions.&quot;</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    <span class="n">newdims</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span> <span class="n">newdims</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span> <span class="p">)</span>
+    <span class="n">dimlist</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s">&#39;neighbour&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">ndims</span> <span class="p">):</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">newdims</span><span class="p">)[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">dimlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">old</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">m1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">newdims</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">m1</span><span class="p">)</span> \
+                            <span class="o">*</span> <span class="p">(</span><span class="n">base</span> <span class="o">+</span> <span class="n">ofs</span><span class="p">)</span> <span class="o">-</span> <span class="n">ofs</span> <span class="p">)</span>
+        <span class="n">cd</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">dimlist</span> <span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">newa</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span> <span class="n">cd</span> <span class="p">)]</span>
+        <span class="k">return</span> <span class="n">newa</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;nearest&#39;</span><span class="p">,</span><span class="s">&#39;linear&#39;</span><span class="p">]:</span>
+        <span class="c"># calculate new dims</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">ndims</span> <span class="p">):</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">newdims</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">)</span>
+            <span class="n">dimlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">old</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">m1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">newdims</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">m1</span><span class="p">)</span> \
+                            <span class="o">*</span> <span class="p">(</span><span class="n">base</span> <span class="o">+</span> <span class="n">ofs</span><span class="p">)</span> <span class="o">-</span> <span class="n">ofs</span> <span class="p">)</span>
+        <span class="c"># specify old dims</span>
+        <span class="n">olddims</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="p">)]</span>
+
+        <span class="c"># first interpolation - for ndims = any</span>
+        <span class="n">mint</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span> <span class="n">olddims</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">a</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">method</span> <span class="p">)</span>
+        <span class="n">newa</span> <span class="o">=</span> <span class="n">mint</span><span class="p">(</span> <span class="n">dimlist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="n">trorder</span> <span class="o">=</span> <span class="p">[</span><span class="n">ndims</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nb">range</span><span class="p">(</span> <span class="n">ndims</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">ndims</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="p">):</span>
+            <span class="n">newa</span> <span class="o">=</span> <span class="n">newa</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span> <span class="n">trorder</span> <span class="p">)</span>
+
+            <span class="n">mint</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span> <span class="n">olddims</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">newa</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">method</span> <span class="p">)</span>
+            <span class="n">newa</span> <span class="o">=</span> <span class="n">mint</span><span class="p">(</span> <span class="n">dimlist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ndims</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c"># need one more transpose to return to original dimensions</span>
+            <span class="n">newa</span> <span class="o">=</span> <span class="n">newa</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span> <span class="n">trorder</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">newa</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;spline&#39;</span><span class="p">]:</span>
+        <span class="n">oslices</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">old</span> <span class="p">]</span>
+        <span class="n">oldcoords</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">ogrid</span><span class="p">[</span><span class="n">oslices</span><span class="p">]</span>
+        <span class="n">nslices</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">newdims</span><span class="p">)</span> <span class="p">]</span>
+        <span class="n">newcoords</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="n">nslices</span><span class="p">]</span>
+
+        <span class="n">newcoords_dims</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">newcoords</span><span class="p">))</span>
+        <span class="c">#make first index last</span>
+        <span class="n">newcoords_dims</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newcoords_dims</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">newcoords_tr</span> <span class="o">=</span> <span class="n">newcoords</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">newcoords_dims</span><span class="p">)</span>
+        <span class="c"># makes a view that affects newcoords</span>
+
+        <span class="n">newcoords_tr</span> <span class="o">+=</span> <span class="n">ofs</span>
+
+        <span class="n">deltas</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">old</span><span class="p">)</span> <span class="o">-</span> <span class="n">m1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">newdims</span> <span class="o">-</span> <span class="n">m1</span><span class="p">)</span>
+        <span class="n">newcoords_tr</span> <span class="o">*=</span> <span class="n">deltas</span>
+
+        <span class="n">newcoords_tr</span> <span class="o">-=</span> <span class="n">ofs</span>
+
+        <span class="n">newa</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">ndimage</span><span class="o">.</span><span class="n">map_coordinates</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">newcoords</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">newa</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;Congrid error: Unrecognized interpolation type.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> \
+              <span class="s">&quot;Currently only </span><span class="se">\&#39;</span><span class="s">neighbour</span><span class="se">\&#39;</span><span class="s">, </span><span class="se">\&#39;</span><span class="s">nearest</span><span class="se">\&#39;</span><span class="s">,</span><span class="se">\&#39;</span><span class="s">linear</span><span class="se">\&#39;</span><span class="s">,&quot;</span><span class="p">,</span> \
+              <span class="s">&quot;and </span><span class="se">\&#39;</span><span class="s">spline</span><span class="se">\&#39;</span><span class="s"> are supported.&quot;</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Example 1</a></li>
+<li><a class="reference internal" href="#example-2">Example 2</a></li>
+<li><a class="reference internal" href="#example-3">Example 3</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Reading_mat_files.html"
+                        title="previous chapter">Matlab 7.3 and greater</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Recarray.html"
+                        title="next chapter">Addressing Array Columns by Name</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Rebinning.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Recarray.html" title="Addressing Array Columns by Name"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Reading_mat_files.html" title="Matlab 7.3 and greater"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

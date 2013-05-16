@@ -1,0 +1,204 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Reading SPE file from CCD camera &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Matlab 7.3 and greater" href="Reading_mat_files.html" />
+    <link rel="prev" title="Introduction" href="Reading_Custom_Text_Files_with_Pyparsing.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Reading_mat_files.html" title="Matlab 7.3 and greater"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Reading_Custom_Text_Files_with_Pyparsing.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="reading-spe-file-from-ccd-camera">
+<h1>Reading SPE file from CCD camera<a class="headerlink" href="#reading-spe-file-from-ccd-camera" title="Permalink to this headline">¶</a></h1>
+<p>Some <a class="reference external" href="http://en.wikipedia.org/wiki/CCD_camera">charge-coupled device
+(CCD)</a> cameras (Princeton
+and like) produce SPE files. This page suggests how to read such binary
+files with Numpy but the code is not robust. The following code is only
+able to read files having the same format as the example,
+&#8216;lampe_dt.spe&#8217; (unfortuanetly the only SPE file on the wiki).</p>
+<div class="section" id="loading-spe-file-with-numpy">
+<h2>Loading SPE file with numpy<a class="headerlink" href="#loading-spe-file-with-numpy" title="Permalink to this headline">¶</a></h2>
+<p>Only Numpy is required for loading SPE file, the result will be an array
+made of colors. The image size is at position 42 and 656 and the data at
+4100. There are then many other data in a SPE file header, one must be
+the data type (you are welcome to edit this page if you know where).
+Finally note that the image is always made of colors coded on unsigned
+integer of 16 bits but it might not be the case in your input file.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disabled</span>
+<span class="c"># read_spe.py</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
+
+<span class="k">class</span> <span class="nc">File</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fid</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_size</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_load_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_xdim</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_at</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">int16</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ydim</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_at</span><span class="p">(</span><span class="mi">656</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">int16</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_load_date_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">rawdate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_at</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+        <span class="n">rawtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_at</span><span class="p">(</span><span class="mi">172</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+        <span class="n">strdate</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">rawdate</span> <span class="p">:</span>
+            <span class="n">strdate</span> <span class="o">+=</span> <span class="nb">chr</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">rawtime</span><span class="p">:</span>
+            <span class="n">strdate</span> <span class="o">+=</span> <span class="nb">chr</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_date_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">strdate</span><span class="p">,</span><span class="s">&quot;</span><span class="si">%d</span><span class="s">%b%Y%H%M%S&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_xdim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ydim</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">read_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">ntype</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fid</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">N</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fid</span><span class="p">,</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">load_img</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_at</span><span class="p">(</span><span class="mi">4100</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xdim</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ydim</span><span class="p">,</span> <span class="n">N</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">img</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_ydim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xdim</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fid</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+    <span class="n">fid</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">fid</span><span class="o">.</span><span class="n">load_img</span><span class="p">()</span>
+    <span class="n">fid</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">img</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="viewing-the-image-with-matplotlib-and-ipython">
+<h2>Viewing the image with matplotlib and ipython<a class="headerlink" href="#viewing-the-image-with-matplotlib-and-ipython" title="Permalink to this headline">¶</a></h2>
+<p>The &#8216;read_spe.py&#8217; script from above and the &#8216;lampe_dt.spe&#8217; example are
+provided in the archive .. image:: Reading_SPE_files_attachments/read_spe.zip. Once decompresesed, you
+can then start ipython in the directory where the script lives:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ipython</span> <span class="o">-</span><span class="n">pylab</span> <span class="n">read_spe</span><span class="o">.</span><span class="n">py</span> <span class="n">lampe_dt</span><span class="o">.</span><span class="n">spe</span>
+</pre></div>
+</div>
+<p>The following first line will show the image in a new window. The second
+line will change the colormap (try &#8216;help(pylab.colormaps)&#8217; for listing
+them).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">pylab</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">pylab</span><span class="o">.</span><span class="n">hot</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>||&lt;:&gt;.. image:: Reading_SPE_files_attachments/lampe_dt.png||</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Reading SPE file from CCD camera</a><ul>
+<li><a class="reference internal" href="#loading-spe-file-with-numpy">Loading SPE file with numpy</a></li>
+<li><a class="reference internal" href="#viewing-the-image-with-matplotlib-and-ipython">Viewing the image with matplotlib and ipython</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Reading_Custom_Text_Files_with_Pyparsing.html"
+                        title="previous chapter">Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Reading_mat_files.html"
+                        title="next chapter">Matlab 7.3 and greater</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Reading_SPE_files.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Reading_mat_files.html" title="Matlab 7.3 and greater"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Reading_Custom_Text_Files_with_Pyparsing.html" title="Introduction"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

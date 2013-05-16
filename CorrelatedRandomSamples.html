@@ -1,0 +1,191 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Correlated Random Samples &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="A Coupled Spring-Mass System" href="CoupledSpringMassSystem.html" />
+    <link rel="prev" title="Compiling Extension Modules on Windows using mingw" href="CompilingExtensionsOnWindowsWithMinGW.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="CoupledSpringMassSystem.html" title="A Coupled Spring-Mass System"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="CompilingExtensionsOnWindowsWithMinGW.html" title="Compiling Extension Modules on Windows using mingw"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="correlated-random-samples">
+<h1>Correlated Random Samples<a class="headerlink" href="#correlated-random-samples" title="Permalink to this headline">¶</a></h1>
+<p><strong>*Note:*</strong> <em>This cookbook entry shows how to generate random samples
+from a multivariate normal distribution using tools from SciPy, but in
+fact NumPy includes the function `numpy.random.multivariate_normal`
+to accomplish the same task.</em></p>
+<p>To generate correlated normally distributed random samples, one can
+first generate uncorrelated samples, and then multiply them by a matrix
+<em>C</em> such that <em>C*C^T^ = R</em>, where <em>R</em> is the desired covariance matrix.
+<em>C</em> can be created, for example, by using the Cholesky decomposition of
+<em>R</em>, or from the eigenvalues and eigenvectors of <em>R</em>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="sd">&quot;&quot;&quot;Example of generating correlated normally distributed random samples.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">eigh</span><span class="p">,</span> <span class="n">cholesky</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
+
+<span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">plot</span><span class="p">,</span> <span class="n">show</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">subplot</span><span class="p">,</span> <span class="n">xlabel</span><span class="p">,</span> <span class="n">ylabel</span><span class="p">,</span> <span class="n">grid</span>
+
+
+<span class="c"># Choice of cholesky or eigenvector method.</span>
+<span class="n">method</span> <span class="o">=</span> <span class="s">&#39;cholesky&#39;</span>
+<span class="c">#method = &#39;eigenvectors&#39;</span>
+
+<span class="n">num_samples</span> <span class="o">=</span> <span class="mi">400</span>
+
+<span class="c"># The desired covariance matrix.</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="p">[</span>  <span class="mf">3.40</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.75</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.00</span><span class="p">],</span>
+        <span class="p">[</span> <span class="o">-</span><span class="mf">2.75</span><span class="p">,</span>  <span class="mf">5.50</span><span class="p">,</span>  <span class="mf">1.50</span><span class="p">],</span>
+        <span class="p">[</span> <span class="o">-</span><span class="mf">2.00</span><span class="p">,</span>  <span class="mf">1.50</span><span class="p">,</span>  <span class="mf">1.25</span><span class="p">]</span>
+    <span class="p">])</span>
+
+<span class="c"># Generate samples from three independent normally distributed random</span>
+<span class="c"># variables (with mean 0 and std. dev. 1).</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">))</span>
+
+<span class="c"># We need a matrix `c` for which `c*c^T = r`.  We can use, for example,</span>
+<span class="c"># the Cholesky decomposition, or the we can construct `c` from the</span>
+<span class="c"># eigenvectors and eigenvalues.</span>
+
+<span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s">&#39;cholesky&#39;</span><span class="p">:</span>
+    <span class="c"># Compute the Cholesky decomposition.</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">cholesky</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c"># Compute the eigenvalues and eigenvectors.</span>
+    <span class="n">evals</span><span class="p">,</span> <span class="n">evecs</span> <span class="o">=</span> <span class="n">eigh</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="c"># Construct c, so c*c^T = r.</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">evecs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">evals</span><span class="p">)))</span>
+
+<span class="c"># Convert the data to correlated random variables.</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="c">#</span>
+<span class="c"># Plot various projections of the samples.</span>
+<span class="c">#</span>
+<span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&#39;b.&#39;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;y[1]&#39;</span><span class="p">)</span>
+<span class="n">axis</span><span class="p">(</span><span class="s">&#39;equal&#39;</span><span class="p">)</span>
+<span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s">&#39;b.&#39;</span><span class="p">)</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;y[0]&#39;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;y[2]&#39;</span><span class="p">)</span>
+<span class="n">axis</span><span class="p">(</span><span class="s">&#39;equal&#39;</span><span class="p">)</span>
+<span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s">&#39;b.&#39;</span><span class="p">)</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;y[1]&#39;</span><span class="p">)</span>
+<span class="n">axis</span><span class="p">(</span><span class="s">&#39;equal&#39;</span><span class="p">)</span>
+<span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Scatter plots of three projections of the random samples:</p>
+<img alt="CorrelatedRandomSamples_attachments/correlated_random_vars.png" src="CorrelatedRandomSamples_attachments/correlated_random_vars.png" />
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="CompilingExtensionsOnWindowsWithMinGW.html"
+                        title="previous chapter">Compiling Extension Modules on Windows using mingw</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="CoupledSpringMassSystem.html"
+                        title="next chapter">A Coupled Spring-Mass System</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/CorrelatedRandomSamples.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="CoupledSpringMassSystem.html" title="A Coupled Spring-Mass System"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="CompilingExtensionsOnWindowsWithMinGW.html" title="Compiling Extension Modules on Windows using mingw"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

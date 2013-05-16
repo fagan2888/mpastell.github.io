@@ -1,0 +1,506 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Fit examples with sinusoidal functions &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="FortranIO(2f)FortranFile(2e).html" />
+    <link rel="prev" title="Finding the minimum point in the convex hull of a finite set of points" href="Finding_Convex_Hull_Minimum_Point.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="FortranIO(2f)FortranFile(2e).html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Finding_Convex_Hull_Minimum_Point.html" title="Finding the minimum point in the convex hull of a finite set of points"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>This page shows you how to fit experimental data and plots the results
+using matplotlib.</p>
+<p>TableOfContents</p>
+<div class="section" id="fit-examples-with-sinusoidal-functions">
+<h1>Fit examples with sinusoidal functions<a class="headerlink" href="#fit-examples-with-sinusoidal-functions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="generating-the-data">
+<h2>Generating the data<a class="headerlink" href="#generating-the-data" title="Permalink to this headline">¶</a></h2>
+<p>Using real data is much more fun, but, just so that you can reproduce
+this example I will generate data to fit</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c"># if you experience problem &quot;optimize not found&quot;, try to uncomment the following</span>
+<span class="c"># line. The problem is present at least at Ubuntu Lucid python scipy package</span>
+<span class="c"># from scipy import optimize</span>
+
+<span class="c"># Generate data points with noise</span>
+<span class="n">num_points</span> <span class="o">=</span> <span class="mi">150</span>
+<span class="n">Tx</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">,</span> <span class="n">num_points</span><span class="p">)</span>
+<span class="n">Ty</span> <span class="o">=</span> <span class="n">Tx</span>
+
+<span class="n">tX</span> <span class="o">=</span> <span class="mf">11.86</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="mf">0.81</span><span class="o">*</span><span class="n">Tx</span><span class="o">-</span><span class="mf">1.32</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.64</span><span class="o">*</span><span class="n">Tx</span><span class="o">+</span><span class="mi">4</span><span class="o">*</span><span class="p">((</span><span class="mf">0.5</span><span class="o">-</span><span class="n">rand</span><span class="p">(</span><span class="n">num_points</span><span class="p">))</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">rand</span>
+<span class="p">(</span><span class="n">num_points</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">tY</span> <span class="o">=</span> <span class="o">-</span><span class="mf">32.14</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="mf">0.8</span><span class="o">*</span><span class="n">Ty</span><span class="o">-</span><span class="mf">1.94</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.15</span><span class="o">*</span><span class="n">Ty</span><span class="o">+</span><span class="mi">7</span><span class="o">*</span><span class="p">((</span><span class="mf">0.5</span><span class="o">-</span><span class="n">rand</span><span class="p">(</span><span class="n">num_points</span><span class="p">))</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">rand</span>
+<span class="p">(</span><span class="n">num_points</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="fitting-the-data">
+<h2>Fitting the data<a class="headerlink" href="#fitting-the-data" title="Permalink to this headline">¶</a></h2>
+<p>We now have two sets of data: Tx and Ty, the time series, and tX and tY,
+sinusoidal data with noise. We are interested in finding the frequency
+of the sine wave.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Fit the first set</span>
+<span class="n">fitfunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="o">+</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="n">x</span> <span class="c"># Target function</span>
+<span class="n">errfunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">fitfunc</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span> <span class="c"># Distance to the target function</span>
+<span class="n">p0</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">15.</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">]</span> <span class="c"># Initial guess for the parameters</span>
+<span class="n">p1</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">leastsq</span><span class="p">(</span><span class="n">errfunc</span><span class="p">,</span> <span class="n">p0</span><span class="p">[:],</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">Tx</span><span class="p">,</span> <span class="n">tX</span><span class="p">))</span>
+
+<span class="n">time</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="n">Tx</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">Tx</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">Tx</span><span class="p">,</span> <span class="n">tX</span><span class="p">,</span> <span class="s">&quot;ro&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">fitfunc</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">time</span><span class="p">),</span> <span class="s">&quot;r-&quot;</span><span class="p">)</span> <span class="c"># Plot of the data and the fit</span>
+
+
+<span class="c"># Fit the second set</span>
+<span class="n">p0</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">15.</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">]</span>
+<span class="n">p2</span><span class="p">,</span><span class="n">success</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">leastsq</span><span class="p">(</span><span class="n">errfunc</span><span class="p">,</span> <span class="n">p0</span><span class="p">[:],</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">Ty</span><span class="p">,</span> <span class="n">tY</span><span class="p">))</span>
+
+<span class="n">time</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="n">Ty</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">Ty</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">Ty</span><span class="p">,</span> <span class="n">tY</span><span class="p">,</span> <span class="s">&quot;b^&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">fitfunc</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">time</span><span class="p">),</span> <span class="s">&quot;b-&quot;</span><span class="p">)</span>
+
+<span class="c"># Legend the plot</span>
+<span class="n">title</span><span class="p">(</span><span class="s">&quot;Oscillations in the compressed trap&quot;</span><span class="p">)</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;time [ms]&quot;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;displacement [um]&quot;</span><span class="p">)</span>
+<span class="n">legend</span><span class="p">((</span><span class="s">&#39;x position&#39;</span><span class="p">,</span> <span class="s">&#39;x fit&#39;</span><span class="p">,</span> <span class="s">&#39;y position&#39;</span><span class="p">,</span> <span class="s">&#39;y fit&#39;</span><span class="p">))</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">()</span>
+
+<span class="n">text</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">,</span>
+     <span class="s">&#39;x freq :  </span><span class="si">%.3f</span><span class="s"> kHz </span><span class="se">\n</span><span class="s"> y freq :  </span><span class="si">%.3f</span><span class="s"> kHz&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="mi">1</span><span class="o">/</span><span class="n">p2</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+     <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+     <span class="n">horizontalalignment</span><span class="o">=</span><span class="s">&#39;center&#39;</span><span class="p">,</span>
+     <span class="n">verticalalignment</span><span class="o">=</span><span class="s">&#39;center&#39;</span><span class="p">,</span>
+     <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="FittingData_attachments/datafit.png" src="FittingData_attachments/datafit.png" />
+</div>
+<div class="section" id="a-clever-use-of-the-cost-function">
+<h2>A clever use of the cost function<a class="headerlink" href="#a-clever-use-of-the-cost-function" title="Permalink to this headline">¶</a></h2>
+<p>Suppose that you have the same data set: two time-series of oscillating
+phenomena, but that you know that the frequency of the two oscillations
+is the same. A clever use of the cost function can allow you to fit both
+set of data in one fit, using the same frequency. The idea is that you
+return, as a &#8220;cost&#8221; array, the concatenation of the costs of your two
+data sets for one choice of parameters. Thus the leastsq routine is
+optimizing both data sets at the same time.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Target function</span>
+<span class="n">fitfunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">T</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="n">T</span><span class="o">*</span><span class="n">x</span><span class="o">+</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">x</span>
+<span class="c"># Initial guess for the first set&#39;s parameters</span>
+<span class="n">p1</span> <span class="o">=</span> <span class="n">r_</span><span class="p">[</span><span class="o">-</span><span class="mf">15.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">]</span>
+<span class="c"># Initial guess for the second set&#39;s parameters</span>
+<span class="n">p2</span> <span class="o">=</span> <span class="n">r_</span><span class="p">[</span><span class="o">-</span><span class="mf">15.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">]</span>
+<span class="c"># Initial guess for the common period</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="c"># Vector of the parameters to fit, it contains all the parameters of the problem</span>
+<span class="c">#, and the period of the oscillation is not there twice !</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">r_</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">]</span>
+<span class="c"># Cost function of the fit, compare it to the previous example.</span>
+<span class="n">errfunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">:</span> <span class="n">r_</span><span class="p">[</span>
+                <span class="n">fitfunc</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="n">x1</span><span class="p">)</span> <span class="o">-</span> <span class="n">y1</span><span class="p">,</span>
+                <span class="n">fitfunc</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">7</span><span class="p">],</span> <span class="n">x2</span><span class="p">)</span> <span class="o">-</span> <span class="n">y2</span>
+            <span class="p">]</span>
+<span class="c"># This time we need to pass the two sets of data, there are thus four &quot;args&quot;.</span>
+<span class="n">p</span><span class="p">,</span><span class="n">success</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">leastsq</span><span class="p">(</span><span class="n">errfunc</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">Tx</span><span class="p">,</span> <span class="n">tX</span><span class="p">,</span> <span class="n">Ty</span><span class="p">,</span> <span class="n">tY</span><span class="p">))</span>
+<span class="n">time</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="n">Tx</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">Tx</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">100</span><span class="p">)</span> <span class="c"># Plot of the first data and the fit</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">Tx</span><span class="p">,</span> <span class="n">tX</span><span class="p">,</span> <span class="s">&quot;ro&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">fitfunc</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="n">time</span><span class="p">),</span><span class="s">&quot;r-&quot;</span><span class="p">)</span>
+
+<span class="c"># Plot of the second data and the fit</span>
+<span class="n">time</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="n">Ty</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">Ty</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">Ty</span><span class="p">,</span> <span class="n">tY</span><span class="p">,</span> <span class="s">&quot;b^&quot;</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">fitfunc</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">7</span><span class="p">],</span> <span class="n">time</span><span class="p">),</span><span class="s">&quot;b-&quot;</span><span class="p">)</span>
+
+<span class="c"># Legend the plot</span>
+<span class="n">title</span><span class="p">(</span><span class="s">&quot;Oscillations in the compressed trap&quot;</span><span class="p">)</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;time [ms]&quot;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;displacement [um]&quot;</span><span class="p">)</span>
+<span class="n">legend</span><span class="p">((</span><span class="s">&#39;x position&#39;</span><span class="p">,</span> <span class="s">&#39;x fit&#39;</span><span class="p">,</span> <span class="s">&#39;y position&#39;</span><span class="p">,</span> <span class="s">&#39;y fit&#39;</span><span class="p">))</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">()</span>
+
+<span class="n">text</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">,</span>
+     <span class="s">&#39;x freq :  </span><span class="si">%.3f</span><span class="s"> kHz&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+     <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+     <span class="n">horizontalalignment</span><span class="o">=</span><span class="s">&#39;center&#39;</span><span class="p">,</span>
+     <span class="n">verticalalignment</span><span class="o">=</span><span class="s">&#39;center&#39;</span><span class="p">,</span>
+     <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="simplifying-the-syntax">
+<h1>Simplifying the syntax<a class="headerlink" href="#simplifying-the-syntax" title="Permalink to this headline">¶</a></h1>
+<p>Especially when using fits for interactive use, the standard syntax for
+optimize.leastsq can get really long. Using the following script can
+simplify your life:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">optimize</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">Parameter</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+
+<span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">y</span> <span class="o">-</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> <span class="n">x</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="n">param</span><span class="p">()</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">]</span>
+    <span class="n">optimize</span><span class="o">.</span><span class="n">leastsq</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now fitting becomes really easy, for example fitting to a gaussian:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># giving initial parameters</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">sigma</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">height</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c"># define your function:</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="k">return</span> <span class="n">height</span><span class="p">()</span> <span class="o">*</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">mu</span><span class="p">())</span><span class="o">/</span><span class="n">sigma</span><span class="p">())</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c"># fit! (given that data is an array with the data to fit)</span>
+<span class="n">fit</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">[</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">height</span><span class="p">],</span> <span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="fitting-gaussian-shaped-data">
+<h1>Fitting gaussian-shaped data<a class="headerlink" href="#fitting-gaussian-shaped-data" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="calculating-the-moments-of-the-distribution">
+<h2>Calculating the moments of the distribution<a class="headerlink" href="#calculating-the-moments-of-the-distribution" title="Permalink to this headline">¶</a></h2>
+<p>Fitting gaussian-shaped data does not require an optimization routine.
+Just calculating the moments of the distribution is enough, and this is
+much faster.</p>
+<p>However this works only if the gaussian is not cut out too much, and if
+it is not too small.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">gaussian</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">3</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="mi">30</span><span class="o">-</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mf">20.</span><span class="p">)</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+
+<span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">X</span><span class="o">*</span><span class="n">data</span><span class="p">)</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">width</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="nb">sum</span><span class="p">((</span><span class="n">X</span><span class="o">-</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">data</span><span class="p">)</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+
+<span class="nb">max</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+<span class="n">fit</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span> <span class="p">:</span> <span class="nb">max</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">width</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="n">plot</span><span class="p">(</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="FittingData_attachments/gaussianfit.png" src="FittingData_attachments/gaussianfit.png" />
+</div>
+<div class="section" id="fitting-a-2d-gaussian">
+<h2>Fitting a 2D gaussian<a class="headerlink" href="#fitting-a-2d-gaussian" title="Permalink to this headline">¶</a></h2>
+<p>Here is robust code to fit a 2D gaussian. It calculates the moments of
+the data to guess the initial parameters for an optimization routine.
+For a more complete gaussian, one with an optional additive constant and
+rotation, see
+<a class="reference external" href="http://code.google.com/p/agpy/source/browse/trunk/agpy/gaussfitter.py">http://code.google.com/p/agpy/source/browse/trunk/agpy/gaussfitter.py</a>.
+It also allows the specification of a known error.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">optimize</span>
+
+<span class="k">def</span> <span class="nf">gaussian</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">center_x</span><span class="p">,</span> <span class="n">center_y</span><span class="p">,</span> <span class="n">width_x</span><span class="p">,</span> <span class="n">width_y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a gaussian function with the given parameters&quot;&quot;&quot;</span>
+    <span class="n">width_x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">width_x</span><span class="p">)</span>
+    <span class="n">width_y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">width_y</span><span class="p">)</span>
+    <span class="k">return</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="n">height</span><span class="o">*</span><span class="n">exp</span><span class="p">(</span>
+                <span class="o">-</span><span class="p">(((</span><span class="n">center_x</span><span class="o">-</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="n">width_x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="p">((</span><span class="n">center_y</span><span class="o">-</span><span class="n">y</span><span class="p">)</span><span class="o">/</span><span class="n">width_y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">moments</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns (height, x, y, width_x, width_y)</span>
+<span class="sd">    the gaussian parameters of a 2D distribution by calculating its</span>
+<span class="sd">    moments &quot;&quot;&quot;</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">indices</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="o">*</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">total</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y</span><span class="o">*</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">total</span>
+    <span class="n">col</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">)]</span>
+    <span class="n">width_x</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="nb">abs</span><span class="p">((</span><span class="n">arange</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="o">-</span><span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">col</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">col</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="p">:]</span>
+    <span class="n">width_y</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="nb">abs</span><span class="p">((</span><span class="n">arange</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="o">-</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">row</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">row</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="n">height</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">height</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width_x</span><span class="p">,</span> <span class="n">width_y</span>
+
+<span class="k">def</span> <span class="nf">fitgaussian</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns (height, x, y, width_x, width_y)</span>
+<span class="sd">    the gaussian parameters of a 2D distribution found by a fit&quot;&quot;&quot;</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">moments</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">errorfunction</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">ravel</span><span class="p">(</span><span class="n">gaussian</span><span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="p">)(</span><span class="o">*</span><span class="n">indices</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span> <span class="o">-</span>
+                                 <span class="n">data</span><span class="p">)</span>
+    <span class="n">p</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">leastsq</span><span class="p">(</span><span class="n">errorfunction</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">p</span>
+</pre></div>
+</div>
+<p>And here is an example using it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="c"># Create the gaussian data</span>
+<span class="n">Xin</span><span class="p">,</span> <span class="n">Yin</span> <span class="o">=</span> <span class="n">mgrid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">201</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">201</span><span class="p">]</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">gaussian</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">40</span><span class="p">)(</span><span class="n">Xin</span><span class="p">,</span> <span class="n">Yin</span><span class="p">)</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">Xin</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="n">matshow</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">gist_earth_r</span><span class="p">)</span>
+
+<span class="n">params</span> <span class="o">=</span> <span class="n">fitgaussian</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">gaussian</span><span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">)</span>
+
+<span class="n">contour</span><span class="p">(</span><span class="n">fit</span><span class="p">(</span><span class="o">*</span><span class="n">indices</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)),</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">copper</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">gca</span><span class="p">()</span>
+<span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width_x</span><span class="p">,</span> <span class="n">width_y</span><span class="p">)</span> <span class="o">=</span> <span class="n">params</span>
+
+<span class="n">text</span><span class="p">(</span><span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">x : </span><span class="si">%.1f</span><span class="s"></span>
+<span class="s">y : </span><span class="si">%.1f</span><span class="s"></span>
+<span class="s">width_x : </span><span class="si">%.1f</span><span class="s"></span>
+<span class="s">width_y : </span><span class="si">%.1f</span><span class="s">&quot;&quot;&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width_x</span><span class="p">,</span> <span class="n">width_y</span><span class="p">),</span>
+        <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s">&#39;right&#39;</span><span class="p">,</span>
+        <span class="n">verticalalignment</span><span class="o">=</span><span class="s">&#39;bottom&#39;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="FittingData_attachments/fitgaussian.png" src="FittingData_attachments/fitgaussian.png" />
+</div>
+</div>
+<div class="section" id="fitting-a-power-law-to-data-with-errors">
+<h1>Fitting a power-law to data with errors<a class="headerlink" href="#fitting-a-power-law-to-data-with-errors" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>Generating the data<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Generate some data with noise to demonstrate the fitting procedure. Data
+is generated with an amplitude of 10 and a power-law index of -2.0.
+Notice that all of our data is well-behaved when the log is taken... you
+may have to be more careful of this for real data.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c"># Define function for calculating a power law</span>
+<span class="n">powerlaw</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">amp</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">amp</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="n">index</span><span class="p">)</span>
+
+<span class="c">##########</span>
+<span class="c"># Generate data points with noise</span>
+<span class="c">##########</span>
+<span class="n">num_points</span> <span class="o">=</span> <span class="mi">20</span>
+
+<span class="c"># Note: all positive, non-zero data</span>
+<span class="n">xdata</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">10.1</span><span class="p">,</span> <span class="n">num_points</span><span class="p">)</span>
+<span class="n">ydata</span> <span class="o">=</span> <span class="n">powerlaw</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">)</span>     <span class="c"># simulated perfect data</span>
+<span class="n">yerr</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">ydata</span>                      <span class="c"># simulated errors (10%)</span>
+
+<span class="n">ydata</span> <span class="o">+=</span> <span class="n">randn</span><span class="p">(</span><span class="n">num_points</span><span class="p">)</span> <span class="o">*</span> <span class="n">yerr</span>       <span class="c"># simulated noisy data</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>Fitting the data<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>If your data is well-behaved, you can fit a power-law function by first
+converting to a linear equation by using the logarithm. Then use the
+optimize function to fit a straight line. Notice that we are weighting
+by positional uncertainties during the fit. Also, the best-fit
+parameters uncertainties are estimated from the variance-covariance
+matrix. You should read up on when it may not be appropriate to use this
+form of error estimation. If you are trying to fit a power-law
+distribution, <a class="reference external" href="http://code.google.com/p/agpy/wiki/PowerLaw?ts=1251337886&amp;updated=PowerLaw">this
+solution</a>
+is more appropriate.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">##########</span>
+<span class="c"># Fitting the data -- Least Squares Method</span>
+<span class="c">##########</span>
+
+<span class="c"># Power-law fitting is best done by first converting</span>
+<span class="c"># to a linear equation and then fitting to a straight line.</span>
+<span class="c">#</span>
+<span class="c">#  y = a * x^b</span>
+<span class="c">#  log(y) = log(a) + b*log(x)</span>
+<span class="c">#</span>
+
+<span class="n">logx</span> <span class="o">=</span> <span class="n">log10</span><span class="p">(</span><span class="n">xdata</span><span class="p">)</span>
+<span class="n">logy</span> <span class="o">=</span> <span class="n">log10</span><span class="p">(</span><span class="n">ydata</span><span class="p">)</span>
+<span class="n">logyerr</span> <span class="o">=</span> <span class="n">yerr</span> <span class="o">/</span> <span class="n">ydata</span>
+
+<span class="c"># define our (line) fitting function</span>
+<span class="n">fitfunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span>
+<span class="n">errfunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">fitfunc</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span> <span class="o">/</span> <span class="n">err</span>
+
+<span class="n">pinit</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">]</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">leastsq</span><span class="p">(</span><span class="n">errfunc</span><span class="p">,</span> <span class="n">pinit</span><span class="p">,</span>
+                       <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">logx</span><span class="p">,</span> <span class="n">logy</span><span class="p">,</span> <span class="n">logyerr</span><span class="p">),</span> <span class="n">full_output</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">pfinal</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">covar</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">print</span> <span class="n">pfinal</span>
+<span class="k">print</span> <span class="n">covar</span>
+
+<span class="n">index</span> <span class="o">=</span> <span class="n">pfinal</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">amp</span> <span class="o">=</span> <span class="mf">10.0</span><span class="o">**</span><span class="n">pfinal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">indexErr</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span> <span class="n">covar</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span>
+<span class="n">ampErr</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span> <span class="n">covar</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span> <span class="o">*</span> <span class="n">amp</span>
+
+<span class="c">##########</span>
+<span class="c"># Plotting data</span>
+<span class="c">##########</span>
+
+<span class="n">clf</span><span class="p">()</span>
+<span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">powerlaw</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">amp</span><span class="p">,</span> <span class="n">index</span><span class="p">))</span>     <span class="c"># Fit</span>
+<span class="n">errorbar</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">yerr</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;k.&#39;</span><span class="p">)</span>  <span class="c"># Data</span>
+<span class="n">text</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">,</span> <span class="s">&#39;Ampli = </span><span class="si">%5.2f</span><span class="s"> +/- </span><span class="si">%5.2f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">amp</span><span class="p">,</span> <span class="n">ampErr</span><span class="p">))</span>
+<span class="n">text</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">,</span> <span class="s">&#39;Index = </span><span class="si">%5.2f</span><span class="s"> +/- </span><span class="si">%5.2f</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">indexErr</span><span class="p">))</span>
+<span class="n">title</span><span class="p">(</span><span class="s">&#39;Best Fit Power Law&#39;</span><span class="p">)</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;X&#39;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Y&#39;</span><span class="p">)</span>
+<span class="n">xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span>
+
+<span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">loglog</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">powerlaw</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">amp</span><span class="p">,</span> <span class="n">index</span><span class="p">))</span>
+<span class="n">errorbar</span><span class="p">(</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">yerr</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;k.&#39;</span><span class="p">)</span>  <span class="c"># Data</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;X (log scale)&#39;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Y (log scale)&#39;</span><span class="p">)</span>
+<span class="n">xlim</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span>
+
+<span class="n">savefig</span><span class="p">(</span><span class="s">&#39;power_law_fit.png&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="FittingData_attachments/power_law_fit.png" src="FittingData_attachments/power_law_fit.png" />
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Fit examples with sinusoidal functions</a><ul>
+<li><a class="reference internal" href="#generating-the-data">Generating the data</a></li>
+<li><a class="reference internal" href="#fitting-the-data">Fitting the data</a></li>
+<li><a class="reference internal" href="#a-clever-use-of-the-cost-function">A clever use of the cost function</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#simplifying-the-syntax">Simplifying the syntax</a></li>
+<li><a class="reference internal" href="#fitting-gaussian-shaped-data">Fitting gaussian-shaped data</a><ul>
+<li><a class="reference internal" href="#calculating-the-moments-of-the-distribution">Calculating the moments of the distribution</a></li>
+<li><a class="reference internal" href="#fitting-a-2d-gaussian">Fitting a 2D gaussian</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fitting-a-power-law-to-data-with-errors">Fitting a power-law to data with errors</a><ul>
+<li><a class="reference internal" href="#id1">Generating the data</a></li>
+<li><a class="reference internal" href="#id2">Fitting the data</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Finding_Convex_Hull_Minimum_Point.html"
+                        title="previous chapter">Finding the minimum point in the convex hull of a finite set of points</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="FortranIO(2f)FortranFile(2e).html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/FittingData.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="FortranIO(2f)FortranFile(2e).html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Finding_Convex_Hull_Minimum_Point.html" title="Finding the minimum point in the convex hull of a finite set of points"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

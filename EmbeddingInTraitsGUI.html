@@ -1,0 +1,229 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Embedding a Matplotlib Figure in a Traits App &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Eye Diagram" href="EyeDiagram.html" />
+    <link rel="prev" title="Introduction" href="Data_Acquisition_with_PyUL.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="EyeDiagram.html" title="Eye Diagram"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Data_Acquisition_with_PyUL.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <ol class="arabic simple">
+<li><ol class="first arabic">
+<li>page was renamed from EmbeddingInTraitsGUI</li>
+</ol>
+</li>
+</ol>
+<div class="section" id="embedding-a-matplotlib-figure-in-a-traits-app">
+<h1>Embedding a Matplotlib Figure in a Traits App<a class="headerlink" href="#embedding-a-matplotlib-figure-in-a-traits-app" title="Permalink to this headline">¶</a></h1>
+<p>Traits, part of the<a class="reference external" href="http://code.enthought.com/">Enthought Tools
+Suit</a>, provides a great framework for
+creating GUI Apps without a lot of the normal boilerplate required to
+connect the UI the rest of the application logic. A brief introduction
+to Traits can be found [:TraitsUI:here]. Although ETS comes with it&#8217;s
+own traits-aware plotting framework (Chaco), if you already know
+matplotlib it is just as easy to embed this instead. The advantages of
+Chaco (IMHO) are its interactive &#8220;tools&#8221;, an (in development) OpenGL
+rendering backend and an easy-to-understand codebase. However,
+matplotlib has more and better documentation and better defaults; it
+just works. The key to getting TraitsUI and matplotlib to play nice is
+to use the mpl object-oriented API, rather than pylab / pyplot. This
+recipe requires the following packages:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;numpy</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;wxPython</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;matplotlib</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Traits&nbsp;&gt;&nbsp;3.0</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;TraitsGUI&nbsp;&gt;&nbsp;3.0</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;TraitsBackendWX&nbsp;&gt;&nbsp;3.0</span></tt></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">For&nbsp;this&nbsp;example,&nbsp;we&nbsp;will&nbsp;display&nbsp;a&nbsp;function&nbsp;(y,&nbsp;a&nbsp;sine&nbsp;wave)&nbsp;of&nbsp;one&nbsp;variable&nbsp;(x,&nbsp;a&nbsp;numpy&nbsp;ndarray)&nbsp;and&nbsp;one&nbsp;parameter&nbsp;(scale,&nbsp;a&nbsp;float&nbsp;value&nbsp;with&nbsp;bounds).&nbsp;We&nbsp;want&nbsp;to&nbsp;be&nbsp;able&nbsp;to&nbsp;vary&nbsp;the&nbsp;parameter&nbsp;from&nbsp;the&nbsp;UI&nbsp;and&nbsp;see&nbsp;the&nbsp;resulting&nbsp;changes&nbsp;to&nbsp;y&nbsp;in&nbsp;a&nbsp;plot&nbsp;window.&nbsp;Here's&nbsp;what&nbsp;the&nbsp;final&nbsp;result&nbsp;looks&nbsp;like:&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`..</span> <span class="pre">image::</span> <span class="pre">EmbeddingInTraitsGUI_attachments/mpl_in_traits_view.png</span></tt> &lt;.. image:: EmbeddingInTraitsGUI_attachments/mpl_in_traits_view.png&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;The&nbsp;TraitsUI&nbsp;&quot;!CustomEditor&quot;&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;display&nbsp;any&nbsp;wxPython&nbsp;window&nbsp;as&nbsp;the&nbsp;editor&nbsp;for&nbsp;the&nbsp;object.&nbsp;You&nbsp;simply&nbsp;pass&nbsp;the&nbsp;!CustomEditor&nbsp;a&nbsp;callable&nbsp;which,&nbsp;when&nbsp;called,&nbsp;returns&nbsp;the&nbsp;wxPython&nbsp;window&nbsp;you&nbsp;want&nbsp;to&nbsp;display.&nbsp;In&nbsp;this&nbsp;case,&nbsp;our&nbsp;!MakePlot()&nbsp;function&nbsp;returns&nbsp;a&nbsp;wxPanel&nbsp;containing&nbsp;the&nbsp;mpl&nbsp;!FigureCanvas&nbsp;and&nbsp;Navigation&nbsp;toolbar.&nbsp;This&nbsp;example&nbsp;exploits&nbsp;a&nbsp;few&nbsp;of&nbsp;Traits'&nbsp;features.&nbsp;We&nbsp;use&nbsp;&quot;dynamic&nbsp;initialisation&quot;&nbsp;to&nbsp;create&nbsp;the&nbsp;Axes&nbsp;and&nbsp;Line2D&nbsp;objects&nbsp;on&nbsp;demand&nbsp;(using&nbsp;the&nbsp;_xxx_default&nbsp;methods).&nbsp;&nbsp;We&nbsp;use&nbsp;Traits&nbsp;&quot;notification&quot;,&nbsp;to&nbsp;call&nbsp;update_line(...)&nbsp;whenever&nbsp;the&nbsp;x-&nbsp;or&nbsp;y-data&nbsp;is&nbsp;changed.&nbsp;Further,&nbsp;the&nbsp;y-data&nbsp;is&nbsp;declared&nbsp;as&nbsp;a&nbsp;Property&nbsp;trait&nbsp;which&nbsp;depends&nbsp;on&nbsp;both&nbsp;the&nbsp;'scale'&nbsp;parameter&nbsp;and&nbsp;the&nbsp;x-data.&nbsp;'y'&nbsp;is&nbsp;then&nbsp;recalculated&nbsp;on&nbsp;demand,&nbsp;whenever&nbsp;either&nbsp;'scale'&nbsp;or&nbsp;'x'&nbsp;change.&nbsp;The&nbsp;'cached_property'&nbsp;decorator&nbsp;prevents&nbsp;recalculation&nbsp;of&nbsp;y&nbsp;if&nbsp;it's&nbsp;dependancies&nbsp;</span></tt><em>``are``
+``not``</em><tt class="docutils literal"><span class="pre">&nbsp;modified.</span></tt></p>
+<p>Finally, there&#8217;s a bit of wx-magic in the redraw() method to limit the
+redraw rate by delaying the actual drawing by 50ms. This uses the
+wx.!CallLater class. This prevents excessive redrawing as the slider is
+dragged, keeping the UI from
+lagging.<a class="reference external" href="..image::EmbeddingInTraitsGUI_attachments/mpl_editor.py">Here&#8217;s</a> the full listing:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A simple demonstration of embedding a matplotlib plot window in</span>
+<span class="sd">a traits-application. The CustomEditor allow any wxPython window</span>
+<span class="sd">to be used as an editor. The demo also illustrates Property traits,</span>
+<span class="sd">which provide nice dependency-handling and dynamic initialisation, using</span>
+<span class="sd">the _xxx_default(...) method.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">enthought.traits.api</span> <span class="kn">import</span> <span class="n">HasTraits</span><span class="p">,</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Range</span><span class="p">,</span>\
+                                <span class="n">Array</span><span class="p">,</span> <span class="n">on_trait_change</span><span class="p">,</span> <span class="n">Property</span><span class="p">,</span>\
+                                <span class="n">cached_property</span><span class="p">,</span> <span class="n">Bool</span>
+<span class="kn">from</span> <span class="nn">enthought.traits.ui.api</span> <span class="kn">import</span> <span class="n">View</span><span class="p">,</span> <span class="n">Item</span>
+<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_wxagg</span> <span class="kn">import</span> <span class="n">FigureCanvasWxAgg</span>
+<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_wx</span> <span class="kn">import</span> <span class="n">NavigationToolbar2Wx</span>
+<span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="kn">import</span> <span class="n">Figure</span>
+<span class="kn">from</span> <span class="nn">matplotlib.axes</span> <span class="kn">import</span> <span class="n">Axes</span>
+<span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <span class="n">Line2D</span>
+<span class="kn">from</span> <span class="nn">enthought.traits.ui.api</span> <span class="kn">import</span> <span class="n">CustomEditor</span>
+<span class="kn">import</span> <span class="nn">wx</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="k">def</span> <span class="nf">MakePlot</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">editor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Builds the Canvas window for displaying the mpl-figure</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">editor</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">figure</span>
+    <span class="n">panel</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">Panel</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">canvas</span> <span class="o">=</span> <span class="n">FigureCanvasWxAgg</span><span class="p">(</span><span class="n">panel</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">fig</span><span class="p">)</span>
+    <span class="n">toolbar</span> <span class="o">=</span> <span class="n">NavigationToolbar2Wx</span><span class="p">(</span><span class="n">canvas</span><span class="p">)</span>
+    <span class="n">toolbar</span><span class="o">.</span><span class="n">Realize</span><span class="p">()</span>
+    <span class="n">sizer</span> <span class="o">=</span> <span class="n">wx</span><span class="o">.</span><span class="n">BoxSizer</span><span class="p">(</span><span class="n">wx</span><span class="o">.</span><span class="n">VERTICAL</span><span class="p">)</span>
+    <span class="n">sizer</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">canvas</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">wx</span><span class="o">.</span><span class="n">EXPAND</span><span class="o">|</span><span class="n">wx</span><span class="o">.</span><span class="n">ALL</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">sizer</span><span class="o">.</span><span class="n">Add</span><span class="p">(</span><span class="n">toolbar</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">wx</span><span class="o">.</span><span class="n">EXPAND</span><span class="o">|</span><span class="n">wx</span><span class="o">.</span><span class="n">ALL</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">panel</span><span class="o">.</span><span class="n">SetSizer</span><span class="p">(</span><span class="n">sizer</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">panel</span>
+<span class="k">class</span> <span class="nc">PlotModel</span><span class="p">(</span><span class="n">HasTraits</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A Model for displaying a matplotlib figure&quot;&quot;&quot;</span>
+    <span class="c">#we need instances of a Figure, a Axes and a Line2D</span>
+    <span class="n">figure</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">Figure</span><span class="p">,</span> <span class="p">())</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">Axes</span><span class="p">)</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">Line2D</span><span class="p">)</span>
+    <span class="n">_draw_pending</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span> <span class="c">#a flag to throttle the redraw rate</span>
+    <span class="c">#a variable paremeter</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">Range</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">10.0</span><span class="p">)</span>
+    <span class="c">#an independent variable</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Array</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">512</span><span class="p">))</span>
+    <span class="c">#a dependent variable</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="n">Array</span><span class="p">,</span> <span class="n">depends_on</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;scale&#39;</span><span class="p">,</span><span class="s">&#39;x&#39;</span><span class="p">])</span>
+    <span class="n">traits_view</span> <span class="o">=</span> <span class="n">View</span><span class="p">(</span>
+                    <span class="n">Item</span><span class="p">(</span><span class="s">&#39;figure&#39;</span><span class="p">,</span>
+                         <span class="n">editor</span><span class="o">=</span><span class="n">CustomEditor</span><span class="p">(</span><span class="n">MakePlot</span><span class="p">),</span>
+                         <span class="n">resizable</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+                    <span class="n">Item</span><span class="p">(</span><span class="s">&#39;scale&#39;</span><span class="p">),</span>
+                    <span class="n">resizable</span><span class="o">=</span><span class="bp">True</span>
+                    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_axes_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_line_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">_get_y</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="nd">@on_trait_change</span><span class="p">(</span><span class="s">&quot;x, y&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">update_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;x&#39;</span><span class="p">:</span> <span class="s">&quot;set_xdata&quot;</span><span class="p">,</span> <span class="s">&#39;y&#39;</span><span class="p">:</span> <span class="s">&quot;set_ydata&quot;</span><span class="p">}[</span><span class="n">name</span><span class="p">]</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="p">,</span> <span class="n">attr</span><span class="p">)(</span><span class="n">val</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redraw</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">redraw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_draw_pending</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">canvas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span>
+        <span class="k">if</span> <span class="n">canvas</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">def</span> <span class="nf">_draw</span><span class="p">():</span>
+            <span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_draw_pending</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">wx</span><span class="o">.</span><span class="n">CallLater</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="n">_draw</span><span class="p">)</span><span class="o">.</span><span class="n">Start</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_draw_pending</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="k">if</span> <span class="n">__name__</span><span class="o">==</span><span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">PlotModel</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">configure_traits</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Data_Acquisition_with_PyUL.html"
+                        title="previous chapter">Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="EyeDiagram.html"
+                        title="next chapter">Eye Diagram</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/EmbeddingInTraitsGUI.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="EyeDiagram.html" title="Eye Diagram"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Data_Acquisition_with_PyUL.html" title="Introduction"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1046 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Indexing numpy arrays &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Introduction" href="InputOutput.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="Histograms.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="InputOutput.html" title="Introduction"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Histograms.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="indexing-numpy-arrays">
+<h1>Indexing numpy arrays<a class="headerlink" href="#indexing-numpy-arrays" title="Permalink to this headline">¶</a></h1>
+<p>The whole point of numpy is to introduce a multidimensional array object
+for holding homogeneously-typed numerical data. This is of course a
+useful tool for storing data, but it is also possible to manipulate
+large numbers of values without writing inefficient python loops. To
+accomplish this, one needs to be able to refer to elements of the arrays
+in many different ways, from simple &#8220;slices&#8221; to using arrays as lookup
+tables. The purpose of this page is to go over the various different
+types of indexing available. Hopefully the sometimes-peculiar syntax
+will also become more clear.</p>
+<p>TableOfContents</p>
+<p>We will use the same arrays as examples wherever possible:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">9</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="mi">3</span><span class="o">*</span><span class="mi">4</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">C</span>
+<span class="n">array</span><span class="p">([[[</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span>  <span class="mi">3</span><span class="p">],</span>
+        <span class="p">[</span> <span class="mi">4</span><span class="p">,</span>  <span class="mi">5</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span>  <span class="mi">7</span><span class="p">],</span>
+        <span class="p">[</span> <span class="mi">8</span><span class="p">,</span>  <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">]],</span>
+       <span class="p">[[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">19</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">23</span><span class="p">]]])</span>
+<span class="o">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<div class="section" id="elements">
+<h2>Elements<a class="headerlink" href="#elements" title="Permalink to this headline">¶</a></h2>
+<p>The simplest way to pick one or some elements of an array looks very
+similar to python lists:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="mi">3</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">C</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+<span class="mi">14</span>
+</pre></div>
+</div>
+<p>That is, to pick out a particular element, you simply put the indices
+into square brackets after it. As is standard for python, element
+numbers start at zero.</p>
+<p>If you want to change an array value in-place, you can simply use the
+syntax above in an assignment:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span>
+<span class="n">array</span><span class="p">([</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span>  <span class="mi">4</span><span class="p">,</span>  <span class="mi">5</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span>  <span class="mi">7</span><span class="p">,</span>  <span class="mi">8</span><span class="p">,</span>  <span class="mi">9</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">7</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span>
+<span class="n">array</span><span class="p">([</span> <span class="mi">7</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span>  <span class="mi">4</span><span class="p">,</span>  <span class="mi">5</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span>  <span class="mi">7</span><span class="p">,</span>  <span class="mi">8</span><span class="p">,</span>  <span class="mi">9</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>(The business with .copy() is to ensure that we don&#8217;t actually modify A,
+since that would make further examples confusing.) Note that numpy also
+supports python&#8217;s &#8220;augmented assignment&#8221; operators, +=, -=, *=, and so
+on.</p>
+<p>Be aware that the type of array elements is a property of the array
+itself, so that if you try to assign an element of another type to an
+array, it will be silently converted (if possible):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.5</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span>
+<span class="n">array</span><span class="p">([</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">4</span><span class="p">,</span>  <span class="mi">5</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span>  <span class="mi">7</span><span class="p">,</span>  <span class="mi">8</span><span class="p">,</span>  <span class="mi">9</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5j</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">TypeError</span><span class="p">:</span> <span class="n">can</span><span class="s">&#39;t convert complex to int; use int(abs(z))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span>
+<span class="n">array</span><span class="p">([</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">4</span><span class="p">,</span>  <span class="mi">5</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span>  <span class="mi">7</span><span class="p">,</span>  <span class="mi">8</span><span class="p">,</span>  <span class="mi">9</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Note that the conversion that happens is a default conversion; in the
+case of float to int conversion, it&#8217;s truncation. If you wanted
+something different, say taking the floor, you would have to arrange
+that yourself (for example with np.floor()). In the case of converting
+complex values to integers, there&#8217;s no resonable default way to do it,
+so numpy raises an exception and leaves the array unchanged.</p>
+<p>Finally, two slightly more technical matters.</p>
+<p>If you want to manipulate indices programmatically, you should know that
+when you write something like</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">C</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+<span class="mi">13</span>
+</pre></div>
+</div>
+<p>it is the same as (in fact it is internally converted to)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">C</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)]</span>
+<span class="mi">13</span>
+</pre></div>
+</div>
+<p>This peculiar-looking syntax is constructing a tuple, python&#8217;s data
+structure for immutable sequences, and using that tuple as an index into
+the array. (Under the hood, C[1,0,1] is converted to
+C.__getitem__((1,0,1)).) This means you can whip up tuples if you
+want to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">i</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="mi">13</span>
+</pre></div>
+</div>
+<p>If it doesn&#8217;t seem likely you would ever want to do this, consider
+iterating over an arbitrarily multidimensional array:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ndindex</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+<span class="o">...</span>     <span class="k">print</span> <span class="n">i</span><span class="p">,</span> <span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="o">...</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="mi">0</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="mi">1</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="mi">2</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="mi">3</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="mi">4</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="mi">5</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="mi">6</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="mi">7</span>
+<span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="mi">8</span>
+</pre></div>
+</div>
+<p>Indexing with tuples will also become important when we start looking at
+fancy indexing and the function np.where().</p>
+<p>The last technical issue I want to mention is that when you select an
+element from an array, what you get back has the same type as the array
+elements. This may sound obvious, and in a way it is, but keep in mind
+that even innocuous numpy arrays like our A, B, and C often contain
+types that are not quite the python types:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span>
+<span class="mi">23</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="nb">type</span> <span class="s">&#39;numpy.int32&#39;</span><span class="o">&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+<span class="o">&lt;</span><span class="nb">type</span> <span class="s">&#39;int&#39;</span><span class="o">&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span><span class="o">**</span><span class="n">a</span>
+<span class="ne">Warning</span><span class="p">:</span> <span class="n">overflow</span> <span class="n">encountered</span> <span class="ow">in</span> <span class="n">long_scalars</span>
+<span class="o">-</span><span class="mi">1276351769</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">**</span><span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="il">20880467999847912034355032910567L</span>
+</pre></div>
+</div>
+<p>numpy scalars also support certain indexing operations, for consistency,
+but these are somewhat subtle and under discussion.</p>
+</div>
+<div class="section" id="slices">
+<h2>Slices<a class="headerlink" href="#slices" title="Permalink to this headline">¶</a></h2>
+<p>It is obviously essential to be able to work with single elements of an
+array. But one of the selling points of numpy is the ability to do
+operations &#8220;array-wise&#8221;:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="mi">2</span><span class="o">*</span><span class="n">A</span>
+<span class="n">array</span><span class="p">([</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span>  <span class="mi">4</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span>  <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">18</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>This is handy, but one very often wants to work with only part of an
+array. For example, suppose one wants to compute the array of
+differences of A, that is, the array whose elements are A[1]-A[0],
+A[2]-A[1], and so on. (In fact, the function np.diff does this, but
+let&#8217;s ignore that for expositional convenience.) numpy makes it possible
+to do this using array-wise operations:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">A</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>This is done by making an array that is all but the first element of A,
+an array that is all but the last element of A, and subtracting the
+corresponding elements. The process of taking subarrays in this way is
+called &#8220;slicing&#8221;.</p>
+<div class="section" id="one-dimensional-slices">
+<h3>One-dimensional slices<a class="headerlink" href="#one-dimensional-slices" title="Permalink to this headline">¶</a></h3>
+<p>The general syntax for a slice is <em>array</em>[<em>start</em>:<em>stop</em>:<em>step</em>]. Any
+or all of the values <em>start</em>, <em>stop</em>, and <em>step</em> may be left out (and if
+<em>step</em> is left out the colon in front of it may also be left out):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">8</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>As usual for python, the <em>start</em> index is included and the <em>stop</em> index
+is not included. Also as usual for python, negative numbers for <em>start</em>
+or <em>stop</em> count backwards from the end of the array:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>If <em>stop</em> comes before <em>start</em> in the array, then an array of length
+zero is returned:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int32</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(The &#8220;dtype=int32&#8221; is present in the printed form because in an array
+with no elements, one cannot tell what type the elements have from their
+printed representation. It nevertheless makes sense to keep track of the
+type that they would have if the array had any elements.)</p>
+<p>If you specify a slice that happens to have only one element, you get an
+array in return that happens to have only one element:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+<span class="mi">5</span>
+</pre></div>
+</div>
+<p>This seems fairly obvious and reasonable, but when dealing with fancy
+indexing and multidimensional arrays it can be surprising.</p>
+<p>If the number <em>step</em> is negative, the step through the array is
+negative, that is, the new array contains (some of) the elements of the
+original in reverse order:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">9</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>This is extremely useful, but it can be confusing when <em>start</em> and
+<em>stop</em> are given:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">5</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The rule to remember is: whether <em>step</em> is positive or negative, <em>start</em>
+is always included and <em>stop</em> never is.</p>
+<p>Just as one can retrieve elements of an array as a subarray rather than
+one-by-one, one can modify them as a subarray rather than one-by-one:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span>
+<span class="n">array</span><span class="p">([</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">,</span>  <span class="mi">8</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>If the array you are trying to assign is the wrong shape, an exception
+is raised:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">ValueError</span><span class="p">:</span> <span class="n">shape</span> <span class="n">mismatch</span><span class="p">:</span> <span class="n">objects</span> <span class="n">cannot</span> <span class="n">be</span> <span class="n">broadcast</span> <span class="n">to</span> <span class="n">a</span> <span class="n">single</span> <span class="n">shape</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">ValueError</span><span class="p">:</span> <span class="n">shape</span> <span class="n">mismatch</span><span class="p">:</span> <span class="n">objects</span> <span class="n">cannot</span> <span class="n">be</span> <span class="n">broadcast</span> <span class="n">to</span> <span class="n">a</span> <span class="n">single</span> <span class="n">shape</span>
+</pre></div>
+</div>
+<p>If you think the error message sounds confusing, I have to agree, but
+there is a reason. In the first case, we tried to stuff six elements
+into five slots, so numpy refused. In the second case, there were the
+right number of elements - four - but we tried to stuff a two-by-two
+array where there was supposed to be a one-dimensional array of length
+four. While numpy could have coerced the two-by-two array into the right
+shape, instead the designers chose to follow the python philosophy
+&#8220;explicit is better than implicit&#8221; and leave any coercing up to the
+user. Let&#8217;s do that, though:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>So in order for assignment to work, it is not simply enough to have the
+right number of elements - they must be arranged in an array of the
+right shape.</p>
+<p>There is another issue complicating the error message: numpy has some
+extremely convenient rules for converting lower-dimensional arrays into
+higher-dimensional arrays, and for implicitly repeating arrays along
+axes. This process is called &#8220;broadcasting&#8221;. We will see more of it
+elsewhere, but here it is in its simplest possible form:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span>
+<span class="n">array</span><span class="p">([</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="mi">8</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>We told numpy to take a scalar, -1, and put it into an array of length
+five. Rather than signal an error, numpy&#8217;s broadcasting rules tell it to
+convert this scalar into an effective array of length five by repeating
+the scalar five times. (It does not, of course, actually create a
+temporary array of this size; in fact it uses a clever trick of telling
+itself that the temporary array has its elements spaced zero bytes
+apart.) This particular case of broadcasting gets used all the time:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Assignment is sometimes a good reason to use the &#8220;everything&#8221; slice:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span><span class="p">[:]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span>
+<span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span>
+<span class="o">-</span><span class="mi">1</span>
+</pre></div>
+</div>
+<p>What happened here? Well, in the first case we told numpy to assign -1
+to all the elements of T, so that&#8217;s what it did. In the second case, we
+told python &#8220;T = -1&#8221;. In python, variables are just names that can be
+attached to objects in memory. This is in sharp contrast with languages
+like C, where a variable is a named region of memory where data can be
+stored. Assignment to a variable name - T in this case - simply changes
+which object the name refers to, without altering the underlying object
+in any way. (If the name was the only reference to the original object,
+it becomes impossible for your program ever to find it again after the
+reassignment, so python deletes the original object to free up some
+memory.) In a language like C, assigning to a variable changes the value
+stored in that memory region. If you really must think in terms of C,
+you can think of all python variables as holding pointers to actual
+objects; assignment to a python variable is just modification of the
+pointer, and doesn&#8217;t affect the object pointed to (unless garbage
+collection deletes it). In any case, if you want to modify the
+<em>contents</em> of an array, you can&#8217;t do it by assigning to the name you
+gave the array; you must use slice assignment or some other approach.</p>
+<p>Finally, a technical point: how can a program work with slices
+programmatically? What if you want to, say, save a slice specification
+to apply to many arrays later on? The answer is to use a slice object,
+which is constructed using slice():</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>(Regrettably, you can&#8217;t just write &#8220;s = 1::2&#8221;. But within square
+brackets, 1::2 is converted internally to slice(1,None,2).) You can
+leave out arguments to slice() just like you can with the colon
+notation, with one exception:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">)]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span><span class="mi">3</span><span class="p">)]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="nb">slice</span><span class="p">()]</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">TypeError</span><span class="p">:</span> <span class="nb">slice</span> <span class="n">expected</span> <span class="n">at</span> <span class="n">least</span> <span class="mi">1</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">got</span> <span class="mi">0</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">)]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="multidimensional-slices">
+<h3>Multidimensional slices<a class="headerlink" href="#multidimensional-slices" title="Permalink to this headline">¶</a></h3>
+<p>One-dimensional arrays are extremely useful, but often one has data that
+is naturally multidimensional - image data might be an N by M array of
+pixel values, or an N by M by 3 array of colour values, for example.
+Just as it is useful to take slices of one-dimensional arrays, it is
+useful to take slices of multidimensional arrays. This is fairly
+straightforward:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span><span class="p">[:</span><span class="mi">2</span><span class="p">,:]</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span><span class="p">[:,::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">]])</span>
+</pre></div>
+</div>
+<p>Essentially one simply specifies a one-dimensional slice for each axis.
+One can also supply a number for an axis rather than a slice:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Notice that when one supplies a number for (say) the first axis, the
+result is no longer a two-dimensional array; it&#8217;s now a one-dimensional
+array. This makes sense:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span><span class="p">[:,:]</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="mi">0</span>
+</pre></div>
+</div>
+<p>If you supply no numbers, you get a two-dimensional array; if you supply
+one number, the dimension drops by one, and you get a one-dimensional
+array; and if you supply two numbers the dimension drops by two and you
+get a scalar. (If you think you should get a zero-dimensional array, you
+are opening a can of worms. The distinction, or lack thereof, between
+scalars and zero-dimensional arrays is an issue under discussion and
+development.)</p>
+<p>If you are used to working with matrices, you may want to preserve a
+distinction between &#8220;row vectors&#8221; and &#8220;column vectors&#8221;. numpy supports
+only one kind of one-dimensional array, but you could represent row and
+column vectors as <em>two</em>-dimensional arrays, one of whose dimensions
+happens to be one. Unfortunately indexing of these objects then becomes
+cumbersome.</p>
+<p>As with one-dimensional arrays, if you specify a slice that happens to
+have only one element, you get an array one of whose axes has length 1 -
+the axis doesn&#8217;t &#8220;disappear&#8221; the way it would if you had provided an
+actual number for that axis:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">6</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>numpy also has a few shortcuts well-suited to dealing with arrays with
+an indeterminate number of dimensions. If this seems like something
+unreasonable, keep in mind that many of numpy&#8217;s functions (for example
+np.sort(), np.sum(), and np.transpose()) must work on arrays of
+arbitrary dimension. It is of course possible to extract the number of
+dimensions from an array and work with it explicitly, but one&#8217;s code
+tends to fill up with things like (slice(None,None,None),)*(C.ndim-1),
+making it unpleasant to read. So numpy has some shortcuts which often
+simplify things.</p>
+<p>First the Ellipsis object:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="o">...</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="o">...</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">array</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="o">...</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="bp">Ellipsis</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The ellipsis (three dots) indicates &#8220;as many &#8216;:&#8217; as needed&#8221;. (Its name
+for use in index-fiddling code is Ellipsis, and it&#8217;s not
+numpy-specific.) This makes it easy to manipulate only one dimension of
+an array, letting numpy do array-wise operations over the &#8220;unwanted&#8221;
+dimensions. You can only really have one ellipsis in any given indexing
+expression, or else the expression would be ambiguous about how many &#8216;:&#8217;
+should be put in each. (In fact, for some reason it is allowed to have
+something like &#8220;C[...,...]&#8221;; this is not actually ambiguous.)</p>
+<p>In some circumstances, it is convenient to omit the ellipsis entirely:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([[</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span>  <span class="mi">3</span><span class="p">],</span>
+       <span class="p">[</span> <span class="mi">4</span><span class="p">,</span>  <span class="mi">5</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span>  <span class="mi">7</span><span class="p">],</span>
+       <span class="p">[</span> <span class="mi">8</span><span class="p">,</span>  <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]])</span>
+</pre></div>
+</div>
+<p>If you don&#8217;t supply enough indices to an array, an ellipsis is silently
+appended. This means that in some sense you can view a two-dimensional
+array as an array of one-dimensional arrays. In combination with numpy&#8217;s
+array-wise operations, this means that functions written for
+one-dimensional arrays can often just work for two-dimensional arrays.
+For example, recall the difference operation we wrote out in the section
+on one-dimensional slices:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">A</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">B</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+</pre></div>
+</div>
+<p>It works, unmodified, to take the differences along the first axis of a
+two-dimensional array.</p>
+<p>Writing to multidimensional slices works just the way writing to
+one-dimensional slices does:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">T</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span>
+<span class="go">array([[ 0,  1,  2],</span>
+<span class="go">       [-1, -1, -1],</span>
+<span class="go">       [ 6,  7,  8]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span><span class="p">[:,:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span>
+<span class="go">array([[-2, -2,  2],</span>
+<span class="go">       [-2, -2, -1],</span>
+<span class="go">       [-2, -2,  8]])</span>
+</pre></div>
+</div>
+<p>FIXME: np.newaxis and broadcasting rules.</p>
+</div>
+<div class="section" id="views-versus-copies">
+<h3>Views versus copies<a class="headerlink" href="#views-versus-copies" title="Permalink to this headline">¶</a></h3>
+<p>FIXME: Zero-dimensional arrays, views of a single element.</p>
+</div>
+</div>
+<div class="section" id="fancy-indexing">
+<h2>Fancy indexing<a class="headerlink" href="#fancy-indexing" title="Permalink to this headline">¶</a></h2>
+<p>Slices are very handy, and the fact that they can be created as views
+makes them efficient. But some operations cannot really be done with
+slices; for example, suppose one wanted to square all the negative
+values in an array. Short of writing a loop in python, one wants to be
+able to locate the negative values, extract them, square them, and put
+the new values where the old ones were:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="o">-</span> <span class="mi">5</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span><span class="p">[</span><span class="n">T</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">]</span> <span class="o">**=</span> <span class="mi">2</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">T</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">25</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span>  <span class="mi">9</span><span class="p">,</span>  <span class="mi">4</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span>  <span class="mi">3</span><span class="p">,</span>  <span class="mi">4</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Or suppose one wants to use an array as a lookup table, that is, for an
+array B, produce an array whose i,j th element is LUT[B[i,j]]: FIXME:
+argsort is a better example</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">LUT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">LUT</span>
+<span class="n">array</span><span class="p">([</span> <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">0.84147098</span><span class="p">,</span>  <span class="mf">0.90929743</span><span class="p">,</span>  <span class="mf">0.14112001</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7568025</span> <span class="p">,</span>
+       <span class="o">-</span><span class="mf">0.95892427</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2794155</span> <span class="p">,</span>  <span class="mf">0.6569866</span> <span class="p">,</span>  <span class="mf">0.98935825</span><span class="p">,</span>  <span class="mf">0.41211849</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">LUT</span><span class="p">[</span><span class="n">B</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([[</span> <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">0.84147098</span><span class="p">,</span>  <span class="mf">0.90929743</span><span class="p">],</span>
+       <span class="p">[</span> <span class="mf">0.14112001</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7568025</span> <span class="p">,</span> <span class="o">-</span><span class="mf">0.95892427</span><span class="p">],</span>
+       <span class="p">[</span><span class="o">-</span><span class="mf">0.2794155</span> <span class="p">,</span>  <span class="mf">0.6569866</span> <span class="p">,</span>  <span class="mf">0.98935825</span><span class="p">]])</span>
+</pre></div>
+</div>
+<p>For this sort of thing numpy provides what is called &#8220;fancy indexing&#8221;.
+It is not nearly as quick and lightweight as slicing, but it allows one
+to do some rather sophisticated things while letting numpy do all the
+hard work in C.</p>
+<div class="section" id="boolean-indexing">
+<h3>Boolean indexing<a class="headerlink" href="#boolean-indexing" title="Permalink to this headline">¶</a></h3>
+<p>It frequently happens that one wants to select or modify only the
+elements of an array satisfying some condition. numpy provides several
+tools for working with this sort of situation. The first is boolean
+arrays. Comparisons - equal to, less than, and so on - between numpy
+arrays produce arrays of boolean values:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="o">&lt;</span><span class="mi">5</span>
+<span class="n">array</span><span class="p">([</span> <span class="bp">True</span><span class="p">,</span>  <span class="bp">True</span><span class="p">,</span>  <span class="bp">True</span><span class="p">,</span>  <span class="bp">True</span><span class="p">,</span>  <span class="bp">True</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">],</span> <span class="n">dt</span>
+<span class="n">ype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>These are normal arrays. The actual storage type is normally a single
+byte per value, not bits packed into a byte, but boolean arrays offer
+the same range of indexing and array-wise operations as other arrays.
+Unfortunately, python&#8217;s &#8220;and&#8221; and &#8220;or&#8221; cannot be overridden to do
+array-wise operations, so you must use the bitwise operations &#8220;&amp;&#8221;, &#8220;|&#8221;,
+and &#8220;^&#8221; (for exclusive-or). Similarly python&#8217;s chained inequalities
+cannot be overridden. Also, regrettably, one cannot chage the precence
+of the bitwise operators:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span> <span class="o">=</span> <span class="n">A</span><span class="o">&lt;</span><span class="mi">5</span> <span class="o">&amp;</span> <span class="n">A</span><span class="o">&gt;</span><span class="mi">1</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">ValueError</span><span class="p">:</span> <span class="n">The</span> <span class="n">truth</span> <span class="n">value</span> <span class="n">of</span> <span class="n">an</span> <span class="n">array</span> <span class="k">with</span> <span class="n">more</span> <span class="n">than</span> <span class="n">one</span> <span class="n">element</span> <span class="ow">is</span> <span class="n">ambiguous</span><span class="o">.</span>
+ <span class="n">Use</span> <span class="n">a</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">or</span> <span class="n">a</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">A</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span>
+<span class="n">array</span><span class="p">([</span><span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span>  <span class="bp">True</span><span class="p">,</span>  <span class="bp">True</span><span class="p">,</span>  <span class="bp">True</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">],</span> <span class="n">dt</span>
+<span class="n">ype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Nevertheless, numpy&#8217;s boolean arrays are extremely powerful.</p>
+<p>One can use boolean arrays to extract values from arrays:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python numbers=disable</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">A</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">A</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+<span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The result is necessarily a copy of the original array, rather than a
+view, since it will not normally be the case the the elements of c that
+are True select an evenly-strided memory layout. Nevertheless it is also
+possible to use boolean arrays to write to specific elements:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">T</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">A</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">7</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span>
+<span class="go">array([ 0,  1, -7, -7, -7,  5,  6,  7,  8,  9])</span>
+</pre></div>
+</div>
+<p>FIXME: mention where()</p>
+<div class="section" id="multidimensional-boolean-indexing">
+<h4>Multidimensional boolean indexing<a class="headerlink" href="#multidimensional-boolean-indexing" title="Permalink to this headline">¶</a></h4>
+<p>Boolean indexing works for multidimensional arrays as well. In its
+simplest (and most common) incarnation, you simply supply a single
+boolean array as index, the same shape as the original array:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">C</span><span class="p">[</span><span class="n">C</span><span class="o">%</span><span class="mi">5</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">array([ 0,  5, 10, 15, 20])</span>
+</pre></div>
+</div>
+<p>You then get back a one-dimensional array of the elements for which the
+condition is True. (Note that the array must be one-dimensional, since
+the boolean values can be arranged arbitrarily around the array. If you
+want to keep track of the arrangement of values in the original array,
+look into using numpy&#8217;s &#8220;masked array&#8221; tools.) You can also use boolean
+indexing for assignment, just as you can for one-dimensional arrays.</p>
+<p>Two very useful operations on boolean arrays are np.any() and np.all():</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">B</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">B</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>They do just what they say on the tin, evaluate whether any entry in the
+boolean matrix is True, or whether all elements in the boolean matrix
+are True. But they can also be used to evaluate &#8220;along an axis&#8221;, for
+example, to produce a boolean array saying whether any element in a
+given row is True:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">B</span><span class="o">&lt;</span><span class="mi">5</span>
+<span class="go">array([[ True,  True,  True],</span>
+<span class="go">       [ True,  True, False],</span>
+<span class="go">       [False, False, False]], dtype=bool)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">B</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([ True,  True, False], dtype=bool)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">B</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([ True, False, False], dtype=bool)</span>
+</pre></div>
+</div>
+<p>One can also use boolean indexing to pull out rows or columns meeting
+some criterion:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">B</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">B</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),:]</span>
+<span class="go">array([[0, 1, 2],</span>
+<span class="go">       [3, 4, 5]])</span>
+</pre></div>
+</div>
+<p>The result here is two-dimensional because there is one dimension for
+the results of the boolean indexing, and one dimension because each row
+is one-dimensional.</p>
+<p>This works with higher-dimensional boolean arrays as well:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">C</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span>
+<span class="go">array([[ True,  True, False],</span>
+<span class="go">       [False, False, False]], dtype=bool)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">C</span><span class="p">[</span><span class="n">c</span><span class="p">,:]</span>
+<span class="go">array([[0, 1, 2, 3],</span>
+<span class="go">       [4, 5, 6, 7]])</span>
+</pre></div>
+</div>
+<p>Here too the result is two-dimensional, though that is perhaps a little
+more surprising. The boolean array is two-dimensional, but the part of
+the return value corresponding to the boolean array must be
+one-dimensional, since the True values may be distributed arbitrarily.
+The subarray of C corresponding to each True or False value is
+one-dimensional, so we get a return array of dimension two.</p>
+<p>Finally, if you want to apply boolean conditions to the rows and columns
+simultaneously, beware:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">B</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">True</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">True</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">False</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="bp">True</span><span class="p">])]</span>
+<span class="go">array([1, 8])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">True</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="bp">True</span><span class="p">]),:][:,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">False</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="bp">True</span><span class="p">])]</span>
+<span class="go">array([[1, 2],</span>
+<span class="go">       [7, 8]])</span>
+</pre></div>
+</div>
+<p>The obvious approach doesn&#8217;t give the right answer. I don&#8217;t know why
+not, or why it produces the value that it does. You can get the right
+answer by indexing twice, but that&#8217;s clumsy and inefficient and doesn&#8217;t
+allow assignment.</p>
+<p>FIXME: works with too-small boolean arrays for some reason?</p>
+</div>
+</div>
+<div class="section" id="list-of-locations-indexing">
+<h3>List-of-locations indexing<a class="headerlink" href="#list-of-locations-indexing" title="Permalink to this headline">¶</a></h3>
+<p>It happens with some frequency that one wants to pull out values at a
+particular location in an array. If one wants a single location, one can
+just use simple indexing. But if there are many locations, you need
+something a bit more clever. Fortunately numpy supports a mode of fancy
+indexing that accomplishes this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">primes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">23</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">primes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+<span class="go">array([ 7, 11,  3,  5,  5])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">primes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+<span class="go">array([ 7, 11,  3,  5,  5])</span>
+</pre></div>
+</div>
+<p>When you index with an array that is not an array of booleans, or with a
+list, numpy views it as an array of indices. The array can be any shape,
+and the returned array has the same shape:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">primes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">23</span><span class="p">,</span><span class="mi">29</span><span class="p">,</span><span class="mi">31</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">primes</span><span class="p">[</span><span class="n">B</span><span class="p">]</span>
+<span class="go">array([[ 2,  3,  5],</span>
+<span class="go">       [ 7, 11, 13],</span>
+<span class="go">       [17, 19, 23]])</span>
+</pre></div>
+</div>
+<p>Effectively this uses the original array as a look-up table.</p>
+<p>You can also assign to arrays in this way:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">T</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span><span class="p">[</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span>
+<span class="go">array([-3,  0,  2, -1,  4, -2,  6,  7,  8,  9])</span>
+</pre></div>
+</div>
+<p><strong>Warning:</strong> Augmented assignment - the operators like &#8220;+=&#8221; - works, but
+it does not necessarily do what you would expect. In particular,
+repeated indices do not result in the value getting added twice:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">T</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span><span class="p">[</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="p">]</span> <span class="o">+=</span> <span class="mi">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span>
+<span class="go">array([10, 11, 12, 13,  4,  5,  6,  7,  8,  9])</span>
+</pre></div>
+</div>
+<p>This is surprising, inconvenient, and unfortunate, but it is a direct
+result of how python implements the &#8220;+=&#8221; operators. The most common case
+for doing this is something histogram-like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pos</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wts</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bins</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span><span class="o">+=</span><span class="n">wts</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bins</span>
+<span class="go">array([1, 1, 1, 4, 0])</span>
+</pre></div>
+</div>
+<p>Unfortunately this gives the wrong answer. In older versions of numpy
+there was no really satisfactory solution, but as of numpy 1.1, the
+histogram function can do this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pos</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wts</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span><span class="n">bins</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="nb">range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="n">weights</span><span class="o">=</span><span class="n">wts</span><span class="p">,</span><span class="n">new</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="go">(array([3, 1, 1, 4, 0]), array([ 0.,  1.,  2.,  3.,  4.,  5.]))</span>
+</pre></div>
+</div>
+<p>FIXME: mention put() and take()</p>
+<div class="section" id="multidimensional-list-of-locations-indexing">
+<h4>Multidimensional list-of-locations indexing<a class="headerlink" href="#multidimensional-list-of-locations-indexing" title="Permalink to this headline">¶</a></h4>
+<p>One can also, not too surprisingly, use list-of-locations indexing on
+multidimensional arrays. The syntax is, however, a bit surprising. Let&#8217;s
+suppose we want the list [B[0,0],B[1,2],B[0,1]]. Then we write:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">B</span><span class="p">[</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="p">]</span>
+<span class="go">array([0, 5, 1])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+<span class="go">[0, 5, 1]</span>
+</pre></div>
+</div>
+<p>This may seem weird - why not provide a list of tuples representing
+coordinates? Well, the reason is basically that for large arrays, lists
+and tuples are very inefficient, so numpy is designed to work with
+arrays only, for indices as well as values. This means that something
+like B[ [(0,0),(1,2),(0,1)] ] looks just like indexing B with a
+two-dimensional array, which as we saw above just means that B should be
+used as a look-up table yielding a two-dimensional array of results
+(each of which is one-dimensional, as usual when we supply only one
+index to a two-dimensional array).</p>
+<p>In summary, in list-of-locations indexing, you supply an array of values
+for each coordinate, all the same shape, and numpy returns an array of
+the same shape containing the values obtained by looking up each set of
+coordinates in the original array. If the coordinate arrays are not the
+same shape, numpy&#8217;s broadcasting rules are applied to them to try to
+make their shapes the same. If there are not as many arrays as the
+original array has dimensions, the original array is regarded as
+containing arrays, and the extra dimensions appear on the result array.</p>
+<p>Fortunately, most of the time when one wants to supply a list of
+locations to a multidimensional array, one got the list from numpy in
+the first place. A normal way to do this is something like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">B</span><span class="o">%</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span>
+<span class="go">(array([0, 1, 1, 2]), array([1, 0, 2, 1]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+<span class="go">array([1, 3, 5, 7])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span><span class="p">[</span><span class="n">B</span><span class="o">%</span><span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+<span class="go">array([1, 3, 5, 7])</span>
+</pre></div>
+</div>
+<p>Here nonzero() takes an array and returns a list of locations (in the
+correct format) where the array is nonzero. Of course, one can also
+index directly into the array with a boolean array; this will be much
+more efficient unless the number of nonzero locations is small and the
+indexing is done many times. But sometimes it is valuable to work with
+the list of indices directly.</p>
+</div>
+<div class="section" id="picking-out-rows-and-columns">
+<h4>Picking out rows and columns<a class="headerlink" href="#picking-out-rows-and-columns" title="Permalink to this headline">¶</a></h4>
+<p>One unfortunate consequence of numpy&#8217;s list-of-locations indexing syntax
+is that users used to other array languages expect it to pick out rows
+and columns. After all, it&#8217;s quite reasonable to want to pull out a list
+of rows and columns from a matrix. So numpy provides a convenience
+function, ix_() for doing this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">B</span><span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span> <span class="p">]</span>
+<span class="go">array([[0, 2],</span>
+<span class="go">       [6, 8]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<span class="go">(array([[0],</span>
+<span class="go">       [2]]), array([[0, 2]]))</span>
+</pre></div>
+</div>
+<p>The way it works is by taking advantage of numpy&#8217;s broadcasting
+facilities. You can see that the two arrays used as row and column
+indices have different shapes; numpy&#8217;s broadcasting repeats each along
+the too-short axis so that they conform.</p>
+</div>
+</div>
+</div>
+<div class="section" id="mixed-indexing-modes">
+<h2>Mixed indexing modes<a class="headerlink" href="#mixed-indexing-modes" title="Permalink to this headline">¶</a></h2>
+<p>What happens when you try to mix slice indexing, element indexing,
+boolean indexing, and list-of-locations indexing?</p>
+</div>
+<div class="section" id="how-indexing-works-under-the-hood">
+<h2>How indexing works under the hood<a class="headerlink" href="#how-indexing-works-under-the-hood" title="Permalink to this headline">¶</a></h2>
+<p>A numpy array is a block of memory, a data type for interpreting memory
+locations, a list of sizes, and a list of strides. So for example,
+C[i,j,k] is the element starting at position
+i*strides[0]+j*strides[1]+k*strides[2]. This means, for example, that
+transposing amatrix can be done very efficiently: just reverse the
+strides and sizes arrays. This is why slices are efficient and can
+return views, but fancy indexing is slower and can&#8217;t.</p>
+<p>At a python level, numpy&#8217;s indexing works by overriding the
+__getitem__ and __setitem__ methods in an ndarray object. These
+methods are called when arrays are indexed, and they allow arbitrary
+implementations:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">IndexDemo</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">print</span> <span class="s">&quot;__getitem__&quot;</span><span class="p">,</span> <span class="n">args</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="mi">1</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">print</span> <span class="s">&quot;__setitem__&quot;</span><span class="p">,</span> <span class="n">args</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">print</span> <span class="s">&quot;__iadd__&quot;</span><span class="p">,</span> <span class="n">args</span>
+<span class="gp">...</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span> <span class="o">=</span> <span class="n">IndexDemo</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">__getitem__ (1,)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span><span class="p">[</span><span class="s">&quot;fish&quot;</span><span class="p">]</span>
+<span class="go">__getitem__ (&#39;fish&#39;,)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span><span class="p">[</span><span class="n">A</span><span class="p">]</span>
+<span class="go">__getitem__ (array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+<span class="go">__getitem__ ((1, 2),)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="go">__setitem__ (1, 7)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">7</span>
+<span class="go">__getitem__ (1,)</span>
+<span class="go">__setitem__ (1, 8)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="array-like-objects">
+<h2>Array-like objects<a class="headerlink" href="#array-like-objects" title="Permalink to this headline">¶</a></h2>
+<p>numpy and scipy provide a few other types that behave like arrays, in
+particular matrices and sparse matrices. Their indexing can differ from
+that of arrays in surprising ways.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Indexing numpy arrays</a><ul>
+<li><a class="reference internal" href="#elements">Elements</a></li>
+<li><a class="reference internal" href="#slices">Slices</a><ul>
+<li><a class="reference internal" href="#one-dimensional-slices">One-dimensional slices</a></li>
+<li><a class="reference internal" href="#multidimensional-slices">Multidimensional slices</a></li>
+<li><a class="reference internal" href="#views-versus-copies">Views versus copies</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fancy-indexing">Fancy indexing</a><ul>
+<li><a class="reference internal" href="#boolean-indexing">Boolean indexing</a><ul>
+<li><a class="reference internal" href="#multidimensional-boolean-indexing">Multidimensional boolean indexing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#list-of-locations-indexing">List-of-locations indexing</a><ul>
+<li><a class="reference internal" href="#multidimensional-list-of-locations-indexing">Multidimensional list-of-locations indexing</a></li>
+<li><a class="reference internal" href="#picking-out-rows-and-columns">Picking out rows and columns</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mixed-indexing-modes">Mixed indexing modes</a></li>
+<li><a class="reference internal" href="#how-indexing-works-under-the-hood">How indexing works under the hood</a></li>
+<li><a class="reference internal" href="#array-like-objects">Array-like objects</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Histograms.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="InputOutput.html"
+                        title="next chapter">Introduction</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Indexing.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="InputOutput.html" title="Introduction"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Histograms.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,194 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Savitzky Golay Filtering" href="SavitzkyGolay.html" />
+    <link rel="prev" title="Table of Contents" href="SWIG_NumPy_examples.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="SavitzkyGolay.html" title="Savitzky Golay Filtering"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="SWIG_NumPy_examples.html" title="Table of Contents"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>Please note that with current versions of NumPy (SVN), the directory
+contains a complete working example with simple SWIG typemaps, including
+also a proper file so you can install it with the standard Python
+mechanisms. This should help you get up and running quickly.</p>
+<p>To get the feel how to write a truly minimalist interface, below is a
+relevant part of the simple SWIG interface file .. image:: SWIG_and_NumPy_attachments/umfpack.i
+(this is for SWIG &lt; version 1.3.29) used to wrap the UMFPACK sparse
+linear solver libraries. The full interface can be found in the
+directory in the SciPy SVN repository. If you&#8217;re using SWIG &gt; version
+1.3.29, refer to the file in SciPy SVN repository, which is slightly
+different.</p>
+<div class="highlight-python"><pre>/*!
+  Gets PyArrayObject from a PyObject.
+*/
+PyArrayObject *helper_getCArrayObject( PyObject *input, int type,
+                                   int minDim, int maxDim ) {
+  PyArrayObject *obj;
+
+  if (PyArray_Check( input )) {
+    obj = (PyArrayObject *) input;
+    if (!PyArray_ISCARRAY( obj )) {
+      PyErr_SetString( PyExc_TypeError, "not a C array" );
+      return NULL;
+    }
+    obj = (PyArrayObject *)
+      PyArray_ContiguousFromAny( input, type, minDim, maxDim );
+    if (!obj) return NULL;
+  } else {
+    PyErr_SetString( PyExc_TypeError, "not an array" );
+    return NULL;
+  }
+  return obj;
+}
+%}
+
+/*!
+  Use for arrays as input arguments. Could be also used for changing an array
+  in place.
+
+  @a rtype ... return this C data type
+  @a ctype ... C data type of the C function
+  @a atype ... PyArray_* suffix
+*/
+#define ARRAY_IN( rtype, ctype, atype ) \
+%typemap( python, in ) (ctype *array) { \
+  PyArrayObject *obj; \
+  obj = helper_getCArrayObject( $input, PyArray_##atype, 1, 1 ); \
+  if (!obj) return NULL; \
+  $1 = (rtype *) obj-&gt;data; \
+  Py_DECREF( obj ); \
+};
+
+ARRAY_IN( int, const int, INT )
+%apply const int *array {
+    const int Ap [ ],
+    const int Ai [ ]
+};
+
+ARRAY_IN( long, const long, LONG )
+%apply const long *array {
+    const long Ap [ ],
+    const long Ai [ ]
+};
+
+ARRAY_IN( double, const double, DOUBLE )
+%apply const double *array {
+    const double Ax [ ],
+    const double Az [ ],
+    const double B [ ]
+};
+
+ARRAY_IN( double, double, DOUBLE )
+%apply double *array {
+    double X [ ]
+};</pre>
+</div>
+<p>The function being wrapped then could be like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">int</span> <span class="n">umfpack_di_solve</span><span class="p">(</span> <span class="nb">int</span> <span class="n">sys</span><span class="p">,</span> <span class="n">const</span> <span class="nb">int</span> <span class="n">Ap</span> <span class="p">[</span> <span class="p">],</span> <span class="n">const</span> <span class="nb">int</span> <span class="n">Ai</span> <span class="p">[</span> <span class="p">],</span>
+                      <span class="n">const</span> <span class="n">double</span> <span class="n">Ax</span> <span class="p">[</span> <span class="p">],</span> <span class="n">double</span> <span class="n">X</span> <span class="p">[</span> <span class="p">],</span> <span class="n">const</span> <span class="n">double</span> <span class="n">B</span> <span class="p">[</span> <span class="p">],</span>
+                      <span class="o">...</span> <span class="p">);</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="SWIG_NumPy_examples.html"
+                        title="previous chapter">Table of Contents</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="SavitzkyGolay.html"
+                        title="next chapter">Savitzky Golay Filtering</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/SWIG_and_NumPy.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="SavitzkyGolay.html" title="Savitzky Golay Filtering"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="SWIG_NumPy_examples.html" title="Table of Contents"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,213 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Finding the minimum point in the convex hull of a finite set of points &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Fit examples with sinusoidal functions" href="FittingData.html" />
+    <link rel="prev" title="Finding the Convex Hull of a 2-D Dataset" href="Finding_Convex_Hull.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="FittingData.html" title="Fit examples with sinusoidal functions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Finding_Convex_Hull.html" title="Finding the Convex Hull of a 2-D Dataset"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>TableOfContents</p>
+<div class="section" id="finding-the-minimum-point-in-the-convex-hull-of-a-finite-set-of-points">
+<h1>Finding the minimum point in the convex hull of a finite set of points<a class="headerlink" href="#finding-the-minimum-point-in-the-convex-hull-of-a-finite-set-of-points" title="Permalink to this headline">¶</a></h1>
+<p>Based on the work of Philip Wolf [1] and the recursive algorithm of
+Kazuyuki Sekitani and Yoshitsugu Yamamoto [2].</p>
+<p>The algorithm in [2] has 3 epsilon to avoid comparison problems in three
+parts of the algorithm. The code below has few changes and only one
+epsilon. The aim of the change is to avoid infinite loops.</p>
+</div>
+<div class="section" id="code">
+<h1>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">dot</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">ix_</span><span class="p">,</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">concatenate</span><span class="p">,</span> <span class="n">a</span>
+<span class="n">bs</span><span class="p">,</span> <span class="n">log10</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">ones</span>
+<span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">norm</span>
+
+<span class="kn">from</span> <span class="nn">mpmath</span> <span class="kn">import</span> <span class="n">mpf</span><span class="p">,</span> <span class="n">mp</span>
+<span class="n">mp</span><span class="o">.</span><span class="n">dps</span><span class="o">=</span><span class="mi">80</span>
+
+<span class="k">def</span> <span class="nf">find_min_point</span><span class="p">(</span><span class="n">P</span><span class="p">):</span>
+<span class="c">#    print &quot;Calling find_min with P: &quot;, P</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">P</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">P</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">eps</span> <span class="o">=</span> <span class="n">mpf</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">**-</span><span class="mi">40</span>
+
+    <span class="n">P</span> <span class="o">=</span> <span class="p">[</span><span class="n">array</span><span class="p">([</span><span class="n">mpf</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">p</span><span class="p">])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">P</span><span class="p">]</span>
+
+    <span class="c"># Step 0. Choose a point from C(P)</span>
+    <span class="n">x</span>  <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">array</span><span class="p">([</span><span class="n">dot</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">P</span><span class="p">])</span><span class="o">.</span><span class="n">argmin</span><span class="p">()]</span>
+
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+
+        <span class="c"># Step 1. \alpha_k := min{x_{k-1}^T p | p \in P}</span>
+        <span class="n">p_alpha</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">array</span><span class="p">([</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">P</span><span class="p">])</span><span class="o">.</span><span class="n">argmin</span><span class="p">()]</span>
+
+        <span class="k">if</span> <span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="o">-</span><span class="n">p_alpha</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span>
+
+        <span class="n">Pk</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">P</span> <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">p</span><span class="o">-</span><span class="n">p_alpha</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">eps</span><span class="p">]</span>
+
+        <span class="c"># Step 2. P_k := { p | p \in P and x_{k-1}^T p = \alpha_k}</span>
+        <span class="n">P_Pk</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">P</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">array</span><span class="p">([(</span><span class="n">p</span> <span class="o">==</span> <span class="n">q</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">Pk</span><span class="p">])</span><span class="o">.</span><span class="n">any</span><span class="p">()]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">Pk</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">P</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span>
+
+        <span class="n">y</span> <span class="o">=</span> <span class="n">find_min_point</span><span class="p">(</span><span class="n">Pk</span><span class="p">)</span>
+
+
+        <span class="n">p_beta</span> <span class="o">=</span> <span class="n">P_Pk</span><span class="p">[</span><span class="n">array</span><span class="p">([</span><span class="n">dot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">P_Pk</span><span class="p">])</span><span class="o">.</span><span class="n">argmin</span><span class="p">()]</span>
+
+        <span class="k">if</span> <span class="n">dot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">y</span><span class="o">-</span><span class="n">p_beta</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">y</span><span class="p">])</span>
+
+
+        <span class="c"># Step 4.</span>
+        <span class="n">P_aux</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">P_Pk</span> <span class="k">if</span> <span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">-</span><span class="n">p</span><span class="p">)</span><span class="o">&gt;</span><span class="n">eps</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">-</span><span class="n">p</span><span class="p">)</span><span class="o">!=</span><span class="mi">0</span><span class="p">)]</span>
+        <span class="n">p_lambda</span> <span class="o">=</span> <span class="n">P_aux</span><span class="p">[</span><span class="n">array</span><span class="p">([</span><span class="n">dot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">y</span><span class="o">-</span><span class="n">p</span><span class="p">)</span><span class="o">/</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">-</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">P_aux</span><span class="p">])</span><span class="o">.</span><span class="n">argmin</span><span class="p">()]</span>
+
+        <span class="n">lam</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">p_lambda</span><span class="o">-</span><span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="n">dot</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">-</span><span class="n">p_lambda</span><span class="p">)</span>
+
+        <span class="n">x</span> <span class="o">+=</span> <span class="n">lam</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">x</span><span class="p">)</span>
+
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">print</span> <span class="n">find_min_point</span><span class="p">(</span> <span class="p">[</span><span class="n">array</span><span class="p">([</span> <span class="o">-</span><span class="mf">4.83907292e+00</span><span class="p">,</span>   <span class="mf">2.22438863e+04</span><span class="p">,</span>  <span class="o">-</span><span class="mf">2.674967</span>
+<span class="mf">63e+04</span><span class="p">]),</span> <span class="n">array</span><span class="p">([</span>   <span class="mf">9.71147604</span><span class="p">,</span> <span class="o">-</span><span class="mf">351.46404195</span><span class="p">,</span> <span class="o">-</span><span class="mf">292.18064276</span><span class="p">]),</span> <span class="n">array</span><span class="p">([</span>  <span class="mf">4.60452</span>
+<span class="mf">808e+00</span><span class="p">,</span>   <span class="mf">1.07020174e+05</span><span class="p">,</span>  <span class="o">-</span><span class="mf">1.25310230e+05</span><span class="p">]),</span> <span class="n">array</span><span class="p">([</span>  <span class="mf">2.16080134e+00</span><span class="p">,</span>   <span class="mf">5.1201</span>
+<span class="mf">9937e+04</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.96167833e+04</span><span class="p">]),</span> <span class="n">array</span><span class="p">([</span>  <span class="mf">2.65472146e+00</span><span class="p">,</span>   <span class="mf">6.70546443e+04</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.716</span>
+<span class="mf">19656e+04</span><span class="p">]),</span> <span class="n">array</span><span class="p">([</span>  <span class="mf">1.55775358e+00</span><span class="p">,</span>  <span class="o">-</span><span class="mf">1.34347516e+05</span><span class="p">,</span>   <span class="mf">1.53209265e+05</span><span class="p">]),</span> <span class="n">arra</span>
+<span class="n">y</span><span class="p">([</span>   <span class="mf">13.22464295</span><span class="p">,</span>  <span class="mf">1869.01251292</span><span class="p">,</span> <span class="o">-</span><span class="mf">2137.61850989</span><span class="p">])])</span>
+
+
+    <span class="k">print</span> <span class="n">find_min_point</span><span class="p">(</span> <span class="p">[</span><span class="n">array</span><span class="p">([</span> <span class="o">-</span><span class="mf">4.83907292e+00</span><span class="p">,</span>   <span class="mf">2.22438863e+04</span><span class="p">,</span>  <span class="o">-</span><span class="mf">2.674967</span>
+<span class="mf">63e+04</span><span class="p">]),</span> <span class="n">array</span><span class="p">([</span>   <span class="mf">9.71147604</span><span class="p">,</span> <span class="o">-</span><span class="mf">351.46404195</span><span class="p">,</span> <span class="o">-</span><span class="mf">292.18064276</span><span class="p">]),</span> <span class="n">array</span><span class="p">([</span>  <span class="mf">4.60452</span>
+<span class="mf">808e+00</span><span class="p">,</span>   <span class="mf">1.07020174e+05</span><span class="p">,</span>  <span class="o">-</span><span class="mf">1.25310230e+05</span><span class="p">]),</span> <span class="n">array</span><span class="p">([</span>  <span class="mf">2.16080134e+00</span><span class="p">,</span>   <span class="mf">5.1201</span>
+<span class="mf">9937e+04</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.96167833e+04</span><span class="p">]),</span> <span class="n">array</span><span class="p">([</span>  <span class="mf">2.65472146e+00</span><span class="p">,</span>   <span class="mf">6.70546443e+04</span><span class="p">,</span>  <span class="o">-</span><span class="mf">7.716</span>
+<span class="mf">19656e+04</span><span class="p">]),</span> <span class="n">array</span><span class="p">([</span>  <span class="mf">1.55775358e+00</span><span class="p">,</span>  <span class="o">-</span><span class="mf">1.34347516e+05</span><span class="p">,</span>   <span class="mf">1.53209265e+05</span><span class="p">]),</span> <span class="n">arra</span>
+<span class="n">y</span><span class="p">([</span>   <span class="mf">13.22464295</span><span class="p">,</span>  <span class="mf">1869.01251292</span><span class="p">,</span> <span class="o">-</span><span class="mf">2137.61850989</span><span class="p">]),</span> <span class="n">array</span><span class="p">([</span> <span class="mf">12273.18670123</span><span class="p">,</span>  <span class="o">-</span><span class="mi">1</span>
+<span class="mf">233.32015854</span><span class="p">,</span>  <span class="mf">61690.10864825</span><span class="p">])])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="references">
+<h1>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Finding</span></tt> <tt class="docutils literal"><span class="pre">the</span></tt> <tt class="docutils literal"><span class="pre">nearest</span></tt> <tt class="docutils literal"><span class="pre">point</span></tt> <tt class="docutils literal"><span class="pre">in</span></tt> <tt class="docutils literal"><span class="pre">A</span></tt></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">polytope</span></tt> &lt;<a class="reference external" href="http://www.springerlink.com/content/hw0l2n1271260604/">http://www.springerlink.com/content/hw0l2n1271260604/</a>&gt;`__
+| <tt class="docutils literal"><span class="pre">2.&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`A</span></tt> <tt class="docutils literal"><span class="pre">recursive</span></tt> <tt class="docutils literal"><span class="pre">algorithm</span></tt> <tt class="docutils literal"><span class="pre">for</span></tt> <tt class="docutils literal"><span class="pre">finding</span></tt>
+<tt class="docutils literal"><span class="pre">the</span></tt> <tt class="docutils literal"><span class="pre">minimum</span></tt> <tt class="docutils literal"><span class="pre">norm</span></tt> <tt class="docutils literal"><span class="pre">point</span></tt> <tt class="docutils literal"><span class="pre">in</span></tt> <tt class="docutils literal"><span class="pre">a</span></tt> <tt class="docutils literal"><span class="pre">polytope</span></tt> <tt class="docutils literal"><span class="pre">and</span></tt>
+<tt class="docutils literal"><span class="pre">a</span></tt> <tt class="docutils literal"><span class="pre">pair</span></tt> <tt class="docutils literal"><span class="pre">of</span></tt> <tt class="docutils literal"><span class="pre">closest</span></tt> <tt class="docutils literal"><span class="pre">points</span></tt> <tt class="docutils literal"><span class="pre">in</span></tt> <tt class="docutils literal"><span class="pre">two</span></tt>
+<tt class="docutils literal"><span class="pre">polytopes</span></tt> &lt;<a class="reference external" href="http://www.springerlink.com/content/j25702174115q68x/">http://www.springerlink.com/content/j25702174115q68x/</a>&gt;`__</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Finding the minimum point in the convex hull of a finite set of points</a></li>
+<li><a class="reference internal" href="#code">Code</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Finding_Convex_Hull.html"
+                        title="previous chapter">Finding the Convex Hull of a 2-D Dataset</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="FittingData.html"
+                        title="next chapter">Fit examples with sinusoidal functions</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Finding_Convex_Hull_Minimum_Point.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="FittingData.html" title="Fit examples with sinusoidal functions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Finding_Convex_Hull.html" title="Finding the Convex Hull of a 2-D Dataset"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,777 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Table of Contents &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Data Frames" href="DataFrame.html" />
+    <link rel="prev" title="A Coupled Spring-Mass System" href="CoupledSpringMassSystem.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="DataFrame.html" title="Data Frames"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="CoupledSpringMassSystem.html" title="A Coupled Spring-Mass System"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="table-of-contents">
+<h1>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h1>
+<p>TableOfContents</p>
+</div>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="http://starship.python.net/crew/theller/ctypes/">ctypes</a> is an
+advanced Foreign Function Interface package for Python 2.3 and higher.
+It is included in the standard library for Python 2.5.</p>
+<p>ctypes allows to call functions exposed from DLLs/shared libraries and
+has extensive facilities to create, access and manipulate simple and
+complicated C data types in Python - in other words: wrap libraries in
+pure Python. It is even possible to implement C callback functions in
+pure Python.</p>
+<p>ctypes also includes a code generator tool chain which allows automatic
+creation of library wrappers from C header files. ctypes works on
+Windows, Mac OS X, Linux, Solaris, FreeBSD, OpenBSD and other systems.</p>
+<p><strong>Ensure that you have at least ctypes version 1.0.1 or later.</strong></p>
+<p>Other possibilities to call or run C code in python include:
+<a class="reference external" href="http://www.scipy.org/Cookbook/SWIG_and_NumPy">SWIG</a>,
+<a class="reference external" href="http://wiki.cython.org/tutorials/numpy">Cython</a>, [&#8220;Weave&#8221;], etc</p>
+</div>
+<div class="section" id="getting-started-with-ctypes">
+<h1>Getting Started with ctypes<a class="headerlink" href="#getting-started-with-ctypes" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference external" href="http://starship.python.net/crew/theller/ctypes/tutorial.html">ctypes
+tutorial</a>
+and the <a class="reference external" href="http://docs.python.org/lib/module-ctypes.html">ctypes documentation for
+Python</a> provide
+extensive information on getting started with ctypes.</p>
+<p>Assuming you&#8217;ve built a library called `foo.dll` or `libfoo.so`
+containing a function called `bar` that takes a pointer to a buffer of
+doubles and an int as arguments and returns an int, the following code
+should get you up and running. The following sections cover some
+possible build scripts, C code and Python code.</p>
+<p>If you would like to build your DLL/shared library with distutils, take
+a look at the !SharedLibrary distutils extension included with
+<a class="reference external" href="http://www.ctcms.nist.gov/oof/oof2/index.html">OOF2</a>. This should
+probably be included in numpy.distutils at some point.</p>
+<div class="section" id="nmake-makefile-windows">
+<h2>Nmake Makefile (Windows)<a class="headerlink" href="#nmake-makefile-windows" title="Permalink to this headline">¶</a></h2>
+<p>Run nmake inside the Visual Studio Command Prompt to build with the
+following file.</p>
+<p>You should be able to build the DLL with any version of the Visual
+Studio compiler regardless of the compiler used to compile Python. Keep
+in mind that you shouldn&#8217;t allocate/deallocate memory across different
+debug/release and single-threaded/multi-threaded runtimes or operate on
+FILE*s from different runtimes.</p>
+<div class="highlight-python"><pre>CXX = cl.exe
+LINK = link.exe
+
+CPPFLAGS = -D_WIN32 -D_USRDLL -DFOO_DLL -DFOO_EXPORTS
+CXXFLAGSALL = -nologo -EHsc -GS -W3 -Wp64 $(CPPFLAGS)
+CXXFLAGSDBG = -MDd -Od -Z7 -RTCcsu
+CXXFLAGSOPT = -MD -O2
+#CXXFLAGS = $(CXXFLAGSALL) $(CXXFLAGSDBG)
+CXXFLAGS = $(CXXFLAGSALL) $(CXXFLAGSOPT)
+
+LINKFLAGSALL = /nologo /DLL
+LINKFLAGSDBG = /DEBUG
+LINKFLAGSOPT =
+#LINKFLAGS = $(LINKFLAGSALL) $(LINKFLAGSDBG)
+LINKFLAGS = $(LINKFLAGSALL) $(LINKFLAGSOPT)
+
+all: foo.dll
+
+foo.dll: foo.obj
+    $(LINK) $(LINKFLAGS) foo.obj /OUT:foo.dll
+
+svm.obj: svm.cpp svm.h
+    $(CXX) $(CXXFLAGS) -c foo.cpp
+
+clean:
+    -erase /Q *.obj *.dll *.exp *.lib</pre>
+</div>
+</div>
+<div class="section" id="sconstruct-gcc">
+<h2>SConstruct (GCC)<a class="headerlink" href="#sconstruct-gcc" title="Permalink to this headline">¶</a></h2>
+<p>You can use the following file with <a class="reference external" href="http://www.scons.org">SCons</a> to
+build a shared library.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">()</span>
+<span class="n">env</span><span class="o">.</span><span class="n">Replace</span><span class="p">(</span><span class="n">CFLAGS</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;-O2&#39;</span><span class="p">,</span><span class="s">&#39;-Wall&#39;</span><span class="p">,</span><span class="s">&#39;-ansi&#39;</span><span class="p">,</span><span class="s">&#39;-pedantic&#39;</span><span class="p">])</span>
+<span class="n">env</span><span class="o">.</span><span class="n">SharedLibrary</span><span class="p">(</span><span class="s">&#39;foo&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;foo.cpp&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="foo-cpp">
+<h2>foo.cpp<a class="headerlink" href="#foo-cpp" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#include &lt;stdio.h&gt;</span>
+
+<span class="c">#ifdef FOO_DLL</span>
+<span class="c">#ifdef FOO_EXPORTS</span>
+<span class="c">#define FOO_API __declspec(dllexport)</span>
+<span class="c">#else</span>
+<span class="c">#define FOO_API __declspec(dllimport)</span>
+<span class="c">#endif /* FOO_EXPORTS */</span>
+<span class="c">#else</span>
+<span class="c">#define FOO_API extern /* XXX confirm this */</span>
+<span class="c">#endif /* FOO_DLL */</span>
+
+<span class="c">#ifdef __cplusplus</span>
+<span class="n">extern</span> <span class="s">&quot;C&quot;</span> <span class="p">{</span>
+<span class="c">#endif</span>
+
+<span class="n">extern</span> <span class="n">FOO_API</span> <span class="nb">int</span> <span class="n">bar</span><span class="p">(</span><span class="n">double</span><span class="o">*</span> <span class="n">data</span><span class="p">,</span> <span class="nb">int</span> <span class="nb">len</span><span class="p">)</span> <span class="p">{</span>
+   <span class="nb">int</span> <span class="n">i</span><span class="p">;</span>
+   <span class="n">printf</span><span class="p">(</span><span class="s">&quot;data = %p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">void</span><span class="o">*</span><span class="p">)</span> <span class="n">data</span><span class="p">);</span>
+   <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">&quot;data[</span><span class="si">%d</span><span class="s">] = </span><span class="si">%f</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+   <span class="p">}</span>
+   <span class="n">printf</span><span class="p">(</span><span class="s">&quot;len = </span><span class="si">%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">);</span>
+   <span class="k">return</span> <span class="nb">len</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c">#ifdef __cplusplus</span>
+<span class="p">}</span>
+<span class="c">#endif</span>
+</pre></div>
+</div>
+<p>When building the DLL for foo on Windows, define `FOO_DLL` and
+`FOO_EXPORTS` (this is what you want to do when building a DLL for
+use with ctypes). When linking against the DLL, define `FOO_DLL`.
+When linking against a static library that contains foo, or when
+including foo in an executable, don&#8217;t define anything.</p>
+<p>If you&#8217;re unclear about what is for, read
+[<a class="reference external" href="http://www.tldp.org/HOWTO/C">http://www.tldp.org/HOWTO/C</a>++-dlopen/thesolution.html section 3 of
+the C++ dlopen mini HOWTO]. This allows you to write function wrappers
+with C linkage on top of a bunch of C++ classes so that you can use them
+with ctypes. Alternatively, you might prefer to write C code.</p>
+</div>
+<div class="section" id="foo-py">
+<h2>foo.py<a class="headerlink" href="#foo-py" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
+<span class="kn">import</span> <span class="nn">ctypes</span> <span class="kn">as</span> <span class="nn">C</span>
+<span class="n">_foo</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">load_library</span><span class="p">(</span><span class="s">&#39;libfoo&#39;</span><span class="p">,</span> <span class="s">&#39;.&#39;</span><span class="p">)</span>
+<span class="n">_foo</span><span class="o">.</span><span class="n">bar</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_int</span>
+<span class="n">_foo</span><span class="o">.</span><span class="n">bar</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">C</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">c_double</span><span class="p">),</span> <span class="n">C</span><span class="o">.</span><span class="n">c_int</span><span class="p">]</span>
+<span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_foo</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data_as</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">c_double</span><span class="p">)),</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="numpy-arrays-ctypes-property">
+<h1>NumPy arrays&#8217; ctypes property<a class="headerlink" href="#numpy-arrays-ctypes-property" title="Permalink to this headline">¶</a></h1>
+<p>A ctypes property was recently added to NumPy arrays:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">18</span><span class="p">]:</span> <span class="n">x</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">19</span><span class="p">]:</span> <span class="n">x</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">19</span><span class="p">]:</span> <span class="n">c_void_p</span><span class="p">(</span><span class="mi">14394256</span><span class="p">)</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">21</span><span class="p">]:</span> <span class="n">x</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data_as</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">))</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">24</span><span class="p">]:</span> <span class="n">x</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">shape</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">24</span><span class="p">]:</span> <span class="o">&lt;</span><span class="n">ctypes</span><span class="o">.</span><span class="n">_endian</span><span class="o">.</span><span class="n">c_long_Array_3</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x00DEF2B0</span><span class="o">&gt;</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">25</span><span class="p">]:</span> <span class="n">x</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">25</span><span class="p">]:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">26</span><span class="p">]:</span> <span class="n">x</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">strides</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">26</span><span class="p">]:</span> <span class="o">&lt;</span><span class="n">ctypes</span><span class="o">.</span><span class="n">_endian</span><span class="o">.</span><span class="n">c_long_Array_3</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x00DEF300</span><span class="o">&gt;</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">27</span><span class="p">]:</span> <span class="n">x</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">strides</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">27</span><span class="p">]:</span> <span class="p">[</span><span class="mi">96</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>In general, a C function might take a pointer to the array&#8217;s data, an
+integer indicating the number of array dimensions, (pass the value of
+the ndim property here) and two int pointers to the shapes and stride
+information.</p>
+<p>If your C function assumes contiguous storage, you might want to wrap it
+with a Python function that calls !NumPy&#8217;s `ascontiguousarray`
+function on all the input arrays.</p>
+</div>
+<div class="section" id="numpy-s-ndpointer-with-ctypes-argtypes">
+<h1>NumPy&#8217;s ndpointer with ctypes argtypes<a class="headerlink" href="#numpy-s-ndpointer-with-ctypes-argtypes" title="Permalink to this headline">¶</a></h1>
+<p>Starting with ctypes 0.9.9.9, any class implementing the from_param
+method can be used in the argtypes list of a function. Before ctypes
+calls a C function, it uses the argtypes list to check each parameter.</p>
+<p>Using !NumPy&#8217;s ndpointer function, some very useful argtypes classes can
+be constructed, for example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">numpy.ctypeslib</span> <span class="kn">import</span> <span class="n">ndpointer</span>
+<span class="n">arg1</span> <span class="o">=</span> <span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s">&#39;&lt;f4&#39;</span><span class="p">)</span>
+<span class="n">arg2</span> <span class="o">=</span> <span class="n">ndpointer</span><span class="p">(</span><span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">arg3</span> <span class="o">=</span> <span class="n">ndpointer</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">arg4</span> <span class="o">=</span> <span class="n">ndpointer</span><span class="p">(</span><span class="n">flags</span><span class="o">=</span><span class="s">&#39;CONTIGUOUS,ALIGNED&#39;</span><span class="p">)</span>
+<span class="c"># or any combination of the above</span>
+<span class="n">arg5</span> <span class="o">=</span> <span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="s">&#39;&gt;i4&#39;</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="s">&#39;CONTIGUOUS&#39;</span><span class="p">)</span>
+<span class="n">func</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">arg1</span><span class="p">,</span><span class="n">arg2</span><span class="p">,</span><span class="n">arg3</span><span class="p">,</span><span class="n">arg4</span><span class="p">,</span><span class="n">arg5</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Now, if an argument doesn&#8217;t meet the requirements, a !TypeError is
+raised. This allows one to make sure that arrays passed to the C
+function is in a form that the function can handle.</p>
+<p>See also the mailing list thread on <a class="reference external" href="http://thread.gmane.org/gmane.comp.python.numeric.general/7418/focus=7418">ctypes and
+ndpointer</a>.</p>
+</div>
+<div class="section" id="dynamic-allocation-through-callbacks">
+<h1>Dynamic allocation through callbacks<a class="headerlink" href="#dynamic-allocation-through-callbacks" title="Permalink to this headline">¶</a></h1>
+<p>ctypes supports the idea of
+<a class="reference external" href="http://docs.python.org/lib/ctypes-callback-functions.html">callbacks</a>,
+allowing C code to call back into Python through a function pointer.
+This is possible because ctypes releases the Python Global Interpreter
+Lock (GIL) before calling the C function.</p>
+<p>We can use this feature to allocate !NumPy arrays if and when we need a
+buffer for C code to operate on. This could avoid having to copy data in
+certain cases. You also don&#8217;t have to worry about freeing the C data
+after you&#8217;re done with it. By allocating your buffers as !NumPy arrays,
+the Python garbage collector can take care of this.</p>
+<p>Python code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">ALLOCATOR</span> <span class="o">=</span> <span class="n">CFUNCTYPE</span><span class="p">(</span><span class="n">c_long</span><span class="p">,</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">c_int</span><span class="p">))</span>
+<span class="c"># load your library as lib</span>
+<span class="n">lib</span><span class="o">.</span><span class="n">baz</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">lib</span><span class="o">.</span><span class="n">baz</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_float</span><span class="p">,</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">ALLOCATOR</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This isn&#8217;t the prettiest way to define the allocator (I&#8217;m also not sure
+if c_long is the right return type), but there are a few bugs in ctypes
+that seem to make this the only way at present. Eventually, we&#8217;d like to
+write the allocator like this (but it doesn&#8217;t work yet):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">numpy.ctypeslib</span> <span class="kn">import</span> <span class="n">ndpointer</span>
+<span class="n">ALLOCATOR</span> <span class="o">=</span> <span class="n">CFUNCTYPE</span><span class="p">(</span><span class="n">ndpointer</span><span class="p">(</span><span class="s">&#39;f4&#39;</span><span class="p">),</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">c_int</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The following also seems to cause problems:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ALLOCATOR</span> <span class="o">=</span> <span class="n">CFUNCTYPE</span><span class="p">(</span><span class="n">POINTER</span><span class="p">(</span><span class="n">c_float</span><span class="p">),</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">c_int</span><span class="p">))</span>
+<span class="n">ALLOCATOR</span> <span class="o">=</span> <span class="n">CFUNCTYPE</span><span class="p">(</span><span class="n">c_void_p</span><span class="p">,</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">c_int</span><span class="p">))</span>
+<span class="n">ALLOCATOR</span> <span class="o">=</span> <span class="n">CFUNCTYPE</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">c_int</span><span class="p">),</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">c_void_p</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Possible failures include a !SystemError exception being raised, the
+interpreter crashing or the interpreter hanging. Check these mailing
+list threads for more details: * <a class="reference external" href="http://thread.gmane.org/gmane.comp.python.ctypes/2979">Pointer-to-pointer unchanged when
+assigning in
+callback</a> *
+<a class="reference external" href="http://thread.gmane.org/gmane.comp.python.ctypes/2974">Hang with callback returning
+POINTER(c_float)</a>
+* <a class="reference external" href="http://thread.gmane.org/gmane.comp.python.ctypes/2972">Error with callback function and as_parameter with NumPy
+ndpointer</a></p>
+<p>Time for an example. The C code for the example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#ifndef CSPKREC_H</span>
+<span class="c">#define CSPKREC_H</span>
+<span class="c">#ifdef FOO_DLL</span>
+<span class="c">#ifdef FOO_EXPORTS</span>
+<span class="c">#define FOO_API __declspec(dllexport)</span>
+<span class="c">#else</span>
+<span class="c">#define FOO_API __declspec(dllimport)</span>
+<span class="c">#endif</span>
+<span class="c">#else</span>
+<span class="c">#define FOO_API</span>
+<span class="c">#endif</span>
+<span class="c">#endif</span>
+<span class="c">#include &lt;stdio.h&gt;</span>
+<span class="c">#ifdef __cplusplus</span>
+<span class="n">extern</span> <span class="s">&quot;C&quot;</span> <span class="p">{</span>
+<span class="c">#endif</span>
+
+<span class="n">typedef</span> <span class="n">void</span><span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">allocator_t</span><span class="p">)(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="o">*</span><span class="p">);</span>
+
+<span class="n">extern</span> <span class="n">FOO_API</span> <span class="n">void</span> <span class="n">foo</span><span class="p">(</span><span class="n">allocator_t</span> <span class="n">allocator</span><span class="p">)</span> <span class="p">{</span>
+   <span class="nb">int</span> <span class="n">dim</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+   <span class="nb">int</span> <span class="n">shape</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">};</span>
+   <span class="nb">float</span><span class="o">*</span> <span class="n">data</span> <span class="o">=</span> <span class="n">NULL</span><span class="p">;</span>
+   <span class="nb">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
+   <span class="n">printf</span><span class="p">(</span><span class="s">&quot;foo calling allocator</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+   <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="o">*</span><span class="p">)</span> <span class="n">allocator</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">shape</span><span class="p">);</span>
+   <span class="n">printf</span><span class="p">(</span><span class="s">&quot;allocator returned in foo</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+   <span class="n">printf</span><span class="p">(</span><span class="s">&quot;data = 0x%p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
+   <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+         <span class="o">*</span><span class="n">data</span><span class="o">++</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+      <span class="p">}</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c">#ifdef __cplusplus</span>
+<span class="p">}</span>
+<span class="c">#endif</span>
+</pre></div>
+</div>
+<p>Check the <a class="reference external" href="http://www.newty.de/fpt/index.html">The Function Pointer
+Tutorials</a> if you&#8217;re new to
+function pointers in C or C++. And the Python code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
+
+<span class="n">allocated_arrays</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">def</span> <span class="nf">allocate</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;allocate called&#39;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">[:</span><span class="n">dim</span><span class="p">],</span> <span class="s">&#39;f4&#39;</span><span class="p">)</span>
+    <span class="n">allocated_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">ptr</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data_as</span><span class="p">(</span><span class="n">c_void_p</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">print</span> <span class="nb">hex</span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;allocate returning&#39;</span>
+    <span class="k">return</span> <span class="n">ptr</span>
+
+<span class="n">lib</span> <span class="o">=</span> <span class="n">cdll</span><span class="p">[</span><span class="s">&#39;callback.dll&#39;</span><span class="p">]</span>
+<span class="n">lib</span><span class="o">.</span><span class="n">foo</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">ALLOCATOR</span> <span class="o">=</span> <span class="n">CFUNCTYPE</span><span class="p">(</span><span class="n">c_long</span><span class="p">,</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">c_int</span><span class="p">))</span>
+<span class="n">lib</span><span class="o">.</span><span class="n">foo</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ALLOCATOR</span><span class="p">]</span>
+
+<span class="k">print</span> <span class="s">&#39;calling foo&#39;</span>
+<span class="n">lib</span><span class="o">.</span><span class="n">foo</span><span class="p">(</span><span class="n">ALLOCATOR</span><span class="p">(</span><span class="n">allocate</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&#39;foo returned&#39;</span>
+
+<span class="k">print</span> <span class="n">allocated_arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The allocate function creates a new !NumPy array and puts it in a list
+so that we keep a reference to it after the callback function returns.
+Expected output:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">calling</span> <span class="n">foo</span>
+<span class="n">foo</span> <span class="n">calling</span> <span class="n">allocator</span>
+<span class="n">allocate</span> <span class="n">called</span>
+<span class="mh">0xaf5778</span>
+<span class="n">allocate</span> <span class="n">returning</span>
+<span class="n">allocator</span> <span class="n">returned</span> <span class="ow">in</span> <span class="n">foo</span>
+<span class="n">data</span> <span class="o">=</span> <span class="mh">0x00AF5778</span>
+<span class="n">foo</span> <span class="n">returned</span>
+<span class="p">[[</span> <span class="mf">1.</span>  <span class="mf">2.</span>  <span class="mf">3.</span><span class="p">]</span>
+ <span class="p">[</span> <span class="mf">2.</span>  <span class="mf">4.</span>  <span class="mf">6.</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>Here&#8217;s another idea for an Allocator class to manage this kind of thing.
+In addition to dimension and shape, this allocator function takes a char
+indicating what type of array to allocate. You can get these typecodes
+from the ndarrayobject.h header, in the `NPY_TYPECHAR` enum.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
+
+<span class="k">class</span> <span class="nc">Allocator</span><span class="p">:</span>
+    <span class="n">CFUNCTYPE</span> <span class="o">=</span> <span class="n">CFUNCTYPE</span><span class="p">(</span><span class="n">c_long</span><span class="p">,</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">c_int</span><span class="p">),</span> <span class="n">c_char</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allocated_arrays</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dims</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">[:</span><span class="n">dims</span><span class="p">],</span> <span class="n">N</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allocated_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data_as</span><span class="p">(</span><span class="n">c_void_p</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">getcfunc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CFUNCTYPE</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="n">cfunc</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">getcfunc</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Use it like this in Python:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">lib</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Allocator</span><span class="o">.</span><span class="n">CFUNCTYPE</span><span class="p">]</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">():</span>
+    <span class="n">alloc</span> <span class="o">=</span> <span class="n">Allocator</span><span class="p">()</span>
+    <span class="n">lib</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">alloc</span><span class="o">.</span><span class="n">cfunc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">alloc</span><span class="o">.</span><span class="n">allocated_arrays</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Corresponding C code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">typedef</span> <span class="n">void</span><span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">allocator_t</span><span class="p">)(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="o">*</span><span class="p">,</span> <span class="n">char</span><span class="p">);</span>
+
+<span class="n">void</span> <span class="n">func</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">allocator_t</span> <span class="n">allocator</span><span class="p">)</span> <span class="p">{</span>
+   <span class="o">/*</span> <span class="o">...</span> <span class="o">*/</span>
+   <span class="nb">int</span> <span class="n">dims</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">};</span>
+   <span class="n">double</span><span class="o">*</span> <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">double</span><span class="o">*</span><span class="p">)</span> <span class="n">allocator</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dims</span><span class="p">,</span> <span class="s">&#39;d&#39;</span><span class="p">);</span>
+   <span class="o">/*</span> <span class="n">allocate</span> <span class="n">more</span> <span class="n">arrays</span> <span class="n">here</span> <span class="o">*/</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>None of the allocators presented above are thread safe. If you have
+multiple Python threads calling the C code that invokes your callbacks,
+you will have to do something a bit smarter.</p>
+</div>
+<div class="section" id="more-useful-code-frags">
+<h1>More useful code frags<a class="headerlink" href="#more-useful-code-frags" title="Permalink to this headline">¶</a></h1>
+<p>Suppose you have a C function like the following, which operates on a
+pointer-to-pointers data structure.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">void</span> <span class="n">foo</span><span class="p">(</span><span class="nb">float</span><span class="o">**</span> <span class="n">data</span><span class="p">,</span> <span class="nb">int</span> <span class="nb">len</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nb">float</span><span class="o">**</span> <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">,</span> <span class="n">x</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="o">/*</span> <span class="n">do</span> <span class="n">something</span> <span class="k">with</span> <span class="o">*</span><span class="n">x</span> <span class="o">*/</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You can create the necessary structure from an existing 2-D !NumPy array
+using the following code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">x</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">],</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">60</span><span class="p">],</span> <span class="p">[</span><span class="mi">80</span><span class="p">,</span><span class="mi">90</span><span class="p">,</span><span class="mi">100</span><span class="p">]],</span> <span class="s">&#39;f4&#39;</span><span class="p">)</span>
+<span class="n">f4ptr</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">c_float</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">f4ptr</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))(</span><span class="o">*</span><span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data_as</span><span class="p">(</span><span class="n">f4ptr</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>`f4ptr*len(x)` creates a ctypes array type that is just large enough
+to contain a pointer to every row of the array.</p>
+</div>
+<div class="section" id="heterogeneous-types-example">
+<h1>Heterogeneous Types Example<a class="headerlink" href="#heterogeneous-types-example" title="Permalink to this headline">¶</a></h1>
+<p>Here&#8217;s a simple example when using heterogeneous dtypes (record arrays).</p>
+<p>But, be warned that NumPy recarrays and corresponding structs in C
+<strong>*may not*</strong> be congruent.</p>
+<p>Also structs are not standardized across platforms ...In other words,
+<strong>&#8216;&#8217; be aware of padding issues!</strong>&#8216;&#8217;</p>
+<p>sample.c</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#include &lt;stdio.h&gt;</span>
+
+<span class="n">typedef</span> <span class="n">struct</span> <span class="n">Weather_t</span> <span class="p">{</span>
+    <span class="nb">int</span> <span class="n">timestamp</span><span class="p">;</span>
+    <span class="n">char</span> <span class="n">desc</span><span class="p">[</span><span class="mi">12</span><span class="p">];</span>
+<span class="p">}</span> <span class="n">Weather</span><span class="p">;</span>
+
+<span class="n">void</span> <span class="n">print_weather</span><span class="p">(</span><span class="n">Weather</span><span class="o">*</span> <span class="n">w</span><span class="p">,</span> <span class="nb">int</span> <span class="n">nelems</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nb">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">nelems</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;timestamp: </span><span class="si">%d</span><span class="se">\n</span><span class="s">description: </span><span class="si">%s</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">desc</span><span class="p">);</span>
+
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>SConstruct</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">()</span>
+<span class="n">env</span><span class="o">.</span><span class="n">Replace</span><span class="p">(</span><span class="n">CFLAGS</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;-O2&#39;</span><span class="p">,</span><span class="s">&#39;-Wall&#39;</span><span class="p">,</span><span class="s">&#39;-ansi&#39;</span><span class="p">,</span><span class="s">&#39;-pedantic&#39;</span><span class="p">])</span>
+<span class="n">env</span><span class="o">.</span><span class="n">SharedLibrary</span><span class="p">(</span><span class="s">&#39;sample&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;sample.c&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>sample.py</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">N</span>
+<span class="kn">import</span> <span class="nn">ctypes</span> <span class="kn">as</span> <span class="nn">C</span>
+
+<span class="n">dat</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1126877361</span><span class="p">,</span><span class="s">&#39;sunny&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">1126877371</span><span class="p">,</span><span class="s">&#39;rain&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">1126877385</span><span class="p">,</span><span class="s">&#39;damn nasty&#39;</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span>
+<span class="mi">26877387</span><span class="p">,</span><span class="s">&#39;sunny&#39;</span><span class="p">]]</span>
+
+<span class="n">dat_dtype</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s">&#39;timestamp&#39;</span><span class="p">,</span><span class="s">&#39;i4&#39;</span><span class="p">),(</span><span class="s">&#39;desc&#39;</span><span class="p">,</span><span class="s">&#39;|S12&#39;</span><span class="p">)])</span>
+<span class="n">arr</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">rec</span><span class="o">.</span><span class="n">fromrecords</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">dat_dtype</span><span class="p">)</span>
+
+<span class="n">_sample</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">load_library</span><span class="p">(</span><span class="s">&#39;libsample&#39;</span><span class="p">,</span><span class="s">&#39;.&#39;</span><span class="p">)</span>
+<span class="n">_sample</span><span class="o">.</span><span class="n">print_weather</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">_sample</span><span class="o">.</span><span class="n">print_weather</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">N</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dat_dtype</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="s">&#39;aligne</span>
+<span class="n">d</span><span class="p">,</span> <span class="n">contiguous</span><span class="s">&#39;), C.c_int]</span>
+
+
+<span class="k">def</span> <span class="nf">print_weather</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">_sample</span><span class="o">.</span><span class="n">print_weather</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+
+
+<span class="k">if</span> <span class="n">__name__</span><span class="o">==</span><span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">print_weather</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="fibonacci-example-using-numpy-arrays-c-and-scons">
+<h1>Fibonacci example (using NumPy arrays, C and Scons)<a class="headerlink" href="#fibonacci-example-using-numpy-arrays-c-and-scons" title="Permalink to this headline">¶</a></h1>
+<p>The following was tested and works on Windows (using MinGW) and
+GNU/Linux 32-bit OSs (last tested 13-08-2009). Copy all three files to
+the same directory.</p>
+<p>The C code (this calculates the Fibonacci number recursively):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="o">/*</span>
+    <span class="n">Filename</span><span class="p">:</span> <span class="n">fibonacci</span><span class="o">.</span><span class="n">c</span>
+    <span class="n">To</span> <span class="n">be</span> <span class="n">used</span> <span class="k">with</span> <span class="n">fibonacci</span><span class="o">.</span><span class="n">py</span><span class="p">,</span> <span class="k">as</span> <span class="n">an</span> <span class="n">imported</span> <span class="n">library</span><span class="o">.</span> <span class="n">Use</span> <span class="n">Scons</span> <span class="n">to</span> <span class="nb">compile</span><span class="p">,</span>
+    <span class="n">simply</span> <span class="nb">type</span> <span class="s">&#39;scons&#39;</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">same</span> <span class="n">directory</span> <span class="k">as</span> <span class="n">this</span> <span class="nb">file</span> <span class="p">(</span><span class="n">see</span> <span class="n">www</span><span class="o">.</span><span class="n">scons</span><span class="o">.</span><span class="n">org</span><span class="p">)</span><span class="o">.</span>
+<span class="o">*/</span>
+
+<span class="o">/*</span> <span class="n">Function</span> <span class="n">prototypes</span> <span class="o">*/</span>
+<span class="nb">int</span> <span class="n">fib</span><span class="p">(</span><span class="nb">int</span> <span class="n">a</span><span class="p">);</span>
+<span class="n">void</span> <span class="n">fibseries</span><span class="p">(</span><span class="nb">int</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="nb">int</span> <span class="n">elements</span><span class="p">,</span> <span class="nb">int</span> <span class="o">*</span><span class="n">series</span><span class="p">);</span>
+<span class="n">void</span> <span class="n">fibmatrix</span><span class="p">(</span><span class="nb">int</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="nb">int</span> <span class="n">rows</span><span class="p">,</span> <span class="nb">int</span> <span class="n">columns</span><span class="p">,</span> <span class="nb">int</span> <span class="o">*</span><span class="n">matrix</span><span class="p">);</span>
+
+<span class="nb">int</span> <span class="n">fib</span><span class="p">(</span><span class="nb">int</span> <span class="n">a</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">a</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">/*</span>  <span class="n">Error</span> <span class="o">--</span> <span class="n">wrong</span> <span class="nb">input</span> <span class="n">will</span> <span class="k">return</span> <span class="o">-</span><span class="mf">1.</span> <span class="o">*/</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="n">a</span><span class="o">==</span><span class="mi">2</span><span class="p">)</span><span class="o">||</span><span class="p">(</span><span class="n">a</span><span class="o">==</span><span class="mi">3</span><span class="p">))</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">else</span>
+        <span class="k">return</span> <span class="n">fib</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">void</span> <span class="n">fibseries</span><span class="p">(</span><span class="nb">int</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="nb">int</span> <span class="n">elements</span><span class="p">,</span> <span class="nb">int</span> <span class="o">*</span><span class="n">series</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nb">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">elements</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+    <span class="n">series</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">fib</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">void</span> <span class="n">fibmatrix</span><span class="p">(</span><span class="nb">int</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="nb">int</span> <span class="n">rows</span><span class="p">,</span> <span class="nb">int</span> <span class="n">columns</span><span class="p">,</span> <span class="nb">int</span> <span class="o">*</span><span class="n">matrix</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nb">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">rows</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">columns</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">matrix</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">columns</span> <span class="o">+</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">fib</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">columns</span> <span class="o">+</span> <span class="n">j</span><span class="p">]);</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The Python code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Filename: fibonacci.py</span>
+<span class="sd">Demonstrates the use of ctypes with three functions:</span>
+
+<span class="sd">    (1) fib(a)</span>
+<span class="sd">    (2) fibseries(b)</span>
+<span class="sd">    (3) fibmatrix(c)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">nm</span>
+<span class="kn">import</span> <span class="nn">ctypes</span> <span class="kn">as</span> <span class="nn">ct</span>
+
+<span class="c"># Load the library as _libfibonacci.</span>
+<span class="c"># Why the underscore (_) in front of _libfibonacci below?</span>
+<span class="c"># To mimimise namespace pollution -- see PEP 8 (www.python.org).</span>
+<span class="n">_libfibonacci</span> <span class="o">=</span> <span class="n">nm</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">load_library</span><span class="p">(</span><span class="s">&#39;libfibonacci&#39;</span><span class="p">,</span> <span class="s">&#39;.&#39;</span><span class="p">)</span>
+
+<span class="n">_libfibonacci</span><span class="o">.</span><span class="n">fib</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ct</span><span class="o">.</span><span class="n">c_int</span><span class="p">]</span> <span class="c">#  Declare arg type, same below.</span>
+<span class="n">_libfibonacci</span><span class="o">.</span><span class="n">fib</span><span class="o">.</span><span class="n">restype</span>  <span class="o">=</span>  <span class="n">ct</span><span class="o">.</span><span class="n">c_int</span>  <span class="c">#  Declare result type, same below.</span>
+
+<span class="n">_libfibonacci</span><span class="o">.</span><span class="n">fibseries</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">nm</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">nm</span><span class="o">.</span><span class="n">int</span><span class="p">),</span>\
+                                     <span class="n">ct</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span>\
+                                     <span class="n">nm</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">nm</span><span class="o">.</span><span class="n">int</span><span class="p">)]</span>
+<span class="n">_libfibonacci</span><span class="o">.</span><span class="n">fibseries</span><span class="o">.</span><span class="n">restype</span>  <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_void_p</span>
+
+<span class="n">_libfibonacci</span><span class="o">.</span><span class="n">fibmatrix</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">nm</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">nm</span><span class="o">.</span><span class="n">int</span><span class="p">),</span>\
+                                     <span class="n">ct</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span>\
+                                    <span class="n">nm</span><span class="o">.</span><span class="n">ctypeslib</span><span class="o">.</span><span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">nm</span><span class="o">.</span><span class="n">int</span><span class="p">)]</span>
+<span class="n">_libfibonacci</span><span class="o">.</span><span class="n">fibmatrix</span><span class="o">.</span><span class="n">restype</span>  <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">c_void_p</span>
+
+<span class="k">def</span> <span class="nf">fib</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the n&#39;th Fibonacci number.</span>
+
+<span class="sd">    ARGUMENT(S):</span>
+<span class="sd">        An integer.</span>
+
+<span class="sd">    RESULT(S):</span>
+<span class="sd">        The n&#39;th Fibonacci number.</span>
+
+<span class="sd">    EXAMPLE(S):</span>
+<span class="sd">    &gt;&gt;&gt; fib(8)</span>
+<span class="sd">    13</span>
+<span class="sd">    &gt;&gt;&gt; fib(23)</span>
+<span class="sd">    17711</span>
+<span class="sd">    &gt;&gt;&gt; fib(0)</span>
+<span class="sd">    -1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_libfibonacci</span><span class="o">.</span><span class="n">fib</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">fibseries</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute an array containing the n&#39;th Fibonacci number of each entry.</span>
+
+<span class="sd">    ARGUMENT(S):</span>
+<span class="sd">        A list or NumPy array (dim = 1) of integers.</span>
+
+<span class="sd">    RESULT(S):</span>
+<span class="sd">        NumPy array containing the n&#39;th Fibonacci number of each entry.</span>
+
+<span class="sd">    EXAMPLE(S):</span>
+<span class="sd">    &gt;&gt;&gt; fibseries([1,2,3,4,5,6,7,8])</span>
+<span class="sd">    array([ 0,  1,  1,  2,  3,  5,  8, 13])</span>
+<span class="sd">    &gt;&gt;&gt; fibseries(range(1,12))</span>
+<span class="sd">    array([ 0,  1,  1,  2,  3,  5,  8, 13, 21, 34, 55])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">nm</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">nm</span><span class="o">.</span><span class="n">intc</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">nm</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">nm</span><span class="o">.</span><span class="n">intc</span><span class="p">)</span>
+    <span class="n">_libfibonacci</span><span class="o">.</span><span class="n">fibseries</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">result</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+<span class="k">def</span> <span class="nf">fibmatrix</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute a matrix containing the n&#39;th Fibonacci number of each entry.</span>
+
+<span class="sd">    ARGUMENT(S):</span>
+<span class="sd">        A nested list or NumPy array (dim = 2) of integers.</span>
+
+<span class="sd">    RESULT(S):</span>
+<span class="sd">        NumPy array containing the n&#39;th Fibonacci number of each entry.</span>
+
+<span class="sd">    EXAMPLE(S):</span>
+<span class="sd">    &gt;&gt;&gt; from numpy import array</span>
+<span class="sd">    &gt;&gt;&gt; fibmatrix([[3,4],[5,6]])</span>
+<span class="sd">    array([[1, 2],</span>
+<span class="sd">           [3, 5]])</span>
+<span class="sd">    &gt;&gt;&gt; fibmatrix(array([[1,2,3],[4,5,6],[7,8,9]]))</span>
+<span class="sd">    array([[ 0,  1,  1],</span>
+<span class="sd">           [ 2,  3,  5],</span>
+<span class="sd">           [ 8, 13, 21]])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">nm</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">nm</span><span class="o">.</span><span class="n">intc</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">nm</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">nm</span><span class="o">.</span><span class="n">intc</span><span class="p">)</span>
+    <span class="n">_libfibonacci</span><span class="o">.</span><span class="n">fibmatrix</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+</div>
+<p>Here&#8217;s the SConstruct file contents (filename: SConstruct):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">()</span>
+<span class="n">env</span><span class="o">.</span><span class="n">Replace</span><span class="p">(</span><span class="n">CFLAGS</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;-O2&#39;</span><span class="p">,</span> <span class="s">&#39;-Wall&#39;</span><span class="p">,</span> <span class="s">&#39;-ansi&#39;</span><span class="p">,</span> <span class="s">&#39;-pedantic&#39;</span><span class="p">])</span>
+<span class="n">env</span><span class="o">.</span><span class="n">SharedLibrary</span><span class="p">(</span><span class="s">&#39;libfibonacci&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;fibonacci.c&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>In Python interpreter (or whatever you use), do:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fibonacci</span> <span class="kn">as</span> <span class="nn">fb</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fb</span><span class="o">.</span><span class="n">fib</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="go">13</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fb</span><span class="o">.</span><span class="n">fibseries</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span>
+<span class="go">array([  3, 144,   1,   5])</span>
+</pre></div>
+</div>
+<p>etc.</p>
+</div>
+<div class="section" id="pertinent-mailing-list-threads">
+<h1>Pertinent Mailing List Threads<a class="headerlink" href="#pertinent-mailing-list-threads" title="Permalink to this headline">¶</a></h1>
+<p>Some useful threads on the ctypes-users mailing list:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`IndexError</span></tt> <tt class="docutils literal"><span class="pre">when</span></tt> <tt class="docutils literal"><span class="pre">indexing</span></tt> <tt class="docutils literal"><span class="pre">on</span></tt></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">POINTER(POINTER(ctype))</span></tt> &lt;<a class="reference external" href="http://aspn.activestate.com/ASPN/Mail/Message/ctypes-users/3119087">http://aspn.activestate.com/ASPN/Mail/Message/ctypes-users/3119087</a>&gt;`__
+| <tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Adding</span></tt> <tt class="docutils literal"><span class="pre">ctypes</span></tt> <tt class="docutils literal"><span class="pre">support</span></tt> <tt class="docutils literal"><span class="pre">to</span></tt>
+<tt class="docutils literal"><span class="pre">NumPy</span></tt> &lt;<a class="reference external" href="http://aspn.activestate.com/ASPN/Mail/Message/ctypes-users/3118513">http://aspn.activestate.com/ASPN/Mail/Message/ctypes-users/3118513</a>&gt;`__
+| <tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Determining</span></tt> <tt class="docutils literal"><span class="pre">if</span></tt> <tt class="docutils literal"><span class="pre">a</span></tt> <tt class="docutils literal"><span class="pre">ctype</span></tt> <tt class="docutils literal"><span class="pre">is</span></tt> <tt class="docutils literal"><span class="pre">a</span></tt>
+<tt class="docutils literal"><span class="pre">pointer</span></tt> <tt class="docutils literal"><span class="pre">type</span></tt> <tt class="docutils literal"><span class="pre">(was</span></tt> <tt class="docutils literal"><span class="pre">RE:</span></tt> <tt class="docutils literal"><span class="pre">Adding</span></tt> <tt class="docutils literal"><span class="pre">ctypes</span></tt> <tt class="docutils literal"><span class="pre">support</span></tt>
+<tt class="docutils literal"><span class="pre">to</span></tt>
+<tt class="docutils literal"><span class="pre">NumPy)</span></tt> &lt;<a class="reference external" href="http://aspn.activestate.com/ASPN/Mail/Message/ctypes-users/3118656">http://aspn.activestate.com/ASPN/Mail/Message/ctypes-users/3118656</a>&gt;`__
+| <tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Check</span></tt> <tt class="docutils literal"><span class="pre">for</span></tt> <tt class="docutils literal"><span class="pre">NULL</span></tt> <tt class="docutils literal"><span class="pre">pointer</span></tt> <tt class="docutils literal"><span class="pre">without</span></tt>
+<tt class="docutils literal"><span class="pre">ValueError</span></tt> &lt;<a class="reference external" href="http://aspn.activestate.com/ASPN/Mail/Message/ctypes-users/3117306">http://aspn.activestate.com/ASPN/Mail/Message/ctypes-users/3117306</a>&gt;`__
+| <tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Problem</span></tt> <tt class="docutils literal"><span class="pre">with</span></tt> <tt class="docutils literal"><span class="pre">callbacks</span></tt> <tt class="docutils literal"><span class="pre">from</span></tt> <tt class="docutils literal"><span class="pre">C</span></tt> <tt class="docutils literal"><span class="pre">into</span></tt>
+<tt class="docutils literal"><span class="pre">Python</span></tt> &lt;<a class="reference external" href="http://aspn.activestate.com/ASPN/Mail/Message/ctypes-users/3205951">http://aspn.activestate.com/ASPN/Mail/Message/ctypes-users/3205951</a>&gt;`__
+| <tt class="docutils literal"><span class="pre">*&nbsp;[</span></tt><tt class="docutils literal"><span class="pre">`http://thread.gmane.org/gmane.comp.python.numeric.general/7418</span></tt> &lt;<a class="reference external" href="http://thread.gmane.org/gmane.comp.python.numeric.general/7418">http://thread.gmane.org/gmane.comp.python.numeric.general/7418</a>&gt;`__<tt class="docutils literal"><span class="pre">\&nbsp;ctypes&nbsp;and&nbsp;ndpointer]</span></tt>
+| <tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Problems</span></tt> <tt class="docutils literal"><span class="pre">with</span></tt> <tt class="docutils literal"><span class="pre">64</span></tt> <tt class="docutils literal"><span class="pre">signed</span></tt>
+<tt class="docutils literal"><span class="pre">integer</span></tt> &lt;<a class="reference external" href="http://thread.gmane.org/gmane.comp.python.ctypes/3116">http://thread.gmane.org/gmane.comp.python.ctypes/3116</a>&gt;`__</p>
+<p>Thomas Heller&#8217;s answers are particularly insightful.</p>
+</div>
+<div class="section" id="documentation">
+<h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`ctypes</span></tt></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">tutorial</span></tt> &lt;<a class="reference external" href="http://starship.python.net/crew/theller/ctypes/tutorial.html">http://starship.python.net/crew/theller/ctypes/tutorial.html</a>&gt;`__
+| <tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`13.14</span></tt> <tt class="docutils literal"><span class="pre">ctypes</span></tt> <tt class="docutils literal"><span class="pre">--</span></tt> <tt class="docutils literal"><span class="pre">A</span></tt> <tt class="docutils literal"><span class="pre">foreign</span></tt> <tt class="docutils literal"><span class="pre">function</span></tt>
+<tt class="docutils literal"><span class="pre">library</span></tt> <tt class="docutils literal"><span class="pre">for</span></tt>
+<tt class="docutils literal"><span class="pre">Python.</span></tt> &lt;<a class="reference external" href="http://docs.python.org/dev/lib/module-ctypes.html">http://docs.python.org/dev/lib/module-ctypes.html</a>&gt;`__</p>
+<hr class="docutils" />
+<p>CategoryCookbook CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Table of Contents</a></li>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#getting-started-with-ctypes">Getting Started with ctypes</a><ul>
+<li><a class="reference internal" href="#nmake-makefile-windows">Nmake Makefile (Windows)</a></li>
+<li><a class="reference internal" href="#sconstruct-gcc">SConstruct (GCC)</a></li>
+<li><a class="reference internal" href="#foo-cpp">foo.cpp</a></li>
+<li><a class="reference internal" href="#foo-py">foo.py</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#numpy-arrays-ctypes-property">NumPy arrays&#8217; ctypes property</a></li>
+<li><a class="reference internal" href="#numpy-s-ndpointer-with-ctypes-argtypes">NumPy&#8217;s ndpointer with ctypes argtypes</a></li>
+<li><a class="reference internal" href="#dynamic-allocation-through-callbacks">Dynamic allocation through callbacks</a></li>
+<li><a class="reference internal" href="#more-useful-code-frags">More useful code frags</a></li>
+<li><a class="reference internal" href="#heterogeneous-types-example">Heterogeneous Types Example</a></li>
+<li><a class="reference internal" href="#fibonacci-example-using-numpy-arrays-c-and-scons">Fibonacci example (using NumPy arrays, C and Scons)</a></li>
+<li><a class="reference internal" href="#pertinent-mailing-list-threads">Pertinent Mailing List Threads</a></li>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="CoupledSpringMassSystem.html"
+                        title="previous chapter">A Coupled Spring-Mass System</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="DataFrame.html"
+                        title="next chapter">Data Frames</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Ctypes.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="DataFrame.html" title="Data Frames"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="CoupledSpringMassSystem.html" title="A Coupled Spring-Mass System"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

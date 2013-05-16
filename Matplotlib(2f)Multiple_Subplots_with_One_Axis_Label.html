@@ -1,0 +1,224 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Using a single axis label to annotate multiple subplot axes &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="Matplotlib(2f)Plotting_Images_with_Special_Values.html" />
+    <link rel="prev" title="Multiple line plots" href="Matplotlib(2f)MultilinePlots.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Plotting_Images_with_Special_Values.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)MultilinePlots.html" title="Multiple line plots"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="using-a-single-axis-label-to-annotate-multiple-subplot-axes">
+<h1>Using a single axis label to annotate multiple subplot axes<a class="headerlink" href="#using-a-single-axis-label-to-annotate-multiple-subplot-axes" title="Permalink to this headline">¶</a></h1>
+<p>When using multiple subplots with the same axis units, it is redundant
+to label each axis individually, and makes the graph overly complex. You
+can use a single axis label, centered in the plot frame, to label
+multiple subplot axes. Here is how to do it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="c"># note that this a code fragment...you will have to define your own data to plot</span>
+<span class="c">#</span>
+<span class="c"># Set up a whole-figure axes, with invisible axis, ticks, and ticklabels,</span>
+<span class="c"># which we use to get the xlabel and ylabel in the right place</span>
+<span class="n">bigAxes</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>     <span class="c"># hide frame</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">xticks</span><span class="p">([])</span>                        <span class="c"># don&#39;t want to see any ticks on this ax</span>
+<span class="ow">is</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">yticks</span><span class="p">([])</span>
+<span class="c"># I&#39;m using TeX for typesetting the labels--not necessary</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">r&#39;\textbf{Surface Concentration $(nmol/m^2)$}&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s">&#39;medium&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">r&#39;\textbf{Time (hours)}&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s">&#39;medium&#39;</span><span class="p">)</span>
+<span class="c"># Create subplots and shift them up and to the right to keep tick labels</span>
+<span class="c"># from overlapping the axis labels defined above</span>
+<span class="n">topSubplot</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">position</span> <span class="o">=</span> <span class="n">topSubplot</span><span class="o">.</span><span class="n">get_position</span><span class="p">()</span>
+<span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.15</span>
+<span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.01</span>
+<span class="n">topSubplot</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">times150</span><span class="p">,</span> <span class="n">average150</span><span class="p">)</span>
+<span class="n">bottomSubplot</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">position</span> <span class="o">=</span> <span class="n">bottomSubplot</span><span class="o">.</span><span class="n">get_position</span><span class="p">()</span>
+<span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.15</span>
+<span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.03</span>
+<span class="n">bottomSubplot</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">times300</span><span class="p">,</span> <span class="n">average300</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><ol class="first arabic">
+<li></li>
+</ol>
+</li>
+</ol>
+<p>Alternatively, you can use the following snippet to have shared ylabels
+on your subplots. Also see the attached <a class="reference external" href="..image::Matplotlib(2f)Multiple_Subplots_with_One_Axis_Label_attachments/Same_ylabel_subplots.png">figure
+output</a>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="kn">import</span> <span class="nn">pylab</span>
+
+<span class="n">figprops</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">8.</span><span class="p">,</span> <span class="mf">8.</span> <span class="o">/</span> <span class="mf">1.618</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+            <span class="c"># Figure properties</span>
+<span class="n">adjustprops</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mf">0.97</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mf">0.93</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mf">0.2</span> <span class="n">hspace</span>
+<span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>       <span class="c"># Subplot properties</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="o">**</span><span class="n">figprops</span><span class="p">)</span>
+            <span class="c"># New figure</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="o">**</span><span class="n">adjustprops</span><span class="p">)</span>
+            <span class="c"># Tunes the subplot layout</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">bx</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">cx</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span> <span class="s">&#39;k-&#39;</span><span class="p">)</span>
+<span class="n">bx</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span> <span class="s">&#39;k-&#39;</span><span class="p">)</span>
+<span class="n">cx</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span> <span class="s">&#39;k-&#39;</span><span class="p">)</span>
+
+<span class="n">pylab</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">(),</span> <span class="n">visible</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">bx</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">(),</span> <span class="n">visible</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="n">bx</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;This is a long label shared among more axes&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">cx</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;And a shared x label&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Thanks to Sebastian Krieger from matplotlib-users list for this trick.</p>
+<ol class="arabic simple">
+<li><ol class="first arabic">
+<li></li>
+</ol>
+</li>
+<li><ol class="first arabic">
+<li></li>
+</ol>
+</li>
+</ol>
+<p>Simple function to get rid of superfluous xticks but retain the ones on
+the bottom (works in pylab). Combine it with the above snippets to get a
+nice plot without too much redundance:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="k">def</span> <span class="nf">rem_x</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Removes superfluous x ticks when multiple subplots  share</span>
+<span class="sd">    their axis works only in pylab mode but can easily be rewritten</span>
+<span class="sd">    for api use&#39;&#39;&#39;</span>
+    <span class="n">nr_ax</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">get_axes</span><span class="p">())</span>
+    <span class="n">count</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">get_axes</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="n">nr_ax</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="k">break</span>
+            <span class="n">setp</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">(),</span><span class="n">visible</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="n">count</span><span class="o">+=</span><span class="mi">1</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><ol class="first arabic">
+<li></li>
+</ol>
+</li>
+</ol>
+<p>The first one above doesn&#8217;t work for me. The subplot command overwrites
+the bigaxes. However, I found a much simpler solution to do a decent job
+for two axes and one ylabel:</p>
+<p>yyl=plt.ylabel(r&#8217;My longish label that I want vertically centred&#8217;)</p>
+<p>yyl.set_position((yyl.get_position()[0],1)) # This says use the top of
+the bottom axis as the reference point.</p>
+<p>yyl.set_verticalalignment(&#8216;center&#8217;)</p>
+<hr class="docutils" />
+<p>CategoryCookbookMatplotlib</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)MultilinePlots.html"
+                        title="previous chapter">Multiple line plots</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)Plotting_Images_with_Special_Values.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Matplotlib(2f)Multiple_Subplots_with_One_Axis_Label.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Plotting_Images_with_Special_Values.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)MultilinePlots.html" title="Multiple line plots"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

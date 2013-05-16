@@ -1,0 +1,180 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>MayaVi2 topics &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="MetaArray" href="MetaArray.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="MayaVi(2f)tvtk.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="MetaArray.html" title="MetaArray"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)tvtk.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p><a class="reference external" href="http://code.enthought.com/projects/mayavi/">Mayavi2</a> is a
+interactive program allowing elaborate 3D plots of scientific data in
+Python with scipy. It is the successor of
+<a class="reference external" href="http://mayavi.sf.net">MayaVi</a> for 3D visualization.</p>
+<p>||&lt;#80FF80&gt; The information on this page is a bit old and outdated.
+You are invited to refer to the <a class="reference external" href="http://enthought.github.com/mayavi/mayavi/">Mayavi2 user
+guide</a> as a reference.
+For a quick introduction to scripting, see
+<a class="reference external" href="http://enthought.github.com/mayavi/mayavi/mlab.html">mlab</a>. In
+recent versions of Mayavi2, the user guide can be accessed in the help
+menu, but the user guide for the latest version of Mayavi can also be
+found <a class="reference external" href="http://enthought.github.com/mayavi/mayavi/">on line</a>. ||</p>
+<p>If you need more help, you are invited to ask questions on the
+<a class="reference external" href="https://mail.enthought.com/mailman/listinfo/enthought-dev">Enthought-dev</a>
+mailing list.</p>
+<div class="highlight-python"><pre>#!figure
+#class right
+## Snazzy graphics here...
+.. image:: MayaVi_attachments/mayavi2.png
+
+!Mayavi2 relies on [http://www.vtk.org VTK], and especially a python interface t
+o it: [https://svn.enthought.com/enthought/wiki/TVTK TVTK].
+
+
+A mayavi2 session.</pre>
+</div>
+<div class="section" id="mayavi2-topics">
+<h1>MayaVi2 topics<a class="headerlink" href="#mayavi2-topics" title="Permalink to this headline">¶</a></h1>
+<p>!MayaVi2 can be used as an interactive program or not, as it will be
+presented here.</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;For&nbsp;installation&nbsp;of&nbsp;!MayaVi2&nbsp;in&nbsp;the&nbsp;enthought&nbsp;tool&nbsp;suite&nbsp;see&nbsp;the&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`Mayavi</span></tt>
+<tt class="docutils literal"><span class="pre">documentation</span></tt> &lt;<a class="reference external" href="http://enthought.github.com/mayavi/mayavi/installation.html">http://enthought.github.com/mayavi/mayavi/installation.html</a>&gt;`__</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;Using&nbsp;!MayaVi2:</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;There&nbsp;are&nbsp;(at&nbsp;least)&nbsp;two&nbsp;ways&nbsp;to&nbsp;use&nbsp;!MayaVi2:</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;*&nbsp;[:Cookbook/MayaVi/RunningMayavi2:&nbsp;Running&nbsp;MayaVi2]&nbsp;on&nbsp;the&nbsp;command&nbsp;line.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;*&nbsp;[:Cookbook/MayaVi/ScriptingMayavi2:&nbsp;Scripting&nbsp;MayaVi2]&nbsp;in&nbsp;Python.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/MayaVi/Examples:&nbsp;Scripting&nbsp;Examples]&nbsp;(all&nbsp;provided&nbsp;in&nbsp;!MayaVi2&nbsp;svn&nbsp;tree):</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;*&nbsp;Using&nbsp;Contour&nbsp;Module&nbsp;(contour.py)</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;*&nbsp;Using&nbsp;Glyph&nbsp;Module&nbsp;(glyph.py)</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;*&nbsp;Using&nbsp;Mayavi2&nbsp;without&nbsp;GUI&nbsp;(nongui.py)</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;*&nbsp;A&nbsp;3D&nbsp;array&nbsp;as&nbsp;numerical&nbsp;source&nbsp;(numeric_source.py)</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;*&nbsp;Using&nbsp;Streamline&nbsp;Module&nbsp;(streamline.py)</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;*&nbsp;Using&nbsp;!ImagePlaneWidget&nbsp;Module&nbsp;(test.py)</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;*&nbsp;Plotting&nbsp;a&nbsp;surface&nbsp;from&nbsp;a&nbsp;matrix&nbsp;(surf_regular_mlab.py).&nbsp;See&nbsp;also&nbsp;[:Cookbook/MayaVi/Surf:&nbsp;Cookbook/MayaVi/Surf]</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/MayaVi/Tips:&nbsp;Tips]:&nbsp;General&nbsp;tips&nbsp;for&nbsp;!MayaVi2&nbsp;and&nbsp;around.</span></tt></p>
+</div>
+<div class="section" id="tvtk">
+<h1>TVTK<a class="headerlink" href="#tvtk" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!figure</span>
+<span class="c">#class inline</span>
+<span class="c">## Snazzy graphics here...</span>
+<span class="o">..</span> <span class="n">image</span><span class="p">::</span> <span class="n">MayaVi_attachments</span><span class="o">/</span><span class="n">mlab</span><span class="o">.</span><span class="n">png</span>
+
+<span class="n">Using</span> <span class="n">the</span> <span class="n">mlab</span> <span class="n">module</span> <span class="kn">from</span> <span class="nn">ipython</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/MayaVi/mlab:&nbsp;Mlab]:&nbsp;module&nbsp;allowing&nbsp;to&nbsp;drive&nbsp;VTK&nbsp;from&nbsp;Python&nbsp;to&nbsp;do&nbsp;3D&nbsp;plots&nbsp;ala&nbsp;matlab.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;[:Cookbook/MayaVi/tvtk:&nbsp;tvtk]:&nbsp;Traited&nbsp;VTK,&nbsp;including&nbsp;iVTK</span></tt></p>
+<img alt="MayaVi_attachments/5_2_1.png" src="MayaVi_attachments/5_2_1.png" />
+<p><strong>Visualization of the (5,2,1) orbital of the H-atom using an
+iso-surface and a semi-transparant scalar cut plane.</strong></p>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">MayaVi2 topics</a></li>
+<li><a class="reference internal" href="#tvtk">TVTK</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="MayaVi(2f)tvtk.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="MetaArray.html"
+                        title="next chapter">MetaArray</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/MayaVi.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="MetaArray.html" title="MetaArray"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)tvtk.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

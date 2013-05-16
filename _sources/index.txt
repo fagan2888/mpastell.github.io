@@ -1,0 +1,170 @@
+.. CookBook documentation master file, created by
+   sphinx-quickstart on Wed May 15 20:27:38 2013.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to CookBook's documentation!
+====================================
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+   ASTER
+   A_Numerical_Agnostic_Pyrex_Class
+   A_Pyrex_Agnostic_Class
+   AccumarrayLike
+   ApplyFIRFilter
+   ArrayStruct_and_Pyrex
+   Autovectorize
+   BrownianMotion
+   BuildingArrays
+   ButterworthBandpass
+   C_Extensions(2f)NumPy_arrays
+   C_Extensions
+   CommTheory
+   CompilingExtensionsOnWindowsWithMinGW
+   CorrelatedRandomSamples
+   CoupledSpringMassSystem
+   Ctypes
+   DataFrame
+   Data_Acquisition_with_NIDAQmx
+   Data_Acquisition_with_PyUL
+   EmbeddingInTraitsGUI
+   EyeDiagram
+   F2Py
+   FIRFilter
+   FiltFilt
+   Finding_Convex_Hull
+   Finding_Convex_Hull_Minimum_Point
+   FittingData
+   FortranIO(2f)FortranFile(2e)
+   FortranIO(2f)FortranFile
+   FortranIO
+   FrequencySweptDemo
+   GMailPM
+   GameOfLifeStrides
+   Histograms
+   Indexing
+   InputOutput
+   Interpolation
+   Intersection
+   KDTree
+   KalmanFiltering
+   KdV
+   LASReader
+   Least_Squares_Circle
+   LineIntegralConvolution
+   LinearClassification
+   LinearRegression
+   LoktaVolterraTutorial
+   Matplotlib(2f)AdjustingImageSize
+   Matplotlib(2f)Animations
+   Matplotlib(2f)Arrows
+   Matplotlib(2f)BarCharts
+   Matplotlib(2f)ColormapTransformations
+   Matplotlib(2f)Common_Errors
+   Matplotlib(2f)CompilingMatPlotLibOnSolaris10
+   Matplotlib(2f)CustomLogLabels
+   Matplotlib(2f)DeletingAnExistingDataSeries
+   Matplotlib(2f)Django
+   Matplotlib(2f)Drag_n_Drop_Text_Example
+   Matplotlib(2f)EmbeddingInWx
+   Matplotlib(2f)Gridding_irregularly_spaced_data
+   Matplotlib(2f)HintonDiagrams
+   Matplotlib(2f)Interactive_Plotting
+   Matplotlib(2f)LaTeX_Examples
+   Matplotlib(2f)Legend
+   Matplotlib(2f)LoadImage
+   Matplotlib(2f)Loading_a_colormap_dynamically
+   Matplotlib(2f)Maps
+   Matplotlib(2f)Matplotlib_and_Zope
+   Matplotlib(2f)MulticoloredLine
+   Matplotlib(2f)MultilinePlots
+   Matplotlib(2f)Multiple_Subplots_with_One_Axis_Label
+   Matplotlib(2f)Plotting_Images_with_Special_Values
+   Matplotlib(2f)Plotting_values_with_masked_arrays
+   Matplotlib(2f)PySide
+   Matplotlib(2f)Qt_with_IPython_and_Designer
+   Matplotlib(2f)ScrollingPlot
+   Matplotlib(2f)ShadedRegions
+   Matplotlib(2f)Show_colormaps
+   Matplotlib(2f)SigmoidalFunctions
+   Matplotlib(2f)ThickAxes
+   Matplotlib(2f)Transformations
+   Matplotlib(2f)TreeMap
+   Matplotlib(2f)UnfilledHistograms
+   Matplotlib(2f)UsingTex
+   Matplotlib(2f)Using_MatPlotLib_in_a_CGI_script
+   Matplotlib(2f)VTK_Integration
+   Matplotlib(2f)converting_a_matrix_to_a_raster_image
+   Matplotlib(2f)mplot3D
+   Matplotlib
+   MayaVi(2f)InstallPythonStuffFromSource
+   MayaVi(2f)Installation
+   MayaVi(2f)RunningMayavi2
+   MayaVi(2f)ScriptingMayavi2(2f)BasicModules
+   MayaVi(2f)ScriptingMayavi2(2f)Filters
+   MayaVi(2f)ScriptingMayavi2(2f)MainModules
+   MayaVi(2f)ScriptingMayavi2
+   MayaVi(2f)Surf
+   MayaVi(2f)Tips
+   MayaVi(2f)examples
+   MayaVi(2f)mlab
+   MayaVi(2f)tvtk
+   MayaVi
+   MetaArray
+   MultiDot
+   Multithreading
+   OLS
+   Obarray
+   OldMatplotlib
+   OptimizationAndFitDemo1
+   OptimizationDemo1
+   PIL
+   ParticleFilter
+   Pyrex_and_NumPy
+   RANSAC
+   RadialBasisFunctions
+   RankNullspace
+   Reading_Custom_Text_Files_with_Pyparsing
+   Reading_SPE_files
+   Reading_mat_files
+   Rebinning
+   Recarray
+   SWIG_Memory_Deallocation
+   SWIG_NumPy_examples
+   SWIG_and_NumPy
+   SavitzkyGolay
+   SchrodingerFDTD
+   SegmentAxis
+   SignalSmooth
+   Solving_Large_Markov_Chains
+   SphericalBesselZeros
+   Theoretical_Ecology(2f)Hastings_and_Powell
+   Theoretical_Ecology
+   TimeSeries(2f)FAQ
+   TimeSeries
+   ViewsVsCopies
+   Watershed
+   Weave
+   Zombie_Apocalypse_ODEINT
+   dbase
+   f2py_and_NumPy
+   hdf5_in_Matlab
+   mplot3D
+   multiprocessing
+   vtkVolumeRendering
+   wxPython_dialogs
+   xplt
+
+   
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+

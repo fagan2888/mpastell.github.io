@@ -1,0 +1,300 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="MayaVi(2f)Surf.html" />
+    <link rel="prev" title="Introduction" href="MayaVi(2f)ScriptingMayavi2(2f)MainModules.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)Surf.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)ScriptingMayavi2(2f)MainModules.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <ol class="arabic simple">
+<li><ol class="first arabic">
+<li>page was renamed from Cookbook/MayaVi/UsingMayavi2</li>
+</ol>
+</li>
+</ol>
+<p>TableOfContents</p>
+<p>||&lt;#80FF80&gt; This page presents scripting Mayavi2 using the advanced,
+object-oriented API. Mayavi2 has recently acquired an easy-to-use,
+thought maybe not as powerful, scripting module: mlab. You are invited
+to refer to the
+<a class="reference external" href="http://code.enthought.com/projects/mayavi/docs/development/mayavi/html/mlab.html">section</a>
+of <a class="reference external" href="http://code.enthought.com/projects/mayavi/docs/development/mayavi/html/">Mayavi2 user
+guide</a>.
+Reading this page will give you a deeper understanding of how Mayavi2
+works, and it complements the user guide. ||</p>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>To script !MayaVi2, you need (at least):</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;your&nbsp;favorite&nbsp;text&nbsp;editor;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;python&nbsp;installed&nbsp;;-)</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;!MayaVi2&nbsp;installed&nbsp;;-)</span></tt></div>
+</div>
+<p>Scripting !MayaVi2 is quite simple because !MayaVi2 is written in python
+and based on TVTK, which eases the uses of all VTK objects.</p>
+<p>In the following, you&#8217;ll be learned how to script and use !MayaVi2
+modules and filters.</p>
+<p>Modules can be split in two parts:</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;modules&nbsp;which&nbsp;do&nbsp;not&nbsp;interact&nbsp;with&nbsp;VTK&nbsp;data,&nbsp;and&nbsp;are&nbsp;seldom&nbsp;modified/handled&nbsp;(Outline,&nbsp;Axes,&nbsp;!OrientationAxes&nbsp;and&nbsp;Text).&nbsp;These&nbsp;are&nbsp;called&nbsp;the&nbsp;&quot;basic&quot;&nbsp;modules.&nbsp;Although&nbsp;color&nbsp;bar&nbsp;is&nbsp;not&nbsp;strictly&nbsp;speaking&nbsp;a&nbsp;module,&nbsp;it&nbsp;will&nbsp;be&nbsp;presented&nbsp;here.&nbsp;Setting&nbsp;a&nbsp;few&nbsp;parameters&nbsp;for&nbsp;rendering&nbsp;your&nbsp;scene&nbsp;will&nbsp;be&nbsp;also&nbsp;presented.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;modules&nbsp;which&nbsp;do&nbsp;interact&nbsp;with&nbsp;VTK&nbsp;data,&nbsp;and&nbsp;those&nbsp;you&nbsp;want&nbsp;to&nbsp;play&nbsp;with&nbsp;(i.e.&nbsp;all&nbsp;the&nbsp;remainder&nbsp;modules&nbsp;;-).</span></tt></p>
+<p>Before starting, let&#8217;s see the &#8220;main template&#8221; of a !MayaVi2 script
+written in python.</p>
+</div>
+<div class="section" id="main-template-create-your-mayavi2-class">
+<h1>Main template: create your MayaVi2 class<a class="headerlink" href="#main-template-create-your-mayavi2-class" title="Permalink to this headline">¶</a></h1>
+<p>A !MayaVi2 script should contain at least the following few lines:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! /usr/bin/env python</span>
+
+<span class="kn">from</span> <span class="nn">enthought.mayavi.app</span> <span class="kn">import</span> <span class="n">Mayavi</span>
+
+<span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="n">Mayavi</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">script</span>
+        <span class="c"># `self.script` is the MayaVi Script interface (an instance of</span>
+        <span class="c"># enthought.mayavi.script.Script) that is created by the</span>
+        <span class="c"># base `Mayavi` class.  Here we save a local reference for</span>
+        <span class="c"># convenience.</span>
+
+        <span class="c">## import any Mayavi modules and filters you want (they must be done her</span>
+<span class="c">#e!)</span>
+        <span class="o">.../...</span>
+
+        <span class="n">script</span><span class="o">.</span><span class="n">new_scene</span><span class="p">()</span>                      <span class="c"># to create the rendering scene</span>
+
+        <span class="c">## your stuff (modules, filters, etc) here</span>
+        <span class="o">.../...</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="n">mc</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">()</span>
+    <span class="n">mc</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Adding modules or filters is quite simple: you have to import it, and
+then add it to your !MayaVi2 class.</p>
+<p>To add a module, type:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.foo_module</span> <span class="kn">import</span> <span class="n">FooModule</span>
+<span class="o">.../...</span>
+<span class="n">mymodule</span> <span class="o">=</span> <span class="n">FooModule</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">mymodule</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To add a filter, type:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.filters.bar_filter</span> <span class="kn">import</span> <span class="n">BarFilter</span>
+<span class="o">.../...</span>
+<span class="n">myfilter</span> <span class="o">=</span> <span class="n">BarFilter</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">myfilter</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Notice the used syntax: for modules for example, foo_module is the
+foo_module python file (without the extension .py) in the subdirectory
+module/ of mayavi/ directory (lower case, underscore); this file
+contains the class FooModule (no underscore, capitalized name).</p>
+<p>But first of all, before rendering your scene with the modules and the
+filters you want to use, you have to load some data, of course.</p>
+</div>
+<div class="section" id="loading-data">
+<h1>Loading data<a class="headerlink" href="#loading-data" title="Permalink to this headline">¶</a></h1>
+<p>You have the choice between:</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;create&nbsp;a&nbsp;3D&nbsp;data&nbsp;array,&nbsp;for&nbsp;scalars&nbsp;data&nbsp;(for&nbsp;vectors&nbsp;data,&nbsp;you&nbsp;have&nbsp;to&nbsp;use&nbsp;a&nbsp;4D&nbsp;scalars&nbsp;data,&nbsp;i.e.&nbsp;a&nbsp;3D&nbsp;scalar&nbsp;data&nbsp;for&nbsp;each&nbsp;component)&nbsp;and&nbsp;load&nbsp;it&nbsp;with&nbsp;!ArraySource&nbsp;method;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;load&nbsp;a&nbsp;data&nbsp;file&nbsp;with&nbsp;!FileReader&nbsp;methods.</span></tt></p>
+<div class="section" id="loading-data-from-array-using-arraysource-method">
+<h2>Loading data from array using ArraySource method<a class="headerlink" href="#loading-data-from-array-using-arraysource-method" title="Permalink to this headline">¶</a></h2>
+<p>For example, we will create a 50*50*50 3D (scalar) array of a product
+of cosinus &amp; sinus functions.</p>
+<p>To do this, we need to load the appropriate modules:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">ogrid</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">pi</span>
+
+<span class="kn">from</span> <span class="nn">enthought.mayavi.sources.array_source</span> <span class="kn">import</span> <span class="n">ArraySource</span>
+
+<span class="n">Nx</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">Ny</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">Nz</span> <span class="o">=</span> <span class="mi">50</span>
+
+<span class="n">Lx</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">Ly</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">Lz</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">ogrid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">Lx</span><span class="p">:(</span><span class="n">Nx</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">1j</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="n">Ly</span><span class="p">:(</span><span class="n">Ny</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">1j</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="n">Lz</span><span class="p">:(</span><span class="n">Nz</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">1j</span><span class="p">]</span>
+
+<span class="c"># Strictly speaking, H is the magnetic field of the &quot;transverse electric&quot; eigenm</span>
+<span class="c">#ode m=n=p=1</span>
+<span class="c"># of a rectangular resonator cavity, with dimensions Lx, Ly, Lz</span>
+<span class="n">Hx</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="n">Lx</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">y</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="n">Ly</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">z</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="n">Lz</span><span class="p">)</span>
+<span class="n">Hy</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="n">Lx</span><span class="p">)</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="n">Ly</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">z</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="n">Lz</span><span class="p">)</span>
+<span class="n">Hz</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="n">Lx</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">y</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="n">Ly</span><span class="p">)</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">z</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="n">Lz</span><span class="p">)</span>
+<span class="n">Hv_scal</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">Hx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">Hy</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">Hz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c"># We want to load a scalars data (Hv_scal) as magnitude of a given 3D vector (Hv</span>
+<span class="c"># = {Hx, Hy, Hz})</span>
+<span class="c"># Hv_scal is a 3D scalars data, Hv is a 4D scalars data</span>
+<span class="n">src</span> <span class="o">=</span> <span class="n">ArraySource</span><span class="p">()</span>
+<span class="n">src</span><span class="o">.</span><span class="n">scalar_data</span> <span class="o">=</span> <span class="n">Hv_scal</span> <span class="c"># load scalars data</span>
+
+<span class="c"># To load vectors data</span>
+<span class="c"># src.vector_data = Hv</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="loading-data-from-file-using-filereader-methods">
+<h2>Loading data from file using FileReader methods<a class="headerlink" href="#loading-data-from-file-using-filereader-methods" title="Permalink to this headline">¶</a></h2>
+<p>To load a VTK data file, say heart.vtk file in mayavi/examples/data/
+directory, simply type:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.sources.vtk_file_reader</span> <span class="kn">import</span> <span class="n">VTKFileReader</span>
+
+<span class="n">src</span> <span class="o">=</span> <span class="n">VTKFileReader</span><span class="p">()</span>
+<span class="n">src</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="s">&quot;heart.vtk&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note: Files with .vtk extension are called &#8220;legacy VTK&#8221; files. !MayaVi2
+can read a lot of other files formats (XML, files from Ensight, Plot3D
+and so on). For example, you can load an XML file (with extension .vti,
+.vtp, .vtr, .vts, .vtu, etc) using VTKXML!FileReader method.</p>
+</div>
+<div class="section" id="add-the-source-to-your-mayavi2-class">
+<h2>Add the source to your MayaVi2 class<a class="headerlink" href="#add-the-source-to-your-mayavi2-class" title="Permalink to this headline">¶</a></h2>
+<p>Then, once your data are loaded using one of the two methods above, add
+the source with the add_source() method in the body of the class
+!MyClass (after script.new_scene):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">script</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The four basic modules Outline, Axes, !OrientationAxes and Text will be
+presented now.</p>
+</div>
+</div>
+<div class="section" id="basic-modules">
+<h1>Basic Modules<a class="headerlink" href="#basic-modules" title="Permalink to this headline">¶</a></h1>
+<p>See the [:Cookbook/MayaVi/ScriptingMayavi2/BasicModules: Basic Modules]
+wiki page.</p>
+</div>
+<div class="section" id="main-modules">
+<h1>Main Modules<a class="headerlink" href="#main-modules" title="Permalink to this headline">¶</a></h1>
+<p>See the [:Cookbook/MayaVi/ScriptingMayavi2/MainModules: Main Modules]
+wiki page.</p>
+</div>
+<div class="section" id="filters">
+<h1>Filters<a class="headerlink" href="#filters" title="Permalink to this headline">¶</a></h1>
+<p>See the [:Cookbook/MayaVi/ScriptingMayavi2/Filters: Filters] wiki page.</p>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a></li>
+<li><a class="reference internal" href="#main-template-create-your-mayavi2-class">Main template: create your MayaVi2 class</a></li>
+<li><a class="reference internal" href="#loading-data">Loading data</a><ul>
+<li><a class="reference internal" href="#loading-data-from-array-using-arraysource-method">Loading data from array using ArraySource method</a></li>
+<li><a class="reference internal" href="#loading-data-from-file-using-filereader-methods">Loading data from file using FileReader methods</a></li>
+<li><a class="reference internal" href="#add-the-source-to-your-mayavi2-class">Add the source to your MayaVi2 class</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#basic-modules">Basic Modules</a></li>
+<li><a class="reference internal" href="#main-modules">Main Modules</a></li>
+<li><a class="reference internal" href="#filters">Filters</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="MayaVi(2f)ScriptingMayavi2(2f)MainModules.html"
+                        title="previous chapter">Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="MayaVi(2f)Surf.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/MayaVi(2f)ScriptingMayavi2.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)Surf.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)ScriptingMayavi2(2f)MainModules.html" title="Introduction"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

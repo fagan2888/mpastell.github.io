@@ -1,0 +1,162 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Compiling Extension Modules on Windows using mingw &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Correlated Random Samples" href="CorrelatedRandomSamples.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="CommTheory.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="CorrelatedRandomSamples.html" title="Correlated Random Samples"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="CommTheory.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <ol class="arabic simple">
+<li><ol class="first arabic">
+<li>page was renamed from Cookbook/CompilingExtensionsOnWindows</li>
+</ol>
+</li>
+</ol>
+<div class="section" id="compiling-extension-modules-on-windows-using-mingw">
+<h1>Compiling Extension Modules on Windows using mingw<a class="headerlink" href="#compiling-extension-modules-on-windows-using-mingw" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="pre-reqs">
+<h2>Pre-reqs<a class="headerlink" href="#pre-reqs" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;Python&nbsp;2.5&nbsp;(with&nbsp;earlier&nbsp;versions&nbsp;of&nbsp;Python,&nbsp;it&nbsp;is&nbsp;much&nbsp;more&nbsp;complicated&nbsp;to&nbsp;compile&nbsp;extensions&nbsp;with&nbsp;mingw.&nbsp;Use&nbsp;visual&nbsp;studio&nbsp;2003&nbsp;if&nbsp;you&nbsp;cannot&nbsp;upgrade&nbsp;to&nbsp;Python&nbsp;2.5)</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;Local&nbsp;admin&nbsp;access&nbsp;on&nbsp;your&nbsp;machine</span></tt></div>
+</div>
+</div>
+<div class="section" id="compiler-setup">
+<h2>Compiler setup<a class="headerlink" href="#compiler-setup" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;Go&nbsp;to&nbsp;www.mingw.org&nbsp;and&nbsp;go&nbsp;to&nbsp;the&nbsp;&quot;downloads&quot;&nbsp;section&nbsp;of&nbsp;the&nbsp;web-site.&nbsp;Look&nbsp;for&nbsp;the&nbsp;link&nbsp;to&nbsp;the&nbsp;sourceforge&nbsp;page&nbsp;and&nbsp;go&nbsp;there.&nbsp;Grab&nbsp;the&nbsp;latest&nbsp;version&nbsp;of&nbsp;the&nbsp;&quot;Automated&nbsp;MinGW&nbsp;Installer&quot;&nbsp;and&nbsp;run&nbsp;the&nbsp;installer.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;When&nbsp;asked&nbsp;&quot;which&nbsp;MinGW&nbsp;package&quot;&nbsp;you&nbsp;would&nbsp;like&nbsp;to&nbsp;install,&nbsp;select&nbsp;&quot;Current&quot;&nbsp;or&nbsp;&quot;Candidate&quot;&nbsp;depending&nbsp;on&nbsp;whether&nbsp;you&nbsp;want&nbsp;to&nbsp;be&nbsp;on&nbsp;the&nbsp;bleeding&nbsp;edge&nbsp;or&nbsp;not.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;When&nbsp;you&nbsp;get&nbsp;to&nbsp;the&nbsp;section&nbsp;where&nbsp;you&nbsp;need&nbsp;to&nbsp;select&nbsp;the&nbsp;various&nbsp;components&nbsp;you&nbsp;want&nbsp;to&nbsp;install,&nbsp;include&nbsp;the&nbsp;&quot;base&nbsp;tools&quot;&nbsp;and&nbsp;the&nbsp;&quot;g++&nbsp;compiler&quot;,&nbsp;and&nbsp;possibly&nbsp;the&nbsp;g77&nbsp;compiler&nbsp;too&nbsp;if&nbsp;you&nbsp;are&nbsp;going&nbsp;to&nbsp;be&nbsp;compiling&nbsp;some&nbsp;extensions&nbsp;that&nbsp;use&nbsp;Fortran.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;Install&nbsp;it&nbsp;to&nbsp;&quot;C:\MinGW&quot;&nbsp;(the&nbsp;default&nbsp;location)</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;Add&nbsp;&quot;C:\MinGW\bin&quot;&nbsp;to&nbsp;your&nbsp;PATH&nbsp;environment&nbsp;variable&nbsp;if&nbsp;the&nbsp;installer&nbsp;did&nbsp;not&nbsp;do&nbsp;this&nbsp;for&nbsp;you.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">If&nbsp;you&nbsp;are&nbsp;running&nbsp;Vista,&nbsp;you&nbsp;will&nbsp;need&nbsp;to&nbsp;add&nbsp;&quot;C:\MinGW\libexec\gcc\mingw32\3.4.5&quot;&nbsp;to&nbsp;your&nbsp;PATH&nbsp;as&nbsp;well</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;In&nbsp;notepad&nbsp;(or&nbsp;your&nbsp;favourite&nbsp;text&nbsp;editor)&nbsp;create&nbsp;a&nbsp;new&nbsp;text&nbsp;file&nbsp;and&nbsp;enter&nbsp;the&nbsp;following&nbsp;in&nbsp;the&nbsp;file:</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;[build]</span></tt><tt class="docutils literal"><span class="pre">`BR</span></tt> &lt;BR&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;compiler&nbsp;=&nbsp;mingw32</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;Save&nbsp;the&nbsp;file&nbsp;as&nbsp;&quot;C:\Python25\Lib\distutils\distutils.cfg&quot;.&nbsp;This&nbsp;will&nbsp;tell&nbsp;python&nbsp;to&nbsp;use&nbsp;the&nbsp;MinGW&nbsp;compiler&nbsp;when&nbsp;compiling&nbsp;extensions</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;Close&nbsp;down&nbsp;any&nbsp;command&nbsp;prompts&nbsp;you&nbsp;have&nbsp;open&nbsp;(they&nbsp;need&nbsp;to&nbsp;be&nbsp;reopened&nbsp;to&nbsp;see&nbsp;the&nbsp;new&nbsp;environment&nbsp;variable&nbsp;values)</span></tt></div>
+</div>
+</div>
+<div class="section" id="compiling-an-extension-through-distutils">
+<h2>Compiling an extension (through distutils)<a class="headerlink" href="#compiling-an-extension-through-distutils" title="Permalink to this headline">¶</a></h2>
+<p>Note: this will only work for modules which have a setup.py script that
+uses distutils</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;So&nbsp;lets&nbsp;say&nbsp;you&nbsp;have&nbsp;downloaded&nbsp;code&nbsp;for&nbsp;some&nbsp;module&nbsp;to&nbsp;the&nbsp;folder&nbsp;&quot;xyz&quot;.&nbsp;Open&nbsp;a&nbsp;command&nbsp;prompt&nbsp;and&nbsp;cd&nbsp;to&nbsp;this&nbsp;directory&nbsp;(eg.&nbsp;type&nbsp;&quot;c:&quot;&nbsp;then&nbsp;press&nbsp;enter&nbsp;to&nbsp;change&nbsp;to&nbsp;the&nbsp;C&nbsp;drive,&nbsp;then&nbsp;type&nbsp;&quot;cd&nbsp;c:\xyz&quot;&nbsp;to&nbsp;change&nbsp;to&nbsp;directory&nbsp;xyz)</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;To&nbsp;create&nbsp;a&nbsp;binary&nbsp;installer,&nbsp;type&nbsp;&quot;python&nbsp;setup.py&nbsp;bdist_wininst&quot;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">1.&nbsp;If&nbsp;everything&nbsp;worked&nbsp;fine,&nbsp;then&nbsp;there&nbsp;should&nbsp;now&nbsp;be&nbsp;a&nbsp;subfolder&nbsp;called&nbsp;&quot;dist&quot;&nbsp;which&nbsp;contains&nbsp;an&nbsp;exe&nbsp;file&nbsp;that&nbsp;you&nbsp;can&nbsp;run&nbsp;to&nbsp;install&nbsp;the&nbsp;module.</span></tt></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Compiling Extension Modules on Windows using mingw</a><ul>
+<li><a class="reference internal" href="#pre-reqs">Pre-reqs</a></li>
+<li><a class="reference internal" href="#compiler-setup">Compiler setup</a></li>
+<li><a class="reference internal" href="#compiling-an-extension-through-distutils">Compiling an extension (through distutils)</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="CommTheory.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="CorrelatedRandomSamples.html"
+                        title="next chapter">Correlated Random Samples</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/CompilingExtensionsOnWindowsWithMinGW.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="CorrelatedRandomSamples.html" title="Correlated Random Samples"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="CommTheory.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

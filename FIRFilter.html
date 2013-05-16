@@ -1,0 +1,230 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Code" href="FiltFilt.html" />
+    <link rel="prev" title="Short examples" href="F2Py.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="FiltFilt.html" title="Code"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="F2Py.html" title="Short examples"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <ol class="arabic simple">
+<li>format wiki</li>
+</ol>
+<p>This cookbook example shows how to design and use a low-pass FIR filter
+using functions from scipy.signal.</p>
+<p>The pylab module from matplotlib is used to create plots.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">absolute</span><span class="p">,</span> <span class="n">arange</span>
+<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">kaiserord</span><span class="p">,</span> <span class="n">lfilter</span><span class="p">,</span> <span class="n">firwin</span><span class="p">,</span> <span class="n">freqz</span>
+<span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">clf</span><span class="p">,</span> <span class="n">plot</span><span class="p">,</span> <span class="n">xlabel</span><span class="p">,</span> <span class="n">ylabel</span><span class="p">,</span> <span class="n">xlim</span><span class="p">,</span> <span class="n">ylim</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">ax</span>
+<span class="n">es</span><span class="p">,</span> <span class="n">show</span>
+
+
+<span class="c">#------------------------------------------------</span>
+<span class="c"># Create a signal for demonstration.</span>
+<span class="c">#------------------------------------------------</span>
+
+<span class="n">sample_rate</span> <span class="o">=</span> <span class="mf">100.0</span>
+<span class="n">nsamples</span> <span class="o">=</span> <span class="mi">400</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">nsamples</span><span class="p">)</span> <span class="o">/</span> <span class="n">sample_rate</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="mf">0.5</span><span class="o">*</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.2</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="mf">2.5</span><span class="o">*</span><span class="n">t</span><span class="o">+</span><span class="mf">0.1</span><span class="p">)</span> <span class="o">+</span> \
+        <span class="mf">0.2</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="mf">15.3</span><span class="o">*</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.1</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="mf">16.7</span><span class="o">*</span><span class="n">t</span> <span class="o">+</span> <span class="mf">0.1</span><span class="p">)</span> <span class="o">+</span> \
+            <span class="mf">0.1</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="mf">23.45</span><span class="o">*</span><span class="n">t</span><span class="o">+.</span><span class="mi">8</span><span class="p">)</span>
+
+
+<span class="c">#------------------------------------------------</span>
+<span class="c"># Create a FIR filter and apply it to x.</span>
+<span class="c">#------------------------------------------------</span>
+
+<span class="c"># The Nyquist rate of the signal.</span>
+<span class="n">nyq_rate</span> <span class="o">=</span> <span class="n">sample_rate</span> <span class="o">/</span> <span class="mf">2.0</span>
+
+<span class="c"># The desired width of the transition from pass to stop,</span>
+<span class="c"># relative to the Nyquist rate.  We&#39;ll design the filter</span>
+<span class="c"># with a 5 Hz transition width.</span>
+<span class="n">width</span> <span class="o">=</span> <span class="mf">5.0</span><span class="o">/</span><span class="n">nyq_rate</span>
+
+<span class="c"># The desired attenuation in the stop band, in dB.</span>
+<span class="n">ripple_db</span> <span class="o">=</span> <span class="mf">60.0</span>
+
+<span class="c"># Compute the order and Kaiser parameter for the FIR filter.</span>
+<span class="n">N</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">kaiserord</span><span class="p">(</span><span class="n">ripple_db</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+
+<span class="c"># The cutoff frequency of the filter.</span>
+<span class="n">cutoff_hz</span> <span class="o">=</span> <span class="mf">10.0</span>
+
+<span class="c"># Use firwin with a Kaiser window to create a lowpass FIR filter.</span>
+<span class="n">taps</span> <span class="o">=</span> <span class="n">firwin</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">cutoff_hz</span><span class="o">/</span><span class="n">nyq_rate</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;kaiser&#39;</span><span class="p">,</span> <span class="n">beta</span><span class="p">))</span>
+
+<span class="c"># Use lfilter to filter x with the FIR filter.</span>
+<span class="n">filtered_x</span> <span class="o">=</span> <span class="n">lfilter</span><span class="p">(</span><span class="n">taps</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="c">#------------------------------------------------</span>
+<span class="c"># Plot the FIR filter coefficients.</span>
+<span class="c">#------------------------------------------------</span>
+
+<span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">taps</span><span class="p">,</span> <span class="s">&#39;bo-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">title</span><span class="p">(</span><span class="s">&#39;Filter Coefficients (</span><span class="si">%d</span><span class="s"> taps)&#39;</span> <span class="o">%</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c">#------------------------------------------------</span>
+<span class="c"># Plot the magnitude response of the filter.</span>
+<span class="c">#------------------------------------------------</span>
+
+<span class="n">figure</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">clf</span><span class="p">()</span>
+<span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">freqz</span><span class="p">(</span><span class="n">taps</span><span class="p">,</span> <span class="n">worN</span><span class="o">=</span><span class="mi">8000</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">((</span><span class="n">w</span><span class="o">/</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="n">nyq_rate</span><span class="p">,</span> <span class="n">absolute</span><span class="p">(</span><span class="n">h</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Gain&#39;</span><span class="p">)</span>
+<span class="n">title</span><span class="p">(</span><span class="s">&#39;Frequency Response&#39;</span><span class="p">)</span>
+<span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">)</span>
+<span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c"># Upper inset plot.</span>
+<span class="n">ax1</span> <span class="o">=</span> <span class="n">axes</span><span class="p">([</span><span class="mf">0.42</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="o">.</span><span class="mi">45</span><span class="p">,</span> <span class="o">.</span><span class="mi">25</span><span class="p">])</span>
+<span class="n">plot</span><span class="p">((</span><span class="n">w</span><span class="o">/</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="n">nyq_rate</span><span class="p">,</span> <span class="n">absolute</span><span class="p">(</span><span class="n">h</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">8.0</span><span class="p">)</span>
+<span class="n">ylim</span><span class="p">(</span><span class="mf">0.9985</span><span class="p">,</span> <span class="mf">1.001</span><span class="p">)</span>
+<span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c"># Lower inset plot</span>
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">axes</span><span class="p">([</span><span class="mf">0.42</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="o">.</span><span class="mi">45</span><span class="p">,</span> <span class="o">.</span><span class="mi">25</span><span class="p">])</span>
+<span class="n">plot</span><span class="p">((</span><span class="n">w</span><span class="o">/</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="n">nyq_rate</span><span class="p">,</span> <span class="n">absolute</span><span class="p">(</span><span class="n">h</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">xlim</span><span class="p">(</span><span class="mf">12.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">)</span>
+<span class="n">ylim</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0025</span><span class="p">)</span>
+<span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c">#------------------------------------------------</span>
+<span class="c"># Plot the original and filtered signals.</span>
+<span class="c">#------------------------------------------------</span>
+
+<span class="c"># The phase delay of the filtered signal.</span>
+<span class="n">delay</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">sample_rate</span>
+
+<span class="n">figure</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="c"># Plot the original signal.</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+<span class="c"># Plot the filtered signal, shifted to compensate for the phase delay.</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">delay</span><span class="p">,</span> <span class="n">filtered_x</span><span class="p">,</span> <span class="s">&#39;r-&#39;</span><span class="p">)</span>
+<span class="c"># Plot just the &quot;good&quot; part of the filtered signal.  The first N-1</span>
+<span class="c"># samples are &quot;corrupted&quot; by the initial conditions.</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span><span class="o">-</span><span class="n">delay</span><span class="p">,</span> <span class="n">filtered_x</span><span class="p">[</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">:],</span> <span class="s">&#39;g&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;t&#39;</span><span class="p">)</span>
+<span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The plots generated by the above code:</p>
+<img alt="FIRFilter_attachments/fir_demo_taps.png..image::FIRFilter_attachments/fir_demo_freq_resp.png" src="FIRFilter_attachments/fir_demo_taps.png..image::FIRFilter_attachments/fir_demo_freq_resp.png" />
+<img alt="FIRFilter_attachments/fir_demo_signals.png" src="FIRFilter_attachments/fir_demo_signals.png" />
+<p>The final plots shows the original signal (thin blue line), the filtered
+signal (shifted by the appropriate phase delay to align with the
+original signal; thin red line), and the &#8220;good&#8221; part of the filtered
+signal (heavy green line). The &#8220;good part&#8221; is the part of the signal
+that is not affected by the initial conditions.</p>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="F2Py.html"
+                        title="previous chapter">Short examples</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="FiltFilt.html"
+                        title="next chapter">Code</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/FIRFilter.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="FiltFilt.html" title="Code"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="F2Py.html" title="Short examples"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

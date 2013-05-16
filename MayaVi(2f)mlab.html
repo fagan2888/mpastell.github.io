@@ -1,0 +1,284 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>A Simple Example &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="MayaVi(2f)tvtk.html" />
+    <link rel="prev" title="Introduction" href="MayaVi(2f)examples.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)tvtk.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)examples.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>||&lt;#80FF80&gt; This page is about the tvtk.tools.mlab module. You are
+strongly advised to use the more recent <a class="reference external" href="http://enthought.github.com/mayavi/mayavi/mlab.html">mayavi.mlab
+module</a> which
+can also be used from <em>ipython -wthread</em> or as a library inside another
+application.||</p>
+<p>The ``mlab.py`` module allows for simple 3D plotting of objects. It
+provides an object oriented approch to 3d visualization.</p>
+<p>It relies on the simple TVTK module, rather than on the full blown
+Mayavi application. As a result it has less dependencies. However, it is
+harder to extend and more limited. The developers are not planning any
+feature addition to this module, and we strongly advise you to use the
+Mayavi mlab module, which provides the same usecases, but with more
+functionalities and is under constant development. For more information,
+you can read <a class="reference external" href="http://enthought.github.com/mayavi/mayavi/mlab.html">the relevant section of the Mayavi user
+guide</a></p>
+<p>&#8216;&#8217;&#8217; Table of Contents &#8216;&#8217;&#8216;</p>
+<p>TableOfContents</p>
+<div class="section" id="a-simple-example">
+<h1>A Simple Example<a class="headerlink" href="#a-simple-example" title="Permalink to this headline">¶</a></h1>
+<p>||&lt;#FF8080&gt; <strong>Important:</strong> All these examples must be run in &#8220;ipython
+-wthread&#8221; or in a Wx application (like pycrust, or the Mayavi2
+application). They <strong>will not work</strong> if you don&#8217;t use this option.||</p>
+<p>Start with `ipython -wthread` and paste the following code:</p>
+<div class="highlight-python"><pre>.. code-block:: python</pre>
+</div>
+<blockquote>
+<div><p>import scipy</p>
+<p># prepare some interesting function:
+def f(x, y):</p>
+<blockquote>
+<div>return 3.0*scipy.sin(x*y+1e-4)/(x*y+1e-4)</div></blockquote>
+<p>x = scipy.arange(-7., 7.05, 0.1)
+y = scipy.arange(-5., 5.05, 0.1)</p>
+<p># 3D visualization of f:
+from enthought.tvtk.tools import mlab
+fig = mlab.figure()
+s = mlab.SurfRegular(x, y, f)
+fig.add(s)</p>
+</div></blockquote>
+<img alt="MayaVi(2f)mlab_attachments/simple_example.png" src="MayaVi(2f)mlab_attachments/simple_example.png" />
+</div>
+<div class="section" id="changing-axis-and-colour">
+<h1>Changing axis and colour<a class="headerlink" href="#changing-axis-and-colour" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]</span><span class="o">=</span><span class="n">mgrid</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">:</span><span class="mi">5</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span><span class="o">-</span><span class="mi">5</span><span class="p">:</span><span class="mi">5</span><span class="p">:</span><span class="mf">0.1</span><span class="p">]</span>
+<span class="n">r</span><span class="o">=</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">z</span><span class="o">=</span><span class="n">sin</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">r</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">enthought.tvtk.tools</span> <span class="kn">import</span> <span class="n">mlab</span>
+
+<span class="c"># Open a viewer without the object browser:</span>
+<span class="n">f</span><span class="o">=</span><span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">browser</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="n">s</span><span class="o">=</span><span class="n">mlab</span><span class="o">.</span><span class="n">Surf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">scalar_bar</span><span class="o">.</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;sinc(r)&#39;</span>
+<span class="n">s</span><span class="o">.</span><span class="n">show_scalar_bar</span><span class="o">=</span><span class="bp">True</span>
+<span class="c"># LUT means &quot;Look-Up Table&quot;, it give the mapping between scalar value and color</span>
+<span class="n">s</span><span class="o">.</span><span class="n">lut_type</span><span class="o">=</span><span class="s">&#39;blue-red&#39;</span>
+<span class="c"># The current figure has two objects, the outline object originaly present,</span>
+<span class="c"># and the surf object that we added.</span>
+<span class="n">f</span><span class="o">.</span><span class="n">objects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">z_label</span><span class="o">=</span><span class="s">&#39;value&#39;</span>
+<span class="n">t</span><span class="o">=</span><span class="n">mlab</span><span class="o">.</span><span class="n">Title</span><span class="p">()</span>
+<span class="n">t</span><span class="o">.</span><span class="n">text</span><span class="o">=</span><span class="s">&#39;Sampling function&#39;</span>
+<span class="n">f</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="c"># Edit the title properties with the GUI:</span>
+<span class="n">t</span><span class="o">.</span><span class="n">edit_traits</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="MayaVi(2f)mlab_attachments/tvtk.mlab_example.png" src="MayaVi(2f)mlab_attachments/tvtk.mlab_example.png" />
+</div>
+<div class="section" id="list-of-different-functionalities">
+<h1>List of different functionalities<a class="headerlink" href="#list-of-different-functionalities" title="Permalink to this headline">¶</a></h1>
+<p>The implementation provided here is object oriented and each
+visualization capability is implemented as a class that has traits. So
+each of these may be configured. Each visualization class derives
+(ultimately) from MLabBase which is responsible for adding/removing its
+actors into the render window. The classes all require that the
+RenderWindow be a `pyface.tvtk.scene.Scene` instance (this constraint
+can be relaxed if necessary later on).</p>
+<p>This module offers the following broad class of functionality:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><strong>``Figure``</strong></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;This&nbsp;basically&nbsp;manages&nbsp;all&nbsp;of&nbsp;the&nbsp;objects&nbsp;rendered.&nbsp;&nbsp;Just&nbsp;like</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;figure&nbsp;in&nbsp;any&nbsp;Matlab&nbsp;like&nbsp;environment.&nbsp;&nbsp;A&nbsp;convenience&nbsp;function</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;called&nbsp;`figure`&nbsp;may&nbsp;be&nbsp;used&nbsp;to&nbsp;create&nbsp;a&nbsp;nice&nbsp;Figure&nbsp;instance.</span></tt></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><strong>``Glyphs``</strong></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;This&nbsp;and&nbsp;its&nbsp;subclasses&nbsp;let&nbsp;one&nbsp;place&nbsp;glyphs&nbsp;at&nbsp;points&nbsp;specified</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;as&nbsp;inputs.&nbsp;&nbsp;The&nbsp;subclasses&nbsp;are:&nbsp;`Arrows`,&nbsp;`Cones`,&nbsp;`Cubes`,&nbsp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;`Cylinders`,&nbsp;`Spheres`,&nbsp;and&nbsp;`Points`.</span></tt></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><strong>``Line3``</strong></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;Draws&nbsp;lines&nbsp;between&nbsp;the&nbsp;points&nbsp;specified&nbsp;at&nbsp;initialization&nbsp;time.</span></tt></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><strong>``Outline``</strong></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;Draws&nbsp;an&nbsp;outline&nbsp;for&nbsp;the&nbsp;contained&nbsp;objects.</span></tt></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><strong>``Title``</strong></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;Draws&nbsp;a&nbsp;title&nbsp;for&nbsp;the&nbsp;entire&nbsp;figure.</span></tt></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><strong>``LUTBase``</strong></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;Manages&nbsp;a&nbsp;lookup&nbsp;table&nbsp;and&nbsp;a&nbsp;scalar&nbsp;bar&nbsp;(legend)&nbsp;for&nbsp;it.&nbsp;&nbsp;This&nbsp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;is&nbsp;subclassed&nbsp;by&nbsp;all&nbsp;classes&nbsp;that&nbsp;need&nbsp;a&nbsp;LUT.</span></tt></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><strong>``SurfRegular``</strong></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;MayaVi1's&nbsp;imv.surf&nbsp;like&nbsp;functionality&nbsp;that&nbsp;plots&nbsp;surfaces&nbsp;given&nbsp;x&nbsp;(1D),&nbsp;y(1D)</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;and&nbsp;z&nbsp;(or&nbsp;a&nbsp;callable)&nbsp;arrays.</span></tt></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><strong>``SurfRegularC``</strong></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;Also&nbsp;plots&nbsp;contour&nbsp;lines.</span></tt></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><strong>``TriMesh``</strong></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;Given&nbsp;triangle&nbsp;connectivity&nbsp;and&nbsp;points,&nbsp;plots&nbsp;a&nbsp;mesh&nbsp;of&nbsp;them.</span></tt></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><strong>``FancyTriMesh``</strong></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;Plots&nbsp;the&nbsp;mesh&nbsp;using&nbsp;tubes&nbsp;and&nbsp;spheres&nbsp;so&nbsp;its&nbsp;fancier.</span></tt></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><strong>``Mesh``</strong></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;Given&nbsp;x,&nbsp;y&nbsp;generated&nbsp;from&nbsp;scipy.mgrid,&nbsp;and&nbsp;a&nbsp;z&nbsp;to&nbsp;go&nbsp;with&nbsp;it.&nbsp;&nbsp;Along&nbsp;with&nbsp;optional</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;scalars.&nbsp;&nbsp;This&nbsp;class&nbsp;builds&nbsp;the&nbsp;triangle&nbsp;connectivity&nbsp;(assuming&nbsp;that&nbsp;x,&nbsp;y&nbsp;are&nbsp;from</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;scipy.mgrid)&nbsp;and&nbsp;builds&nbsp;a&nbsp;mesh&nbsp;and&nbsp;shows&nbsp;it.</span></tt></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><strong>``FancyMesh``</strong></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;Like&nbsp;mesh&nbsp;but&nbsp;shows&nbsp;the&nbsp;mesh&nbsp;using&nbsp;tubes&nbsp;and&nbsp;spheres.</span></tt></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><strong>``Surf``</strong></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;This&nbsp;generates&nbsp;a&nbsp;surface&nbsp;mesh&nbsp;just&nbsp;like&nbsp;Mesh&nbsp;but&nbsp;renders&nbsp;the&nbsp;mesh&nbsp;as</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;a&nbsp;surface.</span></tt></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><strong>``Contour3``</strong></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;Shows&nbsp;contour&nbsp;for&nbsp;a&nbsp;mesh.</span></tt></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><strong>``ImShow``</strong></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;Allows&nbsp;one&nbsp;to&nbsp;view&nbsp;large&nbsp;numeric&nbsp;arrays&nbsp;as&nbsp;image&nbsp;data&nbsp;using&nbsp;an&nbsp;image</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;actor.&nbsp;&nbsp;This&nbsp;is&nbsp;just&nbsp;like&nbsp;MayaVi1's&nbsp;`mayavi.tools.imv.viewi`.</span></tt></div>
+</div>
+<p>To see nice examples of all of these look at the `test_*` functions
+at the end of this file. Here is a quick example that uses these test
+functions:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.tvtk.tools</span> <span class="kn">import</span> <span class="n">mlab</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">mlab</span><span class="o">.</span><span class="n">test_surf</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="c"># Create a spherical harmonic.</span>
+<span class="n">f</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span> <span class="c"># Remove it.</span>
+<span class="n">mlab</span><span class="o">.</span><span class="n">test_molecule</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="c"># Show a caffeine molecule.</span>
+<span class="n">f</span><span class="o">.</span><span class="n">renwin</span><span class="o">.</span><span class="n">reset_zoom</span><span class="p">()</span> <span class="c"># Scale the view.</span>
+<span class="n">f</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span> <span class="c"># Remove this.</span>
+<span class="n">mlab</span><span class="o">.</span><span class="n">test_lines</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="c"># Show pretty lines.</span>
+<span class="n">f</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span> <span class="c"># Remove all the stuff on screen.</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">A Simple Example</a></li>
+<li><a class="reference internal" href="#changing-axis-and-colour">Changing axis and colour</a></li>
+<li><a class="reference internal" href="#list-of-different-functionalities">List of different functionalities</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="MayaVi(2f)examples.html"
+                        title="previous chapter">Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="MayaVi(2f)tvtk.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/MayaVi(2f)mlab.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)tvtk.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)examples.html" title="Introduction"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,285 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installing python2.3/python2.4 &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="MayaVi(2f)Installation.html" />
+    <link rel="prev" title="Simple Plotting" href="Matplotlib.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)Installation.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib.html" title="Simple Plotting"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>Following <a class="reference external" href="http://www.enthought.com/enthought/wiki/GrabbingAndBuilding">http://www.enthought.com/enthought/wiki/GrabbingAndBuilding</a>,
+you have to build/install VTK 5.0 and a few python extensions from
+sources.</p>
+<p>All needed installation information for a given python module or VTK can
+be reached on its webpage.</p>
+<p>For the impatient, these informations are resumed here.</p>
+<p>Note about configure script: If you don&#8217;t specify the destination where
+the packages will be installed, they will be installed by defaut in
+/usr/local.</p>
+<p>We make the choice here to install them in a personnal directory, say
+~/Mayavi2. So we set the environment variable DESTDIR to ~/Mayavi2, and
+will refer it later as DESTDIR:</p>
+<p>Under sh shell-like, type:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">export</span> <span class="n">DESTDIR</span><span class="o">=~/</span><span class="n">Mayavi2</span>
+</pre></div>
+</div>
+<p>Under csh shell-like, type:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">setenv</span> <span class="n">DESTDIR</span> <span class="o">~/</span><span class="n">Mayavi2</span>
+</pre></div>
+</div>
+<p>Is is also supposed that you download and uncompress all tarball sources
+in a specific directory, named src/, for example.</p>
+<div class="section" id="installing-python2-3-python2-4">
+<h1>Installing python2.3/python2.4<a class="headerlink" href="#installing-python2-3-python2-4" title="Permalink to this headline">¶</a></h1>
+<p>Download Python-2.3.5.tar.bz2 at
+<a class="reference external" href="http://www.python.org/download/releases/2.3.5">http://www.python.org/download/releases/2.3.5</a> or Python-2.4.3.tar.bz2 at
+<a class="reference external" href="http://www.python.org/download/releases/2.4.3">http://www.python.org/download/releases/2.4.3</a> and untar it in src/:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cd</span> <span class="n">src</span> <span class="o">&amp;&amp;</span> <span class="n">tar</span> <span class="n">xvfj</span> <span class="n">Python</span><span class="o">-</span><span class="mf">2.4</span><span class="o">.</span><span class="mf">3.</span><span class="n">tar</span><span class="o">.</span><span class="n">bz2</span>
+</pre></div>
+</div>
+<p>Then run:</p>
+<div class="highlight-python"><pre>cd Python-2.4.3/ &amp;&amp; ./configure --enable-shared --enable-unicode=ucs4 --prefix=$
+DESTDIR</pre>
+</div>
+<p>Then you can make &amp; make install:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">make</span> <span class="o">&amp;&amp;</span> <span class="n">make</span> <span class="n">install</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="installing-vtk-5-0">
+<h1>Installing VTK 5.0<a class="headerlink" href="#installing-vtk-5-0" title="Permalink to this headline">¶</a></h1>
+<p>Download vtk-5.0.0.tar.gz and vtkdata-5.0.0.tar.gz at
+<a class="reference external" href="http://public.kitware.com/VTK/get-software.php">http://public.kitware.com/VTK/get-software.php</a> and untar them in src/:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cd</span> <span class="n">src</span><span class="o">/</span> <span class="o">&amp;&amp;</span> <span class="n">tar</span> <span class="n">xvfz</span> <span class="n">vtk</span><span class="o">-</span><span class="mf">5.0</span><span class="o">.</span><span class="mf">0.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span> <span class="o">&amp;&amp;</span> <span class="n">tar</span> <span class="n">xvfz</span> <span class="n">vtkdata</span><span class="o">-</span><span class="mf">5.0</span><span class="o">.</span><span class="mf">0.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+</pre></div>
+</div>
+<p>Note: cmake package must be installed before proceed.</p>
+<p>Run:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cd</span> <span class="n">VTK</span> <span class="o">&amp;&amp;</span> <span class="n">ccmake</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>to create the required Makefile.</p>
+<p>Press on &#8220;c&#8221; to configure.</p>
+<p>Then press &#8220;enter&#8221; on the selected item to toggle flag.</p>
+<p>You should specify some information, notably about some libraries
+location (tcl/tk libs + dev packages and python2.3/python2.4 you have
+just installed) if ccmake does not find them, and the destination (set
+it to DESTDIR).</p>
+<p>Don&#8217;t forget to set flag &#8220;VTK_WRAP_PYTHON&#8221; to on (and &#8220;VTK_WRAP_TCL&#8221;
+if you want to use Tcl/Tk):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">BUILD_EXAMPLES</span>                   <span class="n">ON</span>
+<span class="n">BUILD_SHARED_LIBS</span>                <span class="n">ON</span>
+<span class="n">CMAKE_BACKWARDS_COMPATIBILITY</span>    <span class="mf">2.0</span>
+<span class="n">CMAKE_BUILD_TYPE</span>
+<span class="n">CMAKE_INSTALL_PREFIX</span>             <span class="n">DESTDIR</span>
+<span class="n">VTK_DATA_ROOT</span>                    <span class="n">DESTDIR</span><span class="o">/</span><span class="n">VTKData</span>
+<span class="n">VTK_USE_PARALLEL</span>                 <span class="n">OFF</span>
+<span class="n">VTK_USE_RENDERING</span>                <span class="n">ON</span>
+<span class="n">VTK_WRAP_JAVA</span>                    <span class="n">OFF</span>
+<span class="n">VTK_WRAP_PYTHON</span>                  <span class="n">ON</span>
+<span class="n">VTK_WRAP_TCL</span>                     <span class="n">ON</span>
+</pre></div>
+</div>
+<p>Press &#8220;c&#8221; to continue configuration:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">PYTHON_INCLUDE_PATH</span>             <span class="o">*</span><span class="n">DESTDIR</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">python2</span><span class="o">.</span><span class="mi">4</span>
+<span class="n">PYTHON_LIBRARY</span>                  <span class="o">*</span><span class="n">DESTDIR</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">libpython2</span><span class="o">.</span><span class="mf">4.</span><span class="n">so</span>
+<span class="n">TCL_INCLUDE_PATH</span>                <span class="o">*/</span><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">tcl8</span><span class="o">.</span><span class="mi">4</span>
+<span class="n">TCL_LIBRARY</span>                     <span class="o">*/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">libtcl8</span><span class="o">.</span><span class="mf">4.</span><span class="n">so</span>
+
+<span class="n">TK_INCLUDE_PATH</span>                 <span class="o">*/</span><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">tcl8</span><span class="o">.</span><span class="mi">4</span>
+<span class="n">TK_LIBRARY</span>                      <span class="o">*/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">libtk8</span><span class="o">.</span><span class="mf">4.</span><span class="n">so</span>
+<span class="n">VTK_USE_RPATH</span>                   <span class="o">*</span><span class="n">OFF</span>
+<span class="n">BUILD_EXAMPLES</span>                   <span class="n">ON</span>
+<span class="n">BUILD_SHARED_LIBS</span>                <span class="n">ON</span>
+<span class="n">CMAKE_BACKWARDS_COMPATIBILITY</span>    <span class="mf">2.0</span>
+<span class="n">CMAKE_BUILD_TYPE</span>
+<span class="n">CMAKE_INSTALL_PREFIX</span>             <span class="n">DESTDIR</span>
+<span class="n">VTK_DATA_ROOT</span>                    <span class="n">DESTDIR</span><span class="o">/</span><span class="n">VTKData</span>
+<span class="n">VTK_USE_PARALLEL</span>                 <span class="n">OFF</span>
+<span class="n">VTK_USE_RENDERING</span>                <span class="n">ON</span>
+<span class="n">VTK_WRAP_JAVA</span>                    <span class="n">OFF</span>
+<span class="n">VTK_WRAP_PYTHON</span>                  <span class="n">ON</span>
+<span class="n">VTK_WRAP_TCL</span>                     <span class="n">ON</span>
+</pre></div>
+</div>
+<p>Note: you can press &#8220;t&#8221; to get more configuration options.</p>
+<p>Press &#8220;c&#8221; and then &#8220;g&#8221; to exit configuration, then type:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">make</span> <span class="o">&amp;&amp;</span> <span class="n">make</span> <span class="n">install</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="installing-wx-python2-6">
+<h1>Installing wx-Python2.6<a class="headerlink" href="#installing-wx-python2-6" title="Permalink to this headline">¶</a></h1>
+<p>Download wxPython-src-2.6.3.2.tar.gz at
+<a class="reference external" href="https://sourceforge.net/project/showfiles.php?group_id=10718">https://sourceforge.net/project/showfiles.php?group_id=10718</a> and untar
+it in src/:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cd</span> <span class="n">src</span><span class="o">/</span> <span class="o">&amp;&amp;</span> <span class="n">tar</span> <span class="n">xvfz</span> <span class="n">wxPython</span><span class="o">-</span><span class="n">src</span><span class="o">-</span><span class="mf">2.6</span><span class="o">.</span><span class="mf">3.2</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+</pre></div>
+</div>
+<p>Note: You should have GTK 2 installed i.e. you should have libgtk-2.6.*
+`and` libgtk2.6.*-dev packages installed.</p>
+<p>Then run:</p>
+<div class="highlight-python"><pre>cd wxPython-src-2.6.3.2/ &amp;&amp; ./configure --enable-unicode --with-opengl --prefix=
+$DESTDIR</pre>
+</div>
+<p>Then you can do:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">make</span><span class="p">;</span> <span class="n">make</span> <span class="o">-</span><span class="n">C</span> <span class="n">contrib</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">animate</span><span class="p">;</span> <span class="n">make</span> <span class="o">-</span><span class="n">C</span> <span class="n">contrib</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">gizmos</span><span class="p">;</span> <span class="n">make</span> <span class="o">-</span><span class="n">C</span> <span class="n">contrib</span><span class="o">/</span><span class="n">s</span>
+<span class="n">rc</span><span class="o">/</span><span class="n">stc</span>
+</pre></div>
+</div>
+<p>or follow instructions on wx-Python2.6 webpage, creating a little script
+which runs automatically the commands above.</p>
+<p>Then install all:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">make</span> <span class="n">install</span><span class="p">;</span> <span class="n">make</span> <span class="o">-</span><span class="n">C</span> <span class="n">contrib</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">animate</span> <span class="n">install</span> <span class="p">;</span> <span class="n">make</span> <span class="o">-</span><span class="n">C</span> <span class="n">contrib</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">gizmos</span> <span class="n">i</span>
+<span class="n">nstall</span><span class="p">;</span> <span class="n">make</span> <span class="o">-</span><span class="n">C</span> <span class="n">contrib</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">stc</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>To build python modules:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cd</span> <span class="n">wxPython</span>
+</pre></div>
+</div>
+<p>and run:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="o">./</span><span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build_ext</span> <span class="o">--</span><span class="n">inplace</span> <span class="o">--</span><span class="n">debug</span> <span class="n">UNICODE</span><span class="o">=</span><span class="mi">1</span>
+</pre></div>
+</div>
+<p>and install them:</p>
+<div class="highlight-python"><pre>./setup.py install UNICODE=1 --prefix=$DESTDIR</pre>
+</div>
+</div>
+<div class="section" id="installing-scipy-0-5-numpy-1-0">
+<h1>Installing scipy 0.5 &amp; numpy 1.0<a class="headerlink" href="#installing-scipy-0-5-numpy-1-0" title="Permalink to this headline">¶</a></h1>
+<p>Download scipy-0.5.1.tar.gz at <a class="reference external" href="http://www.scipy.org/Download">http://www.scipy.org/Download</a></p>
+<p>Before installing scipy, you have to download and install:</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;numpy-1.0.tar.gz&nbsp;(http://sourceforge.net/project/showfiles.php?group_id=1369&amp;package_id=175103)</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;Atlas&nbsp;libraries&nbsp;(you&nbsp;could&nbsp;install&nbsp;it&nbsp;with&nbsp;your&nbsp;packages&nbsp;manager,&nbsp;no&nbsp;need&nbsp;to&nbsp;build&nbsp;it&nbsp;in&nbsp;src/)</span></tt></p>
+<p>No special option are required to install these python extensions.</p>
+<p>To install these packages in our $DESTDIR, simply change directory and
+type:</p>
+<div class="highlight-python"><pre>./setup.py install --prefix=$DESTDIR</pre>
+</div>
+</div>
+<div class="section" id="that-s-all-folks">
+<h1>That&#8217;s all, folks !<a class="headerlink" href="#that-s-all-folks" title="Permalink to this headline">¶</a></h1>
+<p>Before installing !MayaVi2, you have to set some environment variables,
+to tell !MayaVi2 where python extensions can be found.</p>
+<p>Under sh shell-like, type:</p>
+<div class="highlight-python"><pre>export PYTHONPATH=$DESTDIR:$PYTHONPATH
+export LD_LIBRARY_PATH=$DESTDIR:$LD_LIBRARY_PATH</pre>
+</div>
+<p>Under csh shell-like, type:</p>
+<div class="highlight-python"><pre>setenv PYTHONPATH ${DESTDIR}:${PYTHONPATH}
+setenv LD_LIBRARY_PATH ${DESTDIR}:${LD_LIBRARY_PATH}</pre>
+</div>
+<hr class="docutils" />
+<p>CategoryInstallation</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installing python2.3/python2.4</a></li>
+<li><a class="reference internal" href="#installing-vtk-5-0">Installing VTK 5.0</a></li>
+<li><a class="reference internal" href="#installing-wx-python2-6">Installing wx-Python2.6</a></li>
+<li><a class="reference internal" href="#installing-scipy-0-5-numpy-1-0">Installing scipy 0.5 &amp; numpy 1.0</a></li>
+<li><a class="reference internal" href="#that-s-all-folks">That&#8217;s all, folks !</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Matplotlib.html"
+                        title="previous chapter">Simple Plotting</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="MayaVi(2f)Installation.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/MayaVi(2f)InstallPythonStuffFromSource.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)Installation.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib.html" title="Simple Plotting"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,706 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="A Simple Example" href="MayaVi(2f)mlab.html" />
+    <link rel="prev" title="Introduction" href="MayaVi(2f)Tips.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)mlab.html" title="A Simple Example"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)Tips.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>TableOfContents</p>
+<p>||&lt;#80FF80&gt; This page presents scripting Mayavi2 using the advanced,
+object-oriented API. Mayavi2 has recently acquired an easy-to-use,
+thought maybe not as powerful, scripting module: mlab. You are invited
+to refer to the
+<a class="reference external" href="http://enthought.github.com/mayavi/mayavi/mlab.html">section</a> of
+<a class="reference external" href="http://enthought.github.com/mayavi/mayavi">Mayavi2 user guide</a>. ||</p>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>Here, you will be presented some examples of rendering scenes you can
+get with !MayaVi2. You are advised to read
+[:Cookbook/MayaVi/ScriptingMayavi2] to understand what you see, although
+most examples given here are self-explanatory.</p>
+<p>||&lt;#FF8080&gt; Please note that these examples are not up to date. The
+example gallery for the latest version of Mayavi can be found at
+<a class="reference external" href="http://enthought.github.com/mayavi/mayavi/auto/examples.html">http://enthought.github.com/mayavi/mayavi/auto/examples.html</a>. ||</p>
+</div>
+<div class="section" id="example-using-isosurface-module-contour-py">
+<h1>Example using IsoSurface Module (contour.py)<a class="headerlink" href="#example-using-isosurface-module-contour-py" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env mayavi2</span>
+
+<span class="sd">&quot;&quot;&quot;This script demonstrates how one can script MayaVi and use its</span>
+<span class="sd">contour related modules.  Notice the magic line at the top.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Author: Prabhu Ramachandran &lt;prabhu_r@users.sf.net&gt;</span>
+<span class="c"># Copyright (c) 2005-2007, Enthought, Inc.</span>
+<span class="c"># License: BSD Style.</span>
+
+<span class="c"># Standard library imports</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">dirname</span>
+
+<span class="c"># Enthought library imports</span>
+<span class="kn">import</span> <span class="nn">enthought.mayavi</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.sources.vtk_file_reader</span> <span class="kn">import</span> <span class="n">VTKFileReader</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.filters.threshold</span> <span class="kn">import</span> <span class="n">Threshold</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.outline</span> <span class="kn">import</span> <span class="n">Outline</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.grid_plane</span> <span class="kn">import</span> <span class="n">GridPlane</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.contour_grid_plane</span> <span class="kn">import</span> <span class="n">ContourGridPlane</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.iso_surface</span> <span class="kn">import</span> <span class="n">IsoSurface</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.scalar_cut_plane</span> <span class="kn">import</span> <span class="n">ScalarCutPlane</span>
+
+
+<span class="k">def</span> <span class="nf">contour</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;The script itself.  We needn&#39;t have defined a function but</span>
+<span class="sd">    having a function makes this more reusable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># &#39;mayavi&#39; is always defined on the interpreter.</span>
+    <span class="c"># Create a new scene.</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">new_scene</span><span class="p">()</span>
+
+    <span class="c"># Read a VTK (old style) data file.</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">VTKFileReader</span><span class="p">()</span>
+    <span class="n">r</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="n">enthought</span><span class="o">.</span><span class="n">mayavi</span><span class="o">.</span><span class="n">__file__</span><span class="p">),</span>
+                      <span class="s">&#39;examples&#39;</span><span class="p">,</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;heart.vtk&#39;</span><span class="p">))</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+    <span class="c"># Create an outline for the data.</span>
+    <span class="n">o</span> <span class="o">=</span> <span class="n">Outline</span><span class="p">()</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+
+    <span class="c"># Create three simple grid plane modules.</span>
+    <span class="c"># First normal to &#39;x&#39; axis.</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">GridPlane</span><span class="p">()</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+    <span class="c"># Second normal to &#39;y&#39; axis.</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">GridPlane</span><span class="p">()</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;y&#39;</span>
+    <span class="c"># Third normal to &#39;z&#39; axis.</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">GridPlane</span><span class="p">()</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;z&#39;</span>
+
+    <span class="c"># Create one ContourGridPlane normal to the &#39;x&#39; axis.</span>
+    <span class="n">cgp</span> <span class="o">=</span> <span class="n">ContourGridPlane</span><span class="p">()</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">cgp</span><span class="p">)</span>
+    <span class="c"># Set the position to the middle of the data.</span>
+    <span class="n">cgp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="mi">15</span>
+
+    <span class="c"># Another with filled contours normal to &#39;y&#39; axis.</span>
+    <span class="n">cgp</span> <span class="o">=</span> <span class="n">ContourGridPlane</span><span class="p">()</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">cgp</span><span class="p">)</span>
+    <span class="c"># Set the axis and position to the middle of the data.</span>
+    <span class="n">cgp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;y&#39;</span>
+    <span class="n">cgp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="mi">15</span>
+    <span class="n">cgp</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">filled_contours</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="c"># An isosurface module.</span>
+    <span class="n">iso</span> <span class="o">=</span> <span class="n">IsoSurface</span><span class="p">(</span><span class="n">compute_normals</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">iso</span><span class="p">)</span>
+    <span class="n">iso</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">contours</span> <span class="o">=</span> <span class="p">[</span><span class="mf">220.0</span><span class="p">]</span>
+
+    <span class="c"># An interactive scalar cut plane.</span>
+    <span class="n">cp</span> <span class="o">=</span> <span class="n">ScalarCutPlane</span><span class="p">()</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">cp</span><span class="p">)</span>
+    <span class="n">cp</span><span class="o">.</span><span class="n">implicit_plane</span><span class="o">.</span><span class="n">normal</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">contour</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="MayaVi(2f)examples_attachments/contour.png" src="MayaVi(2f)examples_attachments/contour.png" />
+</div>
+<div class="section" id="example-using-glyph-module-glyph-py">
+<h1>Example using Glyph Module (glyph.py)<a class="headerlink" href="#example-using-glyph-module-glyph-py" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env mayavi2</span>
+
+<span class="sd">&quot;&quot;&quot;This script demonstrates the use of a VectorCutPlane, splitting the</span>
+<span class="sd">pipeline using a MaskPoints filter and then viewing the filtered data</span>
+<span class="sd">with the Glyph module.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Author: Prabhu Ramachandran &lt;prabhu_r@users.sf.net&gt;</span>
+<span class="c"># Copyright (c) 2005-2007, Enthought, Inc.</span>
+<span class="c"># License: BSD Style.</span>
+
+<span class="c"># Standard library imports</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">dirname</span>
+
+<span class="c"># Enthought library imports</span>
+<span class="kn">import</span> <span class="nn">enthought.mayavi</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.sources.vtk_xml_file_reader</span> <span class="kn">import</span> <span class="n">VTKXMLFileReader</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.outline</span> <span class="kn">import</span> <span class="n">Outline</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.glyph</span> <span class="kn">import</span> <span class="n">Glyph</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.vector_cut_plane</span> <span class="kn">import</span> <span class="n">VectorCutPlane</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.vectors</span> <span class="kn">import</span> <span class="n">Vectors</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.filters.mask_points</span> <span class="kn">import</span> <span class="n">MaskPoints</span>
+
+
+<span class="k">def</span> <span class="nf">glyph</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;The script itself.  We needn&#39;t have defined a function but</span>
+<span class="sd">    having a function makes this more reusable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># &#39;mayavi&#39; is always defined on the interpreter.</span>
+    <span class="c"># Create a new VTK scene.</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">new_scene</span><span class="p">()</span>
+
+    <span class="c"># Read a VTK (old style) data file.</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">VTKXMLFileReader</span><span class="p">()</span>
+    <span class="n">r</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="n">enthought</span><span class="o">.</span><span class="n">mayavi</span><span class="o">.</span><span class="n">__file__</span><span class="p">),</span>
+                      <span class="s">&#39;examples&#39;</span><span class="p">,</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;fire_ug.vtu&#39;</span><span class="p">))</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+    <span class="c"># Create an outline and a vector cut plane.</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">Outline</span><span class="p">())</span>
+
+    <span class="n">v</span> <span class="o">=</span> <span class="n">VectorCutPlane</span><span class="p">()</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="n">v</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">color_mode</span> <span class="o">=</span> <span class="s">&#39;color_by_scalar&#39;</span>
+
+    <span class="c"># Now mask the points and show glyphs (we could also use</span>
+    <span class="c"># Vectors but glyphs are a bit more generic)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">MaskPoints</span><span class="p">()</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">on_ratio</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_mode</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+    <span class="n">g</span> <span class="o">=</span> <span class="n">Glyph</span><span class="p">()</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+    <span class="c"># Note that this adds the module to the filtered output.</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">scale_mode</span> <span class="o">=</span> <span class="s">&#39;scale_by_vector&#39;</span>
+    <span class="c"># Use arrows to view the scalars.</span>
+    <span class="n">g</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_source</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">glyph</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="MayaVi(2f)examples_attachments/glyph.png" src="MayaVi(2f)examples_attachments/glyph.png" />
+</div>
+<div class="section" id="example-without-mayavi2-ui-nongui-py">
+<h1>Example without Mayavi2 UI (nongui.py)<a class="headerlink" href="#example-without-mayavi2-ui-nongui-py" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+
+<span class="sd">&quot;&quot;&quot;This script demonstrates how one can use the MayaVi framework</span>
+<span class="sd">without displaying MayaVi&#39;s UI.  Note: look at the end of this file to</span>
+<span class="sd">see how the non gui plugin is chosen instead of the default gui</span>
+<span class="sd">mayavi plugin.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Author: Prabhu Ramachandran &lt;prabhu_r@users.sf.net&gt;</span>
+<span class="c"># Copyright (c) 2005, Enthought, Inc.</span>
+<span class="c"># License: BSD Style.</span>
+
+<span class="c"># On systems with multiple wx installations installed, pick one that works</span>
+<span class="c"># with the libraries Mayavi depends on.</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">wxversion</span>
+    <span class="n">wxversion</span><span class="o">.</span><span class="n">ensureMinimal</span><span class="p">(</span><span class="s">&#39;2.6&#39;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="c"># Standard library imports</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">dirname</span>
+
+<span class="c"># Enthought library imports</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.app</span> <span class="kn">import</span> <span class="n">Mayavi</span><span class="p">,</span> <span class="n">NONGUI_PLUGIN_DEFINITIONS</span>
+
+
+<span class="k">class</span> <span class="nc">MyApp</span><span class="p">(</span><span class="n">Mayavi</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This is executed once the application GUI has started.</span>
+<span class="sd">        *Make sure all other MayaVi specific imports are made here!*</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c"># Various imports to do different things.</span>
+        <span class="kn">from</span> <span class="nn">enthought.mayavi.sources.vtk_file_reader</span> <span class="kn">import</span> <span class="n">VTKFileReader</span>
+        <span class="kn">from</span> <span class="nn">enthought.mayavi.modules.outline</span> <span class="kn">import</span> <span class="n">Outline</span>
+        <span class="kn">from</span> <span class="nn">enthought.mayavi.modules.axes</span> <span class="kn">import</span> <span class="n">Axes</span>
+        <span class="kn">from</span> <span class="nn">enthought.mayavi.modules.grid_plane</span> <span class="kn">import</span> <span class="n">GridPlane</span>
+        <span class="kn">from</span> <span class="nn">enthought.mayavi.modules.image_plane_widget</span> <span class="kn">import</span> <span class="n">ImagePlaneWidget</span>
+
+        <span class="kn">from</span> <span class="nn">enthought.mayavi.modules.text</span> <span class="kn">import</span> <span class="n">Text</span>
+        <span class="kn">from</span> <span class="nn">enthought.mayavi.modules.contour_grid_plane</span> <span class="kn">import</span> <span class="n">ContourGridPlane</span>
+
+        <span class="kn">from</span> <span class="nn">enthought.mayavi.modules.iso_surface</span> <span class="kn">import</span> <span class="n">IsoSurface</span>
+
+        <span class="n">script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">script</span>
+
+        <span class="c"># Create a new scene.</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">new_scene</span><span class="p">()</span>
+
+        <span class="c"># Read a VTK (old style) data file.</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">VTKFileReader</span><span class="p">()</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="s">&#39;data/heart.vtk&#39;</span><span class="p">)</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;heart.vtk&#39;</span><span class="p">))</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+        <span class="c"># Put up some text.</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s">&#39;MayaVi rules!&#39;</span><span class="p">,</span> <span class="n">x_position</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">y_position</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.8</span>
+<span class="p">)</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>  <span class="c"># Bright yellow, yeah!</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="c"># Create an outline for the data.</span>
+        <span class="n">o</span> <span class="o">=</span> <span class="n">Outline</span><span class="p">()</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+
+        <span class="c"># Create an axes for the data.</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">Axes</span><span class="p">()</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+        <span class="c"># Create three simple grid plane modules.</span>
+        <span class="c"># First normal to &#39;x&#39; axis.</span>
+        <span class="n">gp</span> <span class="o">=</span> <span class="n">GridPlane</span><span class="p">()</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+        <span class="c"># Second normal to &#39;y&#39; axis.</span>
+        <span class="n">gp</span> <span class="o">=</span> <span class="n">GridPlane</span><span class="p">()</span>
+        <span class="n">gp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;y&#39;</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+        <span class="c"># Third normal to &#39;z&#39; axis.</span>
+        <span class="n">gp</span> <span class="o">=</span> <span class="n">GridPlane</span><span class="p">()</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+        <span class="n">gp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;z&#39;</span>
+
+        <span class="c"># Create one ImagePlaneWidget.</span>
+        <span class="n">ipw</span> <span class="o">=</span> <span class="n">ImagePlaneWidget</span><span class="p">()</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">ipw</span><span class="p">)</span>
+        <span class="c"># Set the position to the middle of the data.</span>
+        <span class="n">ipw</span><span class="o">.</span><span class="n">ipw</span><span class="o">.</span><span class="n">slice_position</span> <span class="o">=</span> <span class="mi">16</span>
+
+        <span class="c"># Create one ContourGridPlane normal to the &#39;x&#39; axis.</span>
+        <span class="n">cgp</span> <span class="o">=</span> <span class="n">ContourGridPlane</span><span class="p">()</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">cgp</span><span class="p">)</span>
+        <span class="c"># Set the position to the middle of the data.</span>
+        <span class="n">cgp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;y&#39;</span>
+        <span class="n">cgp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="mi">15</span>
+
+        <span class="c"># An isosurface module.</span>
+        <span class="n">iso</span> <span class="o">=</span> <span class="n">IsoSurface</span><span class="p">(</span><span class="n">compute_normals</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">iso</span><span class="p">)</span>
+        <span class="n">iso</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">contours</span> <span class="o">=</span> <span class="p">[</span><span class="mf">200.0</span><span class="p">]</span>
+
+        <span class="c"># Set the view.</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">current_scene</span>
+        <span class="n">cam</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">camera</span>
+        <span class="n">cam</span><span class="o">.</span><span class="n">azimuth</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span>
+        <span class="n">cam</span><span class="o">.</span><span class="n">elevation</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">MyApp</span><span class="p">()</span>
+    <span class="c"># Note how we change the plugins that are loaded only here.</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">plugin_defs</span><span class="o">=</span><span class="n">NONGUI_PLUGIN_DEFINITIONS</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="MayaVi(2f)examples_attachments/nongui.png" src="MayaVi(2f)examples_attachments/nongui.png" />
+</div>
+<div class="section" id="example-with-a-3d-array-as-numerical-source-numeric-source-py">
+<h1>Example with a 3D array as numerical source (numeric_source.py)<a class="headerlink" href="#example-with-a-3d-array-as-numerical-source-numeric-source-py" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env mayavi2</span>
+
+<span class="sd">&quot;&quot;&quot;This script demonstrates how to create a numpy array data and</span>
+<span class="sd">visualize it as image data using a few modules.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Author: Prabhu Ramachandran &lt;prabhu_r@users.sf.net&gt;</span>
+<span class="c"># Copyright (c) 2005-2007, Enthought, Inc.</span>
+<span class="c"># License: BSD Style.</span>
+
+<span class="c"># Standard library imports</span>
+<span class="kn">import</span> <span class="nn">enthought.util.scipyx</span> <span class="kn">as</span> <span class="nn">scipy</span>
+
+<span class="c"># Enthought library imports</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.sources.array_source</span> <span class="kn">import</span> <span class="n">ArraySource</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.outline</span> <span class="kn">import</span> <span class="n">Outline</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.image_plane_widget</span> <span class="kn">import</span> <span class="n">ImagePlaneWidget</span>
+
+
+<span class="k">def</span> <span class="nf">make_data</span><span class="p">(</span><span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">)):</span>
+    <span class="sd">&quot;&quot;&quot;Creates some simple array data of the given dimensions to test</span>
+<span class="sd">    with.&quot;&quot;&quot;</span>
+    <span class="n">np</span> <span class="o">=</span> <span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">dims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">dims</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="c"># Create some scalars to render.</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">ogrid</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">:</span><span class="mi">5</span><span class="p">:</span><span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">1j</span><span class="p">,</span><span class="o">-</span><span class="mi">5</span><span class="p">:</span><span class="mi">5</span><span class="p">:</span><span class="n">dims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">1j</span><span class="p">,</span><span class="o">-</span><span class="mi">5</span><span class="p">:</span><span class="mi">5</span><span class="p">:</span><span class="n">dims</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="mi">1j</span><span class="p">]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&#39;f&#39;</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&#39;f&#39;</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&#39;f&#39;</span><span class="p">)</span>
+
+    <span class="n">scalars</span> <span class="o">=</span> <span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">y</span><span class="o">*</span><span class="n">z</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">y</span><span class="o">*</span><span class="n">z</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">scalars</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="c"># This makes the data contiguous.</span>
+
+
+<span class="k">def</span> <span class="nf">view_numpy</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Example showing how to view a 3D numpy array in mayavi2.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># &#39;mayavi&#39; is always defined on the interpreter.</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">new_scene</span><span class="p">()</span>
+    <span class="c"># Make the data and add it to the pipeline.</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">make_data</span><span class="p">()</span>
+    <span class="n">src</span> <span class="o">=</span> <span class="n">ArraySource</span><span class="p">(</span><span class="n">transpose_input_array</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">src</span><span class="o">.</span><span class="n">scalar_data</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+    <span class="c"># Visualize the data.</span>
+    <span class="n">o</span> <span class="o">=</span> <span class="n">Outline</span><span class="p">()</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+    <span class="n">ipw</span> <span class="o">=</span> <span class="n">ImagePlaneWidget</span><span class="p">()</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">ipw</span><span class="p">)</span>
+    <span class="n">ipw</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">show_scalar_bar</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="n">ipw_y</span> <span class="o">=</span> <span class="n">ImagePlaneWidget</span><span class="p">()</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">ipw_y</span><span class="p">)</span>
+    <span class="n">ipw_y</span><span class="o">.</span><span class="n">ipw</span><span class="o">.</span><span class="n">plane_orientation</span> <span class="o">=</span> <span class="s">&#39;y_axes&#39;</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">view_numpy</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="MayaVi(2f)examples_attachments/numeric_source.png" src="MayaVi(2f)examples_attachments/numeric_source.png" />
+</div>
+<div class="section" id="example-using-streamline-module-streamline-py">
+<h1>Example using Streamline Module (streamline.py)<a class="headerlink" href="#example-using-streamline-module-streamline-py" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env mayavi2</span>
+<span class="sd">&quot;&quot;&quot;This script demonstrates how one can script MayaVi to display</span>
+<span class="sd">streamlines and an iso surface.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Author: Prabhu Ramachandran &lt;prabhu_r@users.sf.net&gt;</span>
+<span class="c"># Copyright (c) 2005-2007, Enthought, Inc.</span>
+<span class="c"># License: BSD Style.</span>
+
+<span class="c"># Standard library imports</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">dirname</span>
+
+<span class="c"># Enthought library imports</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.sources.vtk_xml_file_reader</span> <span class="kn">import</span> <span class="n">VTKXMLFileReader</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.outline</span> <span class="kn">import</span> <span class="n">Outline</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.streamline</span> <span class="kn">import</span> <span class="n">Streamline</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.iso_surface</span> <span class="kn">import</span> <span class="n">IsoSurface</span>
+
+
+<span class="k">def</span> <span class="nf">setup_data</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Given a VTK XML file name `fname`, this creates a mayavi2</span>
+<span class="sd">    reader for it and adds it to the pipeline.  It returns the reader</span>
+<span class="sd">    created.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">new_scene</span><span class="p">()</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">VTKXMLFileReader</span><span class="p">()</span>
+    <span class="n">r</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span>
+
+<span class="k">def</span> <span class="nf">streamline</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Sets up the mayavi pipeline for the visualization.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Create an outline for the data.</span>
+    <span class="n">o</span> <span class="o">=</span> <span class="n">Outline</span><span class="p">()</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+
+    <span class="n">s</span> <span class="o">=</span> <span class="n">Streamline</span><span class="p">(</span><span class="n">streamline_type</span><span class="o">=</span><span class="s">&#39;tube&#39;</span><span class="p">)</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">stream_tracer</span><span class="o">.</span><span class="n">integration_direction</span> <span class="o">=</span> <span class="s">&#39;both&#39;</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">seed</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">center</span> <span class="o">=</span> <span class="mf">3.5</span><span class="p">,</span> <span class="mf">0.625</span><span class="p">,</span> <span class="mf">1.25</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span><span class="o">.</span><span class="n">show_scalar_bar</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="n">i</span> <span class="o">=</span> <span class="n">IsoSurface</span><span class="p">()</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">i</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">contours</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">550</span>
+    <span class="n">i</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">enthought.mayavi</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="n">enthought</span><span class="o">.</span><span class="n">mayavi</span><span class="o">.</span><span class="n">__file__</span><span class="p">),</span>
+                 <span class="s">&#39;examples&#39;</span><span class="p">,</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;fire_ug.vtu&#39;</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">setup_data</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="n">streamline</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="MayaVi(2f)examples_attachments/streamline.png" src="MayaVi(2f)examples_attachments/streamline.png" />
+</div>
+<div class="section" id="example-using-imageplanewidget-module-test-py">
+<h1>Example using ImagePlaneWidget Module (test.py)<a class="headerlink" href="#example-using-imageplanewidget-module-test-py" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+
+<span class="sd">&quot;&quot;&quot;This script demonstrates how one can script MayaVi, set its size,</span>
+<span class="sd">create a new VTK scene and create a few simple modules.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Author: Prabhu Ramachandran &lt;prabhu_r@users.sf.net&gt;</span>
+<span class="c"># Copyright (c) 2005, Enthought, Inc.</span>
+<span class="c"># License: BSD Style.</span>
+
+<span class="c"># On systems with multiple wx installations installed, pick one that works</span>
+<span class="c"># with the libraries Mayavi depends on.</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">wxversion</span>
+    <span class="n">wxversion</span><span class="o">.</span><span class="n">ensureMinimal</span><span class="p">(</span><span class="s">&#39;2.6&#39;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="c"># Standard library imports</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">dirname</span>
+
+<span class="c"># Enthought library imports</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.app</span> <span class="kn">import</span> <span class="n">Mayavi</span>
+
+
+<span class="k">class</span> <span class="nc">MyApp</span><span class="p">(</span><span class="n">Mayavi</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This is executed once the application GUI has started.</span>
+<span class="sd">        *Make sure all other MayaVi specific imports are made here!*</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Various imports to do different things.</span>
+        <span class="kn">from</span> <span class="nn">enthought.mayavi.sources.vtk_file_reader</span> <span class="kn">import</span> <span class="n">VTKFileReader</span>
+        <span class="kn">from</span> <span class="nn">enthought.mayavi.filters.threshold</span> <span class="kn">import</span> <span class="n">Threshold</span>
+        <span class="kn">from</span> <span class="nn">enthought.mayavi.modules.outline</span> <span class="kn">import</span> <span class="n">Outline</span>
+        <span class="kn">from</span> <span class="nn">enthought.mayavi.modules.axes</span> <span class="kn">import</span> <span class="n">Axes</span>
+        <span class="kn">from</span> <span class="nn">enthought.mayavi.modules.grid_plane</span> <span class="kn">import</span> <span class="n">GridPlane</span>
+        <span class="kn">from</span> <span class="nn">enthought.mayavi.modules.image_plane_widget</span> <span class="kn">import</span> <span class="n">ImagePlaneWidget</span>
+
+        <span class="kn">from</span> <span class="nn">enthought.mayavi.modules.text</span> <span class="kn">import</span> <span class="n">Text</span>
+
+        <span class="n">script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">script</span>
+        <span class="c"># Create a new scene.</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">new_scene</span><span class="p">()</span>
+
+        <span class="c"># Read a VTK (old style) data file.</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">VTKFileReader</span><span class="p">()</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="s">&#39;data&#39;</span><span class="p">,</span> <span class="s">&#39;heart.vtk&#39;</span><span class="p">))</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+        <span class="c"># Put up some text.</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s">&#39;MayaVi rules!&#39;</span><span class="p">,</span> <span class="n">x_position</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+                 <span class="n">y_position</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>  <span class="c"># Bright yellow, yeah!</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="c"># Create an outline for the data.</span>
+        <span class="n">o</span> <span class="o">=</span> <span class="n">Outline</span><span class="p">()</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+
+        <span class="c"># Create an axes for the data.</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">Axes</span><span class="p">()</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+        <span class="c"># Create an orientation axes for the scene.  This only works with</span>
+        <span class="c"># VTK-4.5 and above which is why we have the try block.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">enthought.mayavi.modules.orientation_axes</span> <span class="kn">import</span> <span class="n">OrientationAxe</span>
+<span class="n">s</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">OrientationAxes</span><span class="p">()</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">marker</span><span class="o">.</span><span class="n">set_viewport</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+        <span class="c"># Create three simple grid plane modules.</span>
+        <span class="c"># First normal to &#39;x&#39; axis.</span>
+        <span class="n">gp</span> <span class="o">=</span> <span class="n">GridPlane</span><span class="p">()</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+        <span class="c"># Second normal to &#39;y&#39; axis.</span>
+        <span class="n">gp</span> <span class="o">=</span> <span class="n">GridPlane</span><span class="p">()</span>
+        <span class="n">gp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;y&#39;</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+        <span class="c"># Third normal to &#39;z&#39; axis.</span>
+        <span class="n">gp</span> <span class="o">=</span> <span class="n">GridPlane</span><span class="p">()</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+        <span class="n">gp</span><span class="o">.</span><span class="n">grid_plane</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;z&#39;</span>
+
+        <span class="c"># Create one ImagePlaneWidget.</span>
+        <span class="n">ipw</span> <span class="o">=</span> <span class="n">ImagePlaneWidget</span><span class="p">()</span>
+        <span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">ipw</span><span class="p">)</span>
+        <span class="c"># Set the position to the middle of the data.</span>
+        <span class="n">ipw</span><span class="o">.</span><span class="n">ipw</span><span class="o">.</span><span class="n">slice_position</span> <span class="o">=</span> <span class="mi">16</span>
+
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">MyApp</span><span class="p">()</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="MayaVi(2f)examples_attachments/test.png" src="MayaVi(2f)examples_attachments/test.png" />
+</div>
+<div class="section" id="example-using-mlab-surf-regular-mlab-py">
+<h1>Example using mlab (surf_regular_mlab.py)<a class="headerlink" href="#example-using-mlab-surf-regular-mlab-py" title="Permalink to this headline">¶</a></h1>
+<p>See also [:Cookbook/MayaVi/Surf] for another way of doing this.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env mayavi2</span>
+<span class="sd">&quot;&quot;&quot;Shows how to view data created by `enthought.tvtk.tools.mlab` with</span>
+<span class="sd">mayavi2.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c"># Author: Prabhu Ramachandran &lt;prabhu@aero.iitb.ac.in&gt;</span>
+<span class="c"># Copyright (c) 2006-2007, Enthought Inc.</span>
+<span class="c"># License: BSD Style.</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="kn">from</span> <span class="nn">enthought.tvtk.tools</span> <span class="kn">import</span> <span class="n">mlab</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.sources.vtk_data_source</span> <span class="kn">import</span> <span class="n">VTKDataSource</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.filters.warp_scalar</span> <span class="kn">import</span> <span class="n">WarpScalar</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.outline</span> <span class="kn">import</span> <span class="n">Outline</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.surface</span> <span class="kn">import</span> <span class="n">Surface</span>
+
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Some test function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">y</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">y</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">make_data</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Make some test numpy data and create a TVTK data object from it</span>
+<span class="sd">    that we will visualize.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">7.05</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">5.05</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">SurfRegular</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">data</span>
+
+<span class="k">def</span> <span class="nf">add_data</span><span class="p">(</span><span class="n">tvtk_data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add a TVTK data object `tvtk_data` to the mayavi pipleine.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">VTKDataSource</span><span class="p">()</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">tvtk_data</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_source</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">surf_regular</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Now visualize the data as done in mlab.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">WarpScalar</span><span class="p">()</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_filter</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+    <span class="n">o</span> <span class="o">=</span> <span class="n">Outline</span><span class="p">()</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">Surface</span><span class="p">()</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">mayavi</span><span class="o">.</span><span class="n">new_scene</span><span class="p">()</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">make_data</span><span class="p">()</span>
+    <span class="n">add_data</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="n">surf_regular</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="MayaVi(2f)examples_attachments/surf_regular_mlab.png" src="MayaVi(2f)examples_attachments/surf_regular_mlab.png" />
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a></li>
+<li><a class="reference internal" href="#example-using-isosurface-module-contour-py">Example using IsoSurface Module (contour.py)</a></li>
+<li><a class="reference internal" href="#example-using-glyph-module-glyph-py">Example using Glyph Module (glyph.py)</a></li>
+<li><a class="reference internal" href="#example-without-mayavi2-ui-nongui-py">Example without Mayavi2 UI (nongui.py)</a></li>
+<li><a class="reference internal" href="#example-with-a-3d-array-as-numerical-source-numeric-source-py">Example with a 3D array as numerical source (numeric_source.py)</a></li>
+<li><a class="reference internal" href="#example-using-streamline-module-streamline-py">Example using Streamline Module (streamline.py)</a></li>
+<li><a class="reference internal" href="#example-using-imageplanewidget-module-test-py">Example using ImagePlaneWidget Module (test.py)</a></li>
+<li><a class="reference internal" href="#example-using-mlab-surf-regular-mlab-py">Example using mlab (surf_regular_mlab.py)</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="MayaVi(2f)Tips.html"
+                        title="previous chapter">Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="MayaVi(2f)mlab.html"
+                        title="next chapter">A Simple Example</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/MayaVi(2f)examples.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)mlab.html" title="A Simple Example"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)Tips.html" title="Introduction"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

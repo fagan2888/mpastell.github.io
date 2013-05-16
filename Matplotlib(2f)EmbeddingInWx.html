@@ -1,0 +1,167 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Learning the Object-Oriented API &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Example 1" href="Matplotlib(2f)Gridding_irregularly_spaced_data.html" />
+    <link rel="prev" title="introduction" href="Matplotlib(2f)Drag_n_Drop_Text_Example.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Gridding_irregularly_spaced_data.html" title="Example 1"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Drag_n_Drop_Text_Example.html" title="introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>Matplotlib can be embedded in wxPython applications to provide high
+quality data visualization. There are two approaches to this, direct
+embedding and using an embedding library.</p>
+<p><em>Direct embedding</em> is where your put one of the wxPython backend widgets
+(which subclass ) directly into your application and draw plots on it
+using matplotlib&#8217;s object-oriented API. This approach is demonstrated by
+the
+<a class="reference external" href="http://cvs.sourceforge.net/viewcvs.py/matplotlib/matplotlib/examples/">embedding_in_wx*.py</a>
+examples that come with matplotlib. Neither nor provide any facilities
+for user interactions like displaying the coordinates under the mouse,
+so you&#8217;ll have to implement such things yourself. The matplotlib example
+<a class="reference external" href="http://cvs.sourceforge.net/viewcvs.py/%2Acheckout%2A/matplotlib/matplotlib/examples/wxcursor_demo.py?content-type=text%2Fplain">wxcursor_demo.py</a>
+should help you get started.</p>
+<p>An <em>embedding library</em> saves you a lot of time and effort by providing
+plotting widgets that already support user interactions and other bells
+and whistles. There are two such libraries that I am aware of:</p>
+<p><tt class="docutils literal"><span class="pre">1.&nbsp;Matt&nbsp;Newville's&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`MPlot</span></tt> &lt;<a class="reference external" href="http://cars9.uchicago.edu/~newville/Python/MPlot/">http://cars9.uchicago.edu/~newville/Python/MPlot/</a>&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;package&nbsp;supports&nbsp;drawing&nbsp;2D&nbsp;line&nbsp;plots&nbsp;using&nbsp;pylab-style&nbsp;</span></tt><tt class="docutils literal"><span class="pre">&nbsp;and&nbsp;</span></tt><tt class="docutils literal"><span class="pre">&nbsp;methods.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">2.&nbsp;Ken&nbsp;!McIvor's&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`WxMpl</span></tt> &lt;<a class="reference external" href="http://agni.phys.iit.edu/~kmcivor/wxmpl/">http://agni.phys.iit.edu/~kmcivor/wxmpl/</a>&gt;`__<tt class="docutils literal"><span class="pre">&nbsp;module&nbsp;supports&nbsp;drawing&nbsp;all&nbsp;plot&nbsp;types&nbsp;using&nbsp;matplotlib's&nbsp;object-oriented&nbsp;API.</span></tt></p>
+<p>Each of these libraries has different benefits and drawbacks, so I
+encourage you to evaluate each of them and select the one that best
+meets your needs.</p>
+<div class="section" id="learning-the-object-oriented-api">
+<h1>Learning the Object-Oriented API<a class="headerlink" href="#learning-the-object-oriented-api" title="Permalink to this headline">¶</a></h1>
+<p>If you&#8217;re embedding matplotlib in a wxPython program, you&#8217;re probably
+going to have to use Matplotlib&#8217;s Object-Oriented API to at some point.
+Take heart, as it matches the pylab API closely and is easy to pick up.
+There are more nuts and bolts to deal with, but that&#8217;s no problem to
+someone already programming with wxPython! ;-)</p>
+<p>The matplotlib FAQ [<a class="reference external" href="http://matplotlib.sourceforge.net/faq.html#OO">http://matplotlib.sourceforge.net/faq.html#OO</a>&#8221;
+links] to several resources for learning about the OO API. Once you&#8217;ve
+got your feet wet, reading the classdocs is the most helpful source of
+information. The
+[<a class="reference external" href="http://matplotlib.sourceforge.net/matplotlib.axes.html#Axes">http://matplotlib.sourceforge.net/matplotlib.axes.html#Axes</a>&#8221;
+matplotlib.axes.Axes] class is where most of the plotting methods live,
+so it&#8217;s a good place to start after you&#8217;ve conquored creating a Figure.</p>
+<p>For your edification, a series of pylab examples have been translated to
+the OO API. They are available in a demonstration script that must be
+run from a command line. You may use any interactive matplotlib backend
+to display these plots.</p>
+</div>
+<div class="section" id="a-simple-application">
+<h1>A Simple Application<a class="headerlink" href="#a-simple-application" title="Permalink to this headline">¶</a></h1>
+<p>Here is a simple example of an application written in wx that embeds a
+[&#8220;Matplotlib figure in a wx panel&#8221;]. No toolbars, mouse clicks or any of
+that, just a plot drawn in a panel. Some work has been put into it to
+make sure that the figure is only redrawn once during a resize. For
+plots with many points, the redrawing can take some time, so it is best
+to only redraw when the figure is released. Have a read of the code.</p>
+<hr class="docutils" />
+<p>CategoryCookbookMatplotlib</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Learning the Object-Oriented API</a></li>
+<li><a class="reference internal" href="#a-simple-application">A Simple Application</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)Drag_n_Drop_Text_Example.html"
+                        title="previous chapter">introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)Gridding_irregularly_spaced_data.html"
+                        title="next chapter">Example 1</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Matplotlib(2f)EmbeddingInWx.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Gridding_irregularly_spaced_data.html" title="Example 1"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Drag_n_Drop_Text_Example.html" title="introduction"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

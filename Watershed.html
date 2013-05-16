@@ -1,0 +1,165 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Inline Weave With Basic Array Conversion (no Blitz)" href="Weave.html" />
+    <link rel="prev" title="Views versus copies in NumPy" href="ViewsVsCopies.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Weave.html" title="Inline Weave With Basic Array Conversion (no Blitz)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ViewsVsCopies.html" title="Views versus copies in NumPy"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>The watershed algorithm (see
+<a class="reference external" href="http://en.wikipedia.org/wiki/Watershed_(algorithm)">1</a>) is used to
+split an image into distinct components.</p>
+<p>Suppose that we have the following image, composed of three whites disks
+(pixels of value 1) and a black background (pixels of value 0). We want
+to obtain a new array where each pixel is labeled with the index of the
+component to which it belongs, that is a segmentation of the orginal
+array, as shown in the image below. We will use the watershed algorithm
+provided by scipy.ndimage, scipy.ndimage.watershed_ift.</p>
+<img alt="Watershed_attachments/watershed.png" src="Watershed_attachments/watershed.png" />
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="c"># Create the initial black and white image</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">ndimage</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">uint8</span><span class="p">)</span> <span class="c">#unsigned integer type needed by wate</span>
+<span class="n">rshed</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ogrid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">512</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">512</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">m1</span> <span class="o">=</span> <span class="p">((</span><span class="n">y</span><span class="o">-</span><span class="mi">200</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mi">100</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="mi">30</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">m2</span> <span class="o">=</span> <span class="p">((</span><span class="n">y</span><span class="o">-</span><span class="mi">350</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mi">400</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">m3</span> <span class="o">=</span> <span class="p">((</span><span class="n">y</span><span class="o">-</span><span class="mi">260</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mi">200</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span><span class="p">[</span><span class="n">m1</span><span class="o">+</span><span class="n">m2</span><span class="o">+</span><span class="n">m3</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">imshow</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">gray</span><span class="p">)</span><span class="c"># left plot in the image above</span>
+</pre></div>
+</div>
+<p>The watershed algorithm relies on the <em>flooding</em> of different basins, so
+we need to put markers in the image to initiate the flooding. If one
+knows approximately where the objects are, and there are only a few
+objects, it is possible to set the markers by hand</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">markers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">int16</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">markers</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">markers</span><span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">markers</span><span class="p">[</span><span class="mi">350</span><span class="p">,</span> <span class="mi">400</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">markers</span><span class="p">[</span><span class="mi">260</span><span class="p">,</span> <span class="mi">200</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">res1</span> <span class="o">=</span> <span class="n">ndimage</span><span class="o">.</span><span class="n">watershed_ift</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">uint8</span><span class="p">),</span> <span class="n">markers</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">unique1d</span><span class="p">(</span><span class="n">res1</span><span class="p">)</span> <span class="c"># pixels are tagged according to the object they belong to</span>
+
+<span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int16</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">imshow</span><span class="p">(</span><span class="n">res1</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">)</span> <span class="c"># central plot in the image above</span>
+</pre></div>
+</div>
+<p>If you don&#8217;t know where to put the markers, and you know the minimal
+size of the objects, you can spread a lot of markers on a grid finer
+than the objects.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">xm</span><span class="p">,</span> <span class="n">ym</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ogrid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">512</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">512</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">markers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">int16</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">markers</span><span class="p">[</span><span class="n">xm</span><span class="p">,</span> <span class="n">ym</span><span class="p">]</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">xm</span><span class="o">.</span><span class="n">size</span><span class="o">*</span><span class="n">ym</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">xm</span><span class="o">.</span><span class="n">size</span><span class="p">,</span><span class="n">ym</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">res2</span> <span class="o">=</span> <span class="n">ndimage</span><span class="o">.</span><span class="n">watershed_ift</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">uint8</span><span class="p">),</span> <span class="n">markers</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">res2</span><span class="p">[</span><span class="n">xm</span><span class="p">,</span> <span class="n">ym</span><span class="p">]</span> <span class="o">=</span> <span class="n">res2</span><span class="p">[</span><span class="n">xm</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ym</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c"># remove the isolate seeds</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">imshow</span><span class="p">(</span><span class="n">res2</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">AxesImage</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0xf1fd1ac</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ViewsVsCopies.html"
+                        title="previous chapter">Views versus copies in NumPy</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Weave.html"
+                        title="next chapter">Inline Weave With Basic Array Conversion (no Blitz)</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Watershed.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Weave.html" title="Inline Weave With Basic Array Conversion (no Blitz)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ViewsVsCopies.html" title="Views versus copies in NumPy"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

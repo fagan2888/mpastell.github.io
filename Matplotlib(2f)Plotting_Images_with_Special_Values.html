@@ -1,0 +1,282 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="Matplotlib(2f)Plotting_values_with_masked_arrays.html" />
+    <link rel="prev" title="Using a single axis label to annotate multiple subplot axes" href="Matplotlib(2f)Multiple_Subplots_with_One_Axis_Label.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Plotting_values_with_masked_arrays.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Multiple_Subplots_with_One_Axis_Label.html" title="Using a single axis label to annotate multiple subplot axes"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>Image plotting requires data, a colormap, and a normalization. A common
+desire is to show missing data or other values in a specified color. The
+following code shows an example of how to do this.</p>
+<p>The code creates a new Colormap subclass and a norm subclass.</p>
+<p>The initialization takes a dictionary of value, color pairs. The data is
+already assumed to be normalized (except for the sentinels which are
+preserved). The RGB values at the sentinel values are replaced by the
+specified colors.</p>
+<p>The class normalizes the data in the standard way except for one
+sublety. takes an &#8220;ignore&#8221; argument. The ignored values need to be
+excluded from the normalization so that they do not skew the results.</p>
+<p>I use a not particularly wonderful algorithm of explicitly sorting the
+data and using the first non-sentinel values to define the min and max.
+This can probably be improved, but for my purposes was easy and
+sufficient. The data is then normalized including the sentinels.
+Finally, the sentinels are replaced.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="kn">import</span> <span class="n">Colormap</span><span class="p">,</span> <span class="n">normalize</span>
+<span class="kn">import</span> <span class="nn">matplotlib.numerix</span> <span class="kn">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">IntType</span><span class="p">,</span> <span class="n">FloatType</span><span class="p">,</span> <span class="n">ListType</span>
+
+<span class="k">class</span> <span class="nc">SentinelMap</span><span class="p">(</span><span class="n">Colormap</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">sentinels</span><span class="o">=</span><span class="p">{}):</span>
+                <span class="c"># boilerplate stuff</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">cmap</span><span class="o">.</span><span class="n">N</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;SentinelMap&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sentinels</span> <span class="o">=</span> <span class="n">sentinels</span>
+                <span class="k">for</span> <span class="n">rgb</span> <span class="ow">in</span> <span class="n">sentinels</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rgb</span><span class="p">)</span><span class="o">!=</span><span class="mi">3</span><span class="p">:</span>
+                                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;sentinel color must be RGB&#39;</span><span class="p">)</span>
+
+
+        <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scaledImageData</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+                <span class="c"># assumes the data is already normalized (ignoring sentinels)</span>
+                <span class="c"># clip to be on the safe side</span>
+                <span class="n">rgbaValues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">scaledImageData</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">))</span>
+
+                <span class="c">#replace sentinel data with sentinel colors</span>
+                <span class="k">for</span> <span class="n">sentinel</span><span class="p">,</span><span class="n">rgb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sentinels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">rgb</span>
+                        <span class="n">rgbaValues</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span>  <span class="n">nx</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">scaledImageData</span><span class="o">==</span><span class="n">sentinel</span><span class="p">,</span>
+ <span class="n">r</span><span class="p">,</span> <span class="n">rgbaValues</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="n">rgbaValues</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span>  <span class="n">nx</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">scaledImageData</span><span class="o">==</span><span class="n">sentinel</span><span class="p">,</span>
+ <span class="n">g</span><span class="p">,</span> <span class="n">rgbaValues</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="n">rgbaValues</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span>  <span class="n">nx</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">scaledImageData</span><span class="o">==</span><span class="n">sentinel</span><span class="p">,</span>
+ <span class="n">b</span><span class="p">,</span> <span class="n">rgbaValues</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">])</span>
+                        <span class="n">rgbaValues</span><span class="p">[:,:,</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span>  <span class="n">nx</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">scaledImageData</span><span class="o">==</span><span class="n">sentinel</span><span class="p">,</span>
+ <span class="n">alpha</span><span class="p">,</span> <span class="n">rgbaValues</span><span class="p">[:,:,</span><span class="mi">3</span><span class="p">])</span>
+
+                <span class="k">return</span> <span class="n">rgbaValues</span>
+
+<span class="k">class</span> <span class="nc">SentinelNorm</span><span class="p">(</span><span class="n">normalize</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Leave the sentinel unchanged</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="p">[],</span> <span class="n">vmin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span>
+
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">ignore</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="n">IntType</span><span class="p">,</span> <span class="n">FloatType</span><span class="p">]:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">ignore</span> <span class="o">=</span> <span class="p">[</span><span class="n">ignore</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">ignore</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ignore</span><span class="p">)</span>
+
+
+        <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+
+                <span class="n">vmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vmin</span>
+                <span class="n">vmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vmax</span>
+
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="n">IntType</span><span class="p">,</span> <span class="n">FloatType</span><span class="p">]:</span>
+                        <span class="n">vtype</span> <span class="o">=</span> <span class="s">&#39;scalar&#39;</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="n">value</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                        <span class="n">vtype</span> <span class="o">=</span> <span class="s">&#39;array&#39;</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+                <span class="c"># if both vmin is None and vmax is None, we&#39;ll automatically</span>
+                <span class="c"># norm the data to vmin/vmax of the actual data, so the</span>
+                <span class="c"># clipping step won&#39;t be needed.</span>
+                <span class="k">if</span> <span class="n">vmin</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">vmax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="n">needs_clipping</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="k">else</span><span class="p">:</span>
+                        <span class="n">needs_clipping</span> <span class="o">=</span> <span class="bp">True</span>
+
+                <span class="k">if</span> <span class="n">vmin</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">vmax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="n">rval</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                        <span class="c">#do this if sentinels (values to ignore in data)</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignore</span><span class="p">:</span>
+                                <span class="n">sortValues</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">rval</span><span class="p">)</span>
+                                <span class="k">if</span> <span class="n">vmin</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                                        <span class="c"># find the lowest non-sentinel value</span>
+                                        <span class="k">for</span> <span class="n">thisVal</span> <span class="ow">in</span> <span class="n">sortValues</span><span class="p">:</span>
+                                                <span class="k">if</span> <span class="n">thisVal</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignore</span><span class="p">:</span>
+                                                        <span class="n">vmin</span><span class="o">=</span><span class="n">thisVal</span> <span class="c">#vmin is th</span>
+<span class="n">e</span> <span class="n">lowest</span> <span class="n">non</span><span class="o">-</span><span class="n">sentinel</span> <span class="n">value</span>
+                                                        <span class="k">break</span>
+                                        <span class="k">else</span><span class="p">:</span>
+                                                <span class="n">vmin</span><span class="o">=</span><span class="mf">0.</span>
+                                <span class="k">if</span> <span class="n">vmax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                                        <span class="k">for</span> <span class="n">thisVal</span> <span class="ow">in</span> <span class="n">sortValues</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                                                <span class="k">if</span> <span class="n">thisVal</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignore</span><span class="p">:</span>
+                                                        <span class="n">vmax</span><span class="o">=</span><span class="n">thisVal</span> <span class="c">#vmax is th</span>
+<span class="n">e</span> <span class="n">greatest</span> <span class="n">non</span><span class="o">-</span><span class="n">sentinel</span> <span class="n">value</span>
+                                                        <span class="k">break</span>
+                                        <span class="k">else</span><span class="p">:</span>
+                                                <span class="n">vmax</span><span class="o">=</span><span class="mf">0.</span>
+                        <span class="k">else</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">vmin</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> <span class="n">vmin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">rval</span><span class="p">)</span>
+                                <span class="k">if</span> <span class="n">vmax</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> <span class="n">vmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">rval</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">vmin</span> <span class="o">&gt;</span> <span class="n">vmax</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;minvalue must be less than or equal to</span>
+ <span class="n">maxvalue</span><span class="s">&quot;)</span>
+                <span class="k">elif</span> <span class="n">vmin</span><span class="o">==</span><span class="n">vmax</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="mf">0.</span><span class="o">*</span><span class="n">value</span>
+                <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">needs_clipping</span><span class="p">:</span>
+                                <span class="n">val</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">vmax</span><span class="o">-</span><span class="n">vmin</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">val</span><span class="o">-</span><span class="n">vmin</span><span class="p">)</span>
+
+                <span class="c"># replace sentinels with original (non-normalized) values</span>
+                <span class="k">for</span> <span class="n">thisIgnore</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignore</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">val</span><span class="o">==</span><span class="n">thisIgnore</span><span class="p">,</span><span class="n">thisIgnore</span><span class="p">,</span><span class="n">result</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">vtype</span> <span class="o">==</span> <span class="s">&#39;scalar&#39;</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span><span class="o">==</span><span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">pylab</span>
+        <span class="kn">import</span> <span class="nn">matplotlib.colors</span>
+        <span class="n">n</span><span class="o">=</span><span class="mi">100</span>
+
+        <span class="c"># create a random array</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">mlab</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">cmBase</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span>
+
+        <span class="c"># plot it array as an image</span>
+        <span class="n">pylab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pylab</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmBase</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;nearest&#39;</span><span class="p">)</span>
+
+        <span class="c"># define the sentinels</span>
+        <span class="n">sentinel1</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span>
+        <span class="n">sentinel2</span> <span class="o">=</span> <span class="mi">10</span>
+
+        <span class="c"># replace some data with sentinels</span>
+        <span class="n">X</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="o">*</span><span class="n">n</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="o">.</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="o">*</span><span class="n">n</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="o">.</span><span class="mi">7</span><span class="o">*</span><span class="n">n</span><span class="p">)]</span>  <span class="o">=</span> <span class="n">sentinel1</span>
+        <span class="n">X</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="o">.</span><span class="mi">6</span><span class="o">*</span><span class="n">n</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="o">.</span><span class="mi">8</span><span class="o">*</span><span class="n">n</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="o">.</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="o">.</span><span class="mi">3</span><span class="o">*</span><span class="n">n</span><span class="p">)]</span>  <span class="o">=</span> <span class="n">sentinel2</span>
+
+        <span class="c"># define the colormap and norm</span>
+        <span class="n">rgb1</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">)</span>
+        <span class="n">rgb2</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">)</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">SentinelMap</span><span class="p">(</span><span class="n">cmBase</span><span class="p">,</span> <span class="n">sentinels</span><span class="o">=</span><span class="p">{</span><span class="n">sentinel1</span><span class="p">:</span><span class="n">rgb1</span><span class="p">,</span><span class="n">sentinel2</span><span class="p">:</span><span class="n">rgb2</span><span class="p">,})</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">SentinelNorm</span><span class="p">(</span><span class="n">ignore</span><span class="o">=</span><span class="p">[</span><span class="n">sentinel1</span><span class="p">,</span><span class="n">sentinel2</span><span class="p">])</span>
+
+        <span class="c"># plot with the modified colormap and norm</span>
+        <span class="n">pylab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">pylab</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;nearest&#39;</span><span class="p">)</span>
+
+        <span class="n">pylab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If the preceeding code is run from a prompt, two images are generated.
+The first is a pristine image of random data. The second image is the
+data modified by setting some blocks to sentinel values and then
+plotting the sentinels in specific colors. A sample result is shown
+below.</p>
+<img alt="Matplotlib(2f)Plotting_Images_with_Special_Values_attachments/sentinel_pristine.png" src="Matplotlib(2f)Plotting_Images_with_Special_Values_attachments/sentinel_pristine.png" />
+<img alt="Matplotlib(2f)Plotting_Images_with_Special_Values_attachments/sentinel.png" src="Matplotlib(2f)Plotting_Images_with_Special_Values_attachments/sentinel.png" />
+<hr class="docutils" />
+<p>CategoryCookbookMatplotlib</p>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)Multiple_Subplots_with_One_Axis_Label.html"
+                        title="previous chapter">Using a single axis label to annotate multiple subplot axes</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)Plotting_values_with_masked_arrays.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Matplotlib(2f)Plotting_Images_with_Special_Values.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Plotting_values_with_masked_arrays.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Multiple_Subplots_with_One_Axis_Label.html" title="Using a single axis label to annotate multiple subplot axes"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

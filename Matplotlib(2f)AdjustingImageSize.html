@@ -1,0 +1,245 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>First a little introduction &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Performance" href="Matplotlib(2f)Animations.html" />
+    <link rel="prev" title="Presentation of the Lotka-Volterra Model" href="LoktaVolterraTutorial.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Animations.html" title="Performance"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="LoktaVolterraTutorial.html" title="Presentation of the Lotka-Volterra Model"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>This is a small demo file that helps teach how to adjust figure sizes
+for matplotlib</p>
+<div class="section" id="first-a-little-introduction">
+<h1>First a little introduction<a class="headerlink" href="#first-a-little-introduction" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="there-are-three-parameters-define-an-image-size-this-is-not-mpl-specific">
+<h2>There are three parameters define an image size (this is not MPL specific):<a class="headerlink" href="#there-are-three-parameters-define-an-image-size-this-is-not-mpl-specific" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Size&nbsp;in&nbsp;length&nbsp;units&nbsp;(inches,&nbsp;cm,&nbsp;pt,&nbsp;etc):&nbsp;e.g.&nbsp;5&quot;x7&quot;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Size&nbsp;in&nbsp;pixels:&nbsp;e.g.&nbsp;800x600&nbsp;pixels</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Dots&nbsp;per&nbsp;inch&nbsp;(dpi)&nbsp;e.g.&nbsp;100&nbsp;dpi</span></tt></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">Only&nbsp;two&nbsp;of&nbsp;these&nbsp;are&nbsp;independent,&nbsp;so&nbsp;if&nbsp;you&nbsp;define&nbsp;two&nbsp;of&nbsp;them,&nbsp;the&nbsp;third&nbsp;can&nbsp;be&nbsp;calculated&nbsp;from&nbsp;the&nbsp;others.</span></tt></p>
+<p>When displaying on a computer screen (or saved to a PNG), the size in
+length units is irrelevant, the pixels are simply displayed. When
+printed, or saved to PS, EPS or PDF (all designed to support printing),
+then the Size or dpi is used to determine how to scale the image.</p>
+</div>
+<div class="section" id="now-i-m-getting-into-how-mpl-works">
+<h2>Now I&#8217;m getting into how MPL works<a class="headerlink" href="#now-i-m-getting-into-how-mpl-works" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">.&nbsp;1)&nbsp;The&nbsp;size&nbsp;of&nbsp;a&nbsp;figure&nbsp;is&nbsp;defined&nbsp;in&nbsp;length&nbsp;units&nbsp;(inches),&nbsp;and&nbsp;can&nbsp;be&nbsp;set&nbsp;by&nbsp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">.&nbsp;2)&nbsp;The&nbsp;layout&nbsp;of&nbsp;the&nbsp;figure&nbsp;is&nbsp;defined&nbsp;in&nbsp;'figure&nbsp;units'&nbsp;so&nbsp;that&nbsp;as&nbsp;the&nbsp;figure&nbsp;size&nbsp;is&nbsp;changed,&nbsp;the&nbsp;layout&nbsp;(eg&nbsp;axes&nbsp;positions)&nbsp;will&nbsp;update.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">.&nbsp;3)&nbsp;Size&nbsp;of&nbsp;text,&nbsp;width&nbsp;of&nbsp;lines,&nbsp;etc&nbsp;is&nbsp;defined&nbsp;in&nbsp;terms&nbsp;of&nbsp;length&nbsp;units&nbsp;(points?).</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">.&nbsp;4)&nbsp;When&nbsp;displaying&nbsp;to&nbsp;the&nbsp;screen,&nbsp;or&nbsp;creating&nbsp;an&nbsp;image&nbsp;(PNG)&nbsp;the&nbsp;pixel&nbsp;size&nbsp;of&nbsp;text&nbsp;and&nbsp;line&nbsp;widths,&nbsp;etc&nbsp;is&nbsp;&nbsp;determined&nbsp;by&nbsp;the&nbsp;dpi&nbsp;setting,&nbsp;which&nbsp;is&nbsp;set&nbsp;by&nbsp;</span></tt></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">The&nbsp;trick&nbsp;here&nbsp;is&nbsp;that&nbsp;when&nbsp;printing,&nbsp;it's&nbsp;natural&nbsp;to&nbsp;think&nbsp;in&nbsp;terms&nbsp;of&nbsp;inches,&nbsp;but&nbsp;when&nbsp;creating&nbsp;an&nbsp;image&nbsp;(for&nbsp;a&nbsp;web&nbsp;page,&nbsp;for&nbsp;instance),&nbsp;it&nbsp;is&nbsp;natural&nbsp;to&nbsp;think&nbsp;in&nbsp;terms&nbsp;of&nbsp;pixel&nbsp;size.&nbsp;However,&nbsp;as&nbsp;of&nbsp;0.84,&nbsp;pixel&nbsp;size&nbsp;can&nbsp;only&nbsp;be&nbsp;set&nbsp;directly&nbsp;in&nbsp;the&nbsp;GTK*&nbsp;back-ends,&nbsp;with&nbsp;the&nbsp;canvas.resize(w,h)&nbsp;method.&nbsp;(remember&nbsp;that&nbsp;you&nbsp;can&nbsp;only&nbsp;set&nbsp;two&nbsp;of&nbsp;the&nbsp;three&nbsp;size&nbsp;parameters,&nbsp;the&nbsp;third&nbsp;must&nbsp;be&nbsp;calculated&nbsp;from&nbsp;the&nbsp;other&nbsp;two).</span></tt></p>
+</div>
+</div>
+<div class="section" id="another-trick">
+<h1>Another trick<a class="headerlink" href="#another-trick" title="Permalink to this headline">¶</a></h1>
+<p>Figure.savefig() overrides the dpi setting in figure, and uses a default
+(which on my system at least is 100 dpi). If you want to overide it, you
+can specify the &#8216;dpi&#8217; in the savefig call:</p>
+<p>The following code will hopefully make this more clear, at least for
+generating PNGs for web pages and the like.</p>
+<img alt="Matplotlib(2f)AdjustingImageSize_attachments/MPL_size_test.py" src="Matplotlib(2f)AdjustingImageSize_attachments/MPL_size_test.py" />
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is a small demo file that helps teach how to adjust figure sizes</span>
+<span class="sd">for matplotlib</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="k">print</span> <span class="s">&quot;using MPL version:&quot;</span><span class="p">,</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">__version__</span>
+<span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s">&quot;WXAgg&quot;</span><span class="p">)</span> <span class="c"># do this before pylab so you don&#39;tget the default back</span>
+<span class="n">end</span><span class="o">.</span>
+
+<span class="kn">import</span> <span class="nn">pylab</span>
+<span class="kn">import</span> <span class="nn">matplotlib.numerix</span> <span class="kn">as</span> <span class="nn">N</span>
+
+<span class="c"># Generate and plot some simple data:</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">pylab</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+<span class="n">F</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+
+<span class="c"># Now check everything with the defaults:</span>
+<span class="n">DPI</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">get_dpi</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&quot;DPI:&quot;</span><span class="p">,</span> <span class="n">DPI</span>
+<span class="n">DefaultSize</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">get_size_inches</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&quot;Default size in Inches&quot;</span><span class="p">,</span> <span class="n">DefaultSize</span>
+<span class="k">print</span> <span class="s">&quot;Which should result in a </span><span class="si">%i</span><span class="s"> x </span><span class="si">%i</span><span class="s"> Image&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">DPI</span><span class="o">*</span><span class="n">DefaultSize</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">DPI</span><span class="o">*</span><span class="n">DefaultS</span>
+<span class="n">ize</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="c"># the default is 100dpi for savefig:</span>
+<span class="n">F</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&quot;test1.png&quot;</span><span class="p">)</span>
+<span class="c"># this gives me a 797 x 566 pixel image, which is about 100 DPI</span>
+
+<span class="c"># Now make the image twice as big, while keeping the fonts and all the</span>
+<span class="c"># same size</span>
+<span class="n">F</span><span class="o">.</span><span class="n">set_figsize_inches</span><span class="p">(</span> <span class="p">(</span><span class="n">DefaultSize</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">DefaultSize</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span>
+<span class="n">Size</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">get_size_inches</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&quot;Size in Inches&quot;</span><span class="p">,</span> <span class="n">Size</span>
+<span class="n">F</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&quot;test2.png&quot;</span><span class="p">)</span>
+<span class="c"># this results in a 1595x1132 image</span>
+
+<span class="c"># Now make the image twice as big, making all the fonts and lines</span>
+<span class="c"># bigger too.</span>
+
+<span class="n">F</span><span class="o">.</span><span class="n">set_figsize_inches</span><span class="p">(</span> <span class="n">DefaultSize</span> <span class="p">)</span><span class="c"># resetthe size</span>
+<span class="n">Size</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">get_size_inches</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&quot;Size in Inches&quot;</span><span class="p">,</span> <span class="n">Size</span>
+<span class="n">F</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&quot;test3.png&quot;</span><span class="p">,</span> <span class="n">dpi</span> <span class="o">=</span> <span class="p">(</span><span class="mi">200</span><span class="p">))</span> <span class="c"># change the dpi</span>
+<span class="c"># this also results in a 1595x1132 image, but the fonts are larger.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="putting-more-than-one-image-in-a-figure">
+<h1>Putting more than one image in a figure<a class="headerlink" href="#putting-more-than-one-image-in-a-figure" title="Permalink to this headline">¶</a></h1>
+<p>Suppose you have two images: 100x100 and 100x50 that you want to display
+in a figure with a buffer of 20 pixels (relative to image pixels)
+between them and a border of 10 pixels all around.</p>
+<p>The solution isn&#8217;t particularly object oriented, but at least it gets to
+the practical details.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="k">def</span> <span class="nf">_calcsize</span><span class="p">(</span><span class="n">matrix1</span><span class="p">,</span> <span class="n">matrix2</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">buffer</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+ <span class="n">height</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">):</span>
+   <span class="n">size1</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">matrix1</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span>
+   <span class="n">size2</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">matrix2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span>
+   <span class="n">_width</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">size1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">size2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">left</span> <span class="o">+</span> <span class="n">right</span> <span class="o">+</span> <span class="nb">buffer</span><span class="p">)</span>
+   <span class="n">_height</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">size1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">size2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">top</span> <span class="o">+</span> <span class="n">bottom</span><span class="p">)</span>
+   <span class="n">x1</span> <span class="o">=</span> <span class="n">left</span> <span class="o">/</span> <span class="n">_width</span>
+   <span class="n">y1</span> <span class="o">=</span> <span class="n">bottom</span> <span class="o">/</span> <span class="n">_height</span>
+   <span class="n">dx1</span> <span class="o">=</span> <span class="n">size1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">_width</span>
+   <span class="n">dy1</span> <span class="o">=</span> <span class="n">size1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">_height</span>
+   <span class="n">size1</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">dx1</span><span class="p">,</span> <span class="n">dy1</span><span class="p">)</span>
+   <span class="n">x2</span> <span class="o">=</span> <span class="p">(</span><span class="n">size1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">left</span> <span class="o">+</span> <span class="nb">buffer</span><span class="p">)</span> <span class="o">/</span> <span class="n">_width</span>
+   <span class="n">y2</span> <span class="o">=</span> <span class="n">bottom</span> <span class="o">/</span> <span class="n">_height</span>
+   <span class="n">dx2</span> <span class="o">=</span> <span class="n">size2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">_width</span>
+   <span class="n">dy2</span> <span class="o">=</span> <span class="n">size2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">_height</span>
+   <span class="n">size2</span> <span class="o">=</span> <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">dx2</span><span class="p">,</span> <span class="n">dy2</span><span class="p">)</span>
+   <span class="n">figure</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">_width</span> <span class="o">*</span> <span class="n">height</span> <span class="o">/</span> <span class="n">_height</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
+   <span class="n">axis1</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="n">pylab</span><span class="o">.</span><span class="n">axes</span><span class="p">,</span> <span class="n">size1</span><span class="p">)</span>
+   <span class="n">pylab</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">X1</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s">&#39;preserve&#39;</span><span class="p">)</span>
+   <span class="n">axis2</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="n">pylab</span><span class="o">.</span><span class="n">axes</span><span class="p">,</span> <span class="n">size2</span><span class="p">)</span>
+   <span class="n">pylab</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s">&#39;preserve&#39;</span><span class="p">)</span>
+   <span class="k">return</span> <span class="n">axes1</span><span class="p">,</span> <span class="n">axes2</span><span class="p">,</span> <span class="n">figure</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p><tt class="docutils literal"><span class="pre">.&nbsp;CategoryCookbookMatplotlib</span></tt></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">First a little introduction</a><ul>
+<li><a class="reference internal" href="#there-are-three-parameters-define-an-image-size-this-is-not-mpl-specific">There are three parameters define an image size (this is not MPL specific):</a></li>
+<li><a class="reference internal" href="#now-i-m-getting-into-how-mpl-works">Now I&#8217;m getting into how MPL works</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#another-trick">Another trick</a></li>
+<li><a class="reference internal" href="#putting-more-than-one-image-in-a-figure">Putting more than one image in a figure</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="LoktaVolterraTutorial.html"
+                        title="previous chapter">Presentation of the Lotka-Volterra Model</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)Animations.html"
+                        title="next chapter">Performance</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Matplotlib(2f)AdjustingImageSize.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Animations.html" title="Performance"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="LoktaVolterraTutorial.html" title="Presentation of the Lotka-Volterra Model"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

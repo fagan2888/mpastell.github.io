@@ -1,0 +1,1077 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Table of Contents &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="SWIG_and_NumPy.html" />
+    <link rel="prev" title="Table of Contents" href="SWIG_Memory_Deallocation.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="SWIG_and_NumPy.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="SWIG_Memory_Deallocation.html" title="Table of Contents"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="table-of-contents">
+<h1>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h1>
+<p>TableOfContents</p>
+</div>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>These are simple !NumPy and SWIG examples which use the numpy.i
+interface file. There is also a MinGW section for people who may want to
+use these in a Win32 environment. The following code is C, rather than
+C++.</p>
+<p>The information contained here was first made available by Bill Spotz in
+his article <em>numpy.i: a SWIG Interface File for !NumPy</em>, and the !NumPy
+SVN which can be checked out using the following command:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">svn</span> <span class="n">co</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">scipy</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">svn</span><span class="o">/</span><span class="n">numpy</span><span class="o">/</span><span class="n">trunk</span> <span class="n">numpy</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;The&nbsp;!NumPy+SWIG&nbsp;manual&nbsp;is&nbsp;available&nbsp;here:&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`1</span></tt> &lt;<a class="reference external" href="http://scipy.org/svn/numpy/trunk/doc/swig/doc/numpy_swig.pdf">http://scipy.org/svn/numpy/trunk/doc/swig/doc/numpy_swig.pdf</a>&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;The&nbsp;numpy.i&nbsp;file&nbsp;can&nbsp;be&nbsp;downloaded&nbsp;from&nbsp;the&nbsp;SVN:&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`2</span></tt> &lt;<a class="reference external" href="http://scipy.org/svn/numpy/trunk/doc/swig/numpy.i">http://scipy.org/svn/numpy/trunk/doc/swig/numpy.i</a>&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;and&nbsp;the&nbsp;pyfragments.swg&nbsp;file,&nbsp;hich&nbsp;is&nbsp;also&nbsp;needed,&nbsp;is&nbsp;available&nbsp;from&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`3</span></tt> &lt;<a class="reference external" href="http://scipy.org/svn/numpy/trunk/doc/swig/pyfragments.swg">http://scipy.org/svn/numpy/trunk/doc/swig/pyfragments.swg</a>&gt;`__</div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;These&nbsp;two&nbsp;files&nbsp;(and&nbsp;others)&nbsp;are&nbsp;also&nbsp;available&nbsp;in&nbsp;the&nbsp;numpy&nbsp;source&nbsp;tarball:&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`4</span></tt> &lt;<a class="reference external" href="http://sourceforge.net/project/showfiles.php?group_id=1369&amp;package_id=175103">http://sourceforge.net/project/showfiles.php?group_id=1369&amp;package_id=175103</a>&gt;`__</div>
+</div>
+</div>
+<div class="section" id="initial-setup">
+<h1>Initial setup<a class="headerlink" href="#initial-setup" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="gcc-and-swig">
+<h2>gcc and SWIG<a class="headerlink" href="#gcc-and-swig" title="Permalink to this headline">¶</a></h2>
+<p>Check that both gcc and SWIG are available (paths known):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">swig</span> <span class="o">-</span><span class="n">version</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">gcc</span> <span class="o">-</span><span class="n">v</span>
+</pre></div>
+</div>
+<p>Both should output some text...</p>
+</div>
+<div class="section" id="modifying-the-pyfragments-swg-file-mingw-only">
+<h2>Modifying the pyfragments.swg file (MinGW only)<a class="headerlink" href="#modifying-the-pyfragments-swg-file-mingw-only" title="Permalink to this headline">¶</a></h2>
+<p>This is from my own tests, running SWIG Version 1.3.36 and gcc version
+3.4.5 (mingw-vista special r3). I had to remove the &#8216;static&#8217; statements
+from the source, otherwise your SWIGed sources won&#8217;t compile. There are
+only two &#8216;static&#8217; statements in the file, both will need removing. Here
+is my modified version:
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/pyfragments.swg">pyfragments.swg</a></p>
+</div>
+<div class="section" id="compilation-and-testing">
+<h2>Compilation and testing<a class="headerlink" href="#compilation-and-testing" title="Permalink to this headline">¶</a></h2>
+<p>A setup.py file specific to each module must be written first. I based
+mine on the reference setup.py available in
+<a class="reference external" href="http://scipy.org/svn/numpy/trunk/doc/swig/test/">http://scipy.org/svn/numpy/trunk/doc/swig/test/</a> with added automatic
+handling of swig.</p>
+<p>On a un*x like system, the command-line is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span>
+</pre></div>
+</div>
+<p>In a Win32 environment (either cygwin or cmd), the setup command-line is
+(for use with MinGW):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span> <span class="o">--</span><span class="n">compiler</span><span class="o">=</span><span class="n">mingw32</span>
+</pre></div>
+</div>
+<p>The command handles both the SWIG process (generation of wrapper C and
+Python code) and gcc compilation. The resulting module (a pyd file) is
+built in the `build\lib.XXX` directory (e.g. for a Python 2.5 install
+and on a Win32 machine, the `build\lib.win32-2.5` directory).</p>
+</div>
+</div>
+<div class="section" id="a-simple-argout-array1-example">
+<h1>A simple ARGOUT_ARRAY1 example<a class="headerlink" href="#a-simple-argout-array1-example" title="Permalink to this headline">¶</a></h1>
+<p>This is a re-implementation of the range function. The module is called
+ezrange. One thing to remember with `ARGOUT_ARRAY1` is that the
+dimension of the array must be passed from Python.</p>
+<p>From Bill Spotz&#8217;s article: <em>The python user does not pass these arrays
+in, they simply get returned. For the case where a dimension is
+specified, the python user must provide that dimension as an argument.</em></p>
+<p>This is useful for functions like `numpy.arange(N)`, for which the
+size of the returned array is known in advance and passed to the C
+function.</p>
+<p>For functions that follow `array_out = function(array_in)` where the
+size of array_out is <em>not</em> known in advance and depends on memory
+allocated in C, see the example given in [:Cookbook/SWIG Memory
+Deallocation].</p>
+<div class="section" id="the-c-source-ezrange-c-and-ezrange-h">
+<h2>The C source (ezrange.c and ezrange.h)<a class="headerlink" href="#the-c-source-ezrange-c-and-ezrange-h" title="Permalink to this headline">¶</a></h2>
+<p>Here is the
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/ezrange.h">ezrange.h</a>
+file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">void</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span> <span class="o">*</span><span class="n">rangevec</span><span class="p">,</span> <span class="nb">int</span> <span class="n">n</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Here is the
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/ezrange.c">ezrange.c</a>
+file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">void</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span> <span class="o">*</span><span class="n">rangevec</span><span class="p">,</span> <span class="nb">int</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nb">int</span> <span class="n">i</span><span class="p">;</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">rangevec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-interface-file-ezrange-i">
+<h2>The interface file (ezrange.i)<a class="headerlink" href="#the-interface-file-ezrange-i" title="Permalink to this headline">¶</a></h2>
+<p>Here is the
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/ezrange.i">ezrange.i</a>
+file.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="o">%</span><span class="n">module</span> <span class="n">ezrange</span>
+
+<span class="o">%</span><span class="p">{</span>
+    <span class="c">#define SWIG_FILE_WITH_INIT</span>
+    <span class="c">#include &quot;ezrange.h&quot;</span>
+<span class="o">%</span><span class="p">}</span>
+
+<span class="o">%</span><span class="n">include</span> <span class="s">&quot;numpy.i&quot;</span>
+
+<span class="o">%</span><span class="n">init</span> <span class="o">%</span><span class="p">{</span>
+    <span class="n">import_array</span><span class="p">();</span>
+<span class="o">%</span><span class="p">}</span>
+
+<span class="o">%</span><span class="nb">apply</span> <span class="p">(</span><span class="nb">int</span><span class="o">*</span> <span class="n">ARGOUT_ARRAY1</span><span class="p">,</span> <span class="nb">int</span> <span class="n">DIM1</span><span class="p">)</span> <span class="p">{(</span><span class="nb">int</span><span class="o">*</span> <span class="n">rangevec</span><span class="p">,</span> <span class="nb">int</span> <span class="n">n</span><span class="p">)}</span>
+
+<span class="o">%</span><span class="n">include</span> <span class="s">&quot;ezrange.h&quot;</span>
+</pre></div>
+</div>
+<p>Don&#8217;t forget that you will also need the
+<a class="reference external" href="http://scipy.org/svn/numpy/trunk/doc/swig/numpy.i">numpy.i</a> file in
+the same directory.</p>
+</div>
+<div class="section" id="setup-file-setup-py">
+<h2>Setup file (setup.py)<a class="headerlink" href="#setup-file-setup-py" title="Permalink to this headline">¶</a></h2>
+<p>This is my
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/setup_range.py">setup.py</a>
+file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! /usr/bin/env python</span>
+
+<span class="c"># System imports</span>
+<span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">distutils</span>      <span class="kn">import</span> <span class="n">sysconfig</span>
+
+<span class="c"># Third-party modules - we depend on numpy for everything</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="c"># Obtain the numpy include directory.  This logic works across numpy versions.</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">numpy_include</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">get_include</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+    <span class="n">numpy_include</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">get_numpy_include</span><span class="p">()</span>
+
+<span class="c"># ezrange extension module</span>
+<span class="n">_ezrange</span> <span class="o">=</span> <span class="n">Extension</span><span class="p">(</span><span class="s">&quot;_ezrange&quot;</span><span class="p">,</span>
+                   <span class="p">[</span><span class="s">&quot;ezrange.i&quot;</span><span class="p">,</span><span class="s">&quot;ezrange.c&quot;</span><span class="p">],</span>
+                   <span class="n">include_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">numpy_include</span><span class="p">],</span>
+                   <span class="p">)</span>
+
+<span class="c"># ezrange setup</span>
+<span class="n">setup</span><span class="p">(</span>  <span class="n">name</span>        <span class="o">=</span> <span class="s">&quot;range function&quot;</span><span class="p">,</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;range takes an integer and returns an n element int array</span>
+ <span class="n">where</span> <span class="n">each</span> <span class="n">element</span> <span class="ow">is</span> <span class="n">equal</span> <span class="n">to</span> <span class="n">its</span> <span class="n">index</span><span class="s">&quot;,</span>
+        <span class="n">author</span>      <span class="o">=</span> <span class="s">&quot;Egor Zindy&quot;</span><span class="p">,</span>
+        <span class="n">version</span>     <span class="o">=</span> <span class="s">&quot;1.0&quot;</span><span class="p">,</span>
+        <span class="n">ext_modules</span> <span class="o">=</span> <span class="p">[</span><span class="n">_ezrange</span><span class="p">]</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="compiling-the-module">
+<h2>Compiling the module<a class="headerlink" href="#compiling-the-module" title="Permalink to this headline">¶</a></h2>
+<p>The setup command-line is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span> <span class="o">--</span><span class="n">compiler</span><span class="o">=</span><span class="n">mingw32</span>
+</pre></div>
+</div>
+<p>depending on your environment.</p>
+</div>
+<div class="section" id="testing-the-module">
+<h2>Testing the module<a class="headerlink" href="#testing-the-module" title="Permalink to this headline">¶</a></h2>
+<p>If everything goes according to plan, there should be a
+`_ezrange.pyd` file available in the `build\lib.XXX` directory.
+You will need to copy the file in the directory where the `ezrange.py`
+file is (generated by swig), in which case, the following will work (in
+python):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ezrange</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ezrange</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="a-simple-inplace-array1-example">
+<h1>A simple INPLACE_ARRAY1 example<a class="headerlink" href="#a-simple-inplace-array1-example" title="Permalink to this headline">¶</a></h1>
+<p>This example doubles the elements of the 1-D array passed to it. The
+operation is done in-place, which means that the array passed to the
+function is changed.</p>
+<div class="section" id="the-c-source-inplace-c-and-inplace-h">
+<h2>The C source (inplace.c and inplace.h)<a class="headerlink" href="#the-c-source-inplace-c-and-inplace-h" title="Permalink to this headline">¶</a></h2>
+<p>Here is the
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/inplace.h">inplace.h</a>
+file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">void</span> <span class="n">inplace</span><span class="p">(</span><span class="n">double</span> <span class="o">*</span><span class="n">invec</span><span class="p">,</span> <span class="nb">int</span> <span class="n">n</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Here is the
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/inplace.c">inplace.c</a>
+file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">void</span> <span class="n">inplace</span><span class="p">(</span><span class="n">double</span> <span class="o">*</span><span class="n">invec</span><span class="p">,</span> <span class="nb">int</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nb">int</span> <span class="n">i</span><span class="p">;</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">invec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">invec</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-interface-file-inplace-i">
+<h2>The interface file (inplace.i)<a class="headerlink" href="#the-interface-file-inplace-i" title="Permalink to this headline">¶</a></h2>
+<p>Here is the
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/inplace.i">inplace.i</a>
+interface file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="o">%</span><span class="n">module</span> <span class="n">inplace</span>
+
+<span class="o">%</span><span class="p">{</span>
+    <span class="c">#define SWIG_FILE_WITH_INIT</span>
+    <span class="c">#include &quot;inplace.h&quot;</span>
+<span class="o">%</span><span class="p">}</span>
+
+<span class="o">%</span><span class="n">include</span> <span class="s">&quot;numpy.i&quot;</span>
+
+<span class="o">%</span><span class="n">init</span> <span class="o">%</span><span class="p">{</span>
+    <span class="n">import_array</span><span class="p">();</span>
+<span class="o">%</span><span class="p">}</span>
+
+<span class="o">%</span><span class="nb">apply</span> <span class="p">(</span><span class="n">double</span><span class="o">*</span> <span class="n">INPLACE_ARRAY1</span><span class="p">,</span> <span class="nb">int</span> <span class="n">DIM1</span><span class="p">)</span> <span class="p">{(</span><span class="n">double</span><span class="o">*</span> <span class="n">invec</span><span class="p">,</span> <span class="nb">int</span> <span class="n">n</span><span class="p">)}</span>
+<span class="o">%</span><span class="n">include</span> <span class="s">&quot;inplace.h&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>Setup file (setup.py)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>This is my
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/setup_inplace.py">setup.py</a>
+file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! /usr/bin/env python</span>
+
+<span class="c"># System imports</span>
+<span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">distutils</span>      <span class="kn">import</span> <span class="n">sysconfig</span>
+
+<span class="c"># Third-party modules - we depend on numpy for everything</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="c"># Obtain the numpy include directory.  This logic works across numpy versions.</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">numpy_include</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">get_include</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+    <span class="n">numpy_include</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">get_numpy_include</span><span class="p">()</span>
+
+<span class="c"># inplace extension module</span>
+<span class="n">_inplace</span> <span class="o">=</span> <span class="n">Extension</span><span class="p">(</span><span class="s">&quot;_inplace&quot;</span><span class="p">,</span>
+                   <span class="p">[</span><span class="s">&quot;inplace.i&quot;</span><span class="p">,</span><span class="s">&quot;inplace.c&quot;</span><span class="p">],</span>
+                   <span class="n">include_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">numpy_include</span><span class="p">],</span>
+                   <span class="p">)</span>
+
+<span class="c"># NumyTypemapTests setup</span>
+<span class="n">setup</span><span class="p">(</span>  <span class="n">name</span>        <span class="o">=</span> <span class="s">&quot;inplace function&quot;</span><span class="p">,</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;inplace takes a double array and doubles each of its elem</span>
+<span class="n">ents</span> <span class="ow">in</span><span class="o">-</span><span class="n">place</span><span class="o">.</span><span class="s">&quot;,</span>
+
+        <span class="n">author</span>      <span class="o">=</span> <span class="s">&quot;Egor Zindy&quot;</span><span class="p">,</span>
+        <span class="n">version</span>     <span class="o">=</span> <span class="s">&quot;1.0&quot;</span><span class="p">,</span>
+        <span class="n">ext_modules</span> <span class="o">=</span> <span class="p">[</span><span class="n">_inplace</span><span class="p">]</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>Compiling the module<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>The setup command-line is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span> <span class="o">--</span><span class="n">compiler</span><span class="o">=</span><span class="n">mingw32</span>
+</pre></div>
+</div>
+<p>depending on your environment.</p>
+</div>
+<div class="section" id="id3">
+<h2>Testing the module<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>If everything goes according to plan, there should be a
+`_inplace.pyd` file available in the `build\lib.XXX` directory.
+You will need to copy the file in the directory where the `inplace.py`
+file is (generated by swig), in which case, the following will work (in
+python):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">inplace</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span><span class="s">&#39;d&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inplace</span><span class="o">.</span><span class="n">inplace</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([2., 4., 6.])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="a-simple-argoutview-array1-example">
+<h1>A simple ARGOUTVIEW_ARRAY1 example<a class="headerlink" href="#a-simple-argoutview-array1-example" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="big-fat-multiple-warnings">
+<h2>Big fat multiple warnings<a class="headerlink" href="#big-fat-multiple-warnings" title="Permalink to this headline">¶</a></h2>
+<p>Please note, Bill Spotz advises against the use of argout_view arrays,
+unless absolutely necessary:</p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;Argoutview&nbsp;arrays&nbsp;are&nbsp;for&nbsp;when&nbsp;your&nbsp;C&nbsp;code&nbsp;provides&nbsp;you&nbsp;with&nbsp;a&nbsp;view&nbsp;of&nbsp;its&nbsp;internal&nbsp;data&nbsp;and&nbsp;does&nbsp;not&nbsp;require&nbsp;any&nbsp;memory&nbsp;to&nbsp;be&nbsp;allocated&nbsp;by&nbsp;the&nbsp;user.&nbsp;This&nbsp;can&nbsp;be&nbsp;dangerous.&nbsp;There&nbsp;is&nbsp;almost&nbsp;no&nbsp;way&nbsp;to&nbsp;guarantee&nbsp;that&nbsp;the&nbsp;internal&nbsp;data&nbsp;from&nbsp;the&nbsp;C&nbsp;code&nbsp;will&nbsp;remain&nbsp;in&nbsp;existence&nbsp;for&nbsp;the&nbsp;entire&nbsp;lifetime&nbsp;of&nbsp;the&nbsp;!NumPy&nbsp;array&nbsp;that&nbsp;encapsulates&nbsp;it.&nbsp;If&nbsp;the&nbsp;user&nbsp;destroys&nbsp;the&nbsp;object&nbsp;that&nbsp;provides&nbsp;the&nbsp;view&nbsp;of&nbsp;the&nbsp;data&nbsp;before&nbsp;destroying&nbsp;the&nbsp;!NumPy&nbsp;array,&nbsp;then&nbsp;using&nbsp;that&nbsp;array&nbsp;my&nbsp;result&nbsp;in&nbsp;bad&nbsp;memory&nbsp;references&nbsp;or&nbsp;segmentation&nbsp;faults.&nbsp;Nevertheless,&nbsp;there&nbsp;are&nbsp;situations,&nbsp;working&nbsp;with&nbsp;large&nbsp;data&nbsp;sets,&nbsp;where&nbsp;you&nbsp;simply&nbsp;have&nbsp;no&nbsp;other&nbsp;choice.</span></tt></p>
+<p>Python does not take care of memory de-allocation, as stated here by
+Travis Oliphant: <a class="reference external" href="http://blog.enthought.com/?p=62">1</a></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;The&nbsp;tricky&nbsp;part,&nbsp;however,&nbsp;is&nbsp;memory&nbsp;management.&nbsp;How&nbsp;does&nbsp;the&nbsp;memory&nbsp;get&nbsp;deallocated?&nbsp;The&nbsp;suggestions&nbsp;have&nbsp;always&nbsp;been&nbsp;something&nbsp;similar&nbsp;to&nbsp;“make&nbsp;sure&nbsp;the&nbsp;memory&nbsp;doesn’t&nbsp;get&nbsp;deallocated&nbsp;before&nbsp;the&nbsp;!NumPy&nbsp;array&nbsp;disappears.”&nbsp;This&nbsp;is&nbsp;nice&nbsp;advice,&nbsp;but&nbsp;not&nbsp;generally&nbsp;helpful&nbsp;as&nbsp;it&nbsp;basically&nbsp;just&nbsp;tells&nbsp;you&nbsp;to&nbsp;create&nbsp;a&nbsp;memory&nbsp;leak.</span></tt></p>
+<p>Memory deallocation is also difficult to handle automatically as there
+is no easy way to do module &#8220;finalization&#8221;. There is a
+`Py_InitModule()` function, but nothing to handle
+deletion/destruction/finalization (this will be addressed in Python 3000
+as stated in <a class="reference external" href="http://www.python.org/dev/peps/pep-3121/">PEP3121</a>. In
+my example, I use the python <a class="reference external" href="http://www.python.org/doc/2.5.2/lib/module-atexit.html">module
+atexit</a> but
+there must be a better way.</p>
+<p>Having said all that, if you have no other choice, here is an example
+that uses ARGOUTVIEW_ARRAY1. As usual, comments welcome!</p>
+<p>The module declares a block of memory and a couple of functions: *
+ezview.set_ones() sets all the elements (doubles) in the memory block
+to one and returns a numpy array that is a VIEW of the memory block. *
+ezview.get_view() simply returns a view of the memory block. *
+ezview.finalize() takes care of the memory deallocation (this is the
+weak part of this example).</p>
+</div>
+<div class="section" id="the-c-source-ezview-c-and-ezview-h">
+<h2>The C source (ezview.c and ezview.h)<a class="headerlink" href="#the-c-source-ezview-c-and-ezview-h" title="Permalink to this headline">¶</a></h2>
+<p>Here is the
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/ezview.h">ezview.h</a>
+file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">void</span> <span class="n">set_ones</span><span class="p">(</span><span class="n">double</span> <span class="o">*</span><span class="n">array</span><span class="p">,</span> <span class="nb">int</span> <span class="n">n</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Here is the
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/ezview.c">ezview.c</a>
+file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#include &lt;stdio.h&gt;</span>
+<span class="c">#include &lt;stdlib.h&gt;</span>
+
+<span class="c">#include &quot;ezview.h&quot;</span>
+
+<span class="n">void</span> <span class="n">set_ones</span><span class="p">(</span><span class="n">double</span> <span class="o">*</span><span class="n">array</span><span class="p">,</span> <span class="nb">int</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nb">int</span> <span class="n">i</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">array</span> <span class="o">==</span> <span class="n">NULL</span><span class="p">)</span>
+        <span class="k">return</span><span class="p">;</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-interface-file-ezview-i">
+<h2>The interface file (ezview.i)<a class="headerlink" href="#the-interface-file-ezview-i" title="Permalink to this headline">¶</a></h2>
+<p>Here is the
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/ezview.i">ezview.i</a>
+interface file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="o">%</span><span class="n">module</span> <span class="n">ezview</span>
+
+<span class="o">%</span><span class="p">{</span>
+    <span class="c">#define SWIG_FILE_WITH_INIT</span>
+    <span class="c">#include &quot;ezview.h&quot;</span>
+
+    <span class="n">double</span> <span class="o">*</span><span class="n">my_array</span> <span class="o">=</span> <span class="n">NULL</span><span class="p">;</span>
+    <span class="nb">int</span> <span class="n">my_n</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+
+    <span class="n">void</span> <span class="n">__call_at_begining</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;__call_at_begining...</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+        <span class="n">my_array</span> <span class="o">=</span> <span class="p">(</span><span class="n">double</span> <span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="n">my_n</span><span class="o">*</span><span class="n">sizeof</span><span class="p">(</span><span class="n">double</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="n">void</span> <span class="n">__call_at_end</span><span class="p">(</span><span class="n">void</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;__call_at_end...</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">my_array</span> <span class="o">!=</span> <span class="n">NULL</span><span class="p">)</span>
+            <span class="n">free</span><span class="p">(</span><span class="n">my_array</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="o">%</span><span class="p">}</span>
+
+<span class="o">%</span><span class="n">include</span> <span class="s">&quot;numpy.i&quot;</span>
+
+<span class="o">%</span><span class="n">init</span> <span class="o">%</span><span class="p">{</span>
+    <span class="n">import_array</span><span class="p">();</span>
+    <span class="n">__call_at_begining</span><span class="p">();</span>
+<span class="o">%</span><span class="p">}</span>
+
+<span class="o">%</span><span class="nb">apply</span> <span class="p">(</span><span class="n">double</span><span class="o">**</span> <span class="n">ARGOUTVIEW_ARRAY1</span><span class="p">,</span> <span class="nb">int</span> <span class="o">*</span><span class="n">DIM1</span><span class="p">)</span> <span class="p">{(</span><span class="n">double</span><span class="o">**</span> <span class="n">vec</span><span class="p">,</span> <span class="nb">int</span><span class="o">*</span> <span class="n">n</span><span class="p">)}</span>
+
+<span class="o">%</span><span class="n">include</span> <span class="s">&quot;ezview.h&quot;</span>
+<span class="o">%</span><span class="n">rename</span> <span class="p">(</span><span class="n">set_ones</span><span class="p">)</span> <span class="n">my_set_ones</span><span class="p">;</span>
+
+<span class="o">%</span><span class="n">inline</span> <span class="o">%</span><span class="p">{</span>
+<span class="n">void</span> <span class="n">finalize</span><span class="p">(</span><span class="n">void</span><span class="p">){</span>
+    <span class="n">__call_at_end</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="n">void</span> <span class="n">get_view</span><span class="p">(</span><span class="n">double</span> <span class="o">**</span><span class="n">vec</span><span class="p">,</span> <span class="nb">int</span><span class="o">*</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+    <span class="o">*</span><span class="n">vec</span> <span class="o">=</span> <span class="n">my_array</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">n</span> <span class="o">=</span> <span class="n">my_n</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">void</span> <span class="n">my_set_ones</span><span class="p">(</span><span class="n">double</span> <span class="o">**</span><span class="n">vec</span><span class="p">,</span> <span class="nb">int</span><span class="o">*</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">set_ones</span><span class="p">(</span><span class="n">my_array</span><span class="p">,</span><span class="n">my_n</span><span class="p">);</span>
+    <span class="o">*</span><span class="n">vec</span> <span class="o">=</span> <span class="n">my_array</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">n</span> <span class="o">=</span> <span class="n">my_n</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="o">%</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Don&#8217;t forget that you will also need the numpy.i file in the same
+directory.</p>
+</div>
+<div class="section" id="id4">
+<h2>Setup file (setup.py)<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>This is my
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/setup_ezview.py">setup.py</a>
+file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! /usr/bin/env python</span>
+
+<span class="c"># System imports</span>
+<span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">distutils</span>      <span class="kn">import</span> <span class="n">sysconfig</span>
+
+<span class="c"># Third-party modules - we depend on numpy for everything</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="c"># Obtain the numpy include directory.  This logic works across numpy versions.</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">numpy_include</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">get_include</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+    <span class="n">numpy_include</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">get_numpy_include</span><span class="p">()</span>
+
+<span class="c"># view extension module</span>
+<span class="n">_ezview</span> <span class="o">=</span> <span class="n">Extension</span><span class="p">(</span><span class="s">&quot;_ezview&quot;</span><span class="p">,</span>
+                   <span class="p">[</span><span class="s">&quot;ezview.i&quot;</span><span class="p">,</span><span class="s">&quot;ezview.c&quot;</span><span class="p">],</span>
+                   <span class="n">include_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">numpy_include</span><span class="p">],</span>
+                   <span class="p">)</span>
+
+<span class="c"># NumyTypemapTests setup</span>
+<span class="n">setup</span><span class="p">(</span>  <span class="n">name</span>        <span class="o">=</span> <span class="s">&quot;ezview module&quot;</span><span class="p">,</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;ezview provides 3 functions: set_ones(), get_view() and f</span>
+<span class="n">inalize</span><span class="p">()</span><span class="o">.</span> <span class="n">set_ones</span><span class="p">()</span> <span class="ow">and</span> <span class="n">get_view</span><span class="p">()</span> <span class="n">provide</span> <span class="n">a</span> <span class="n">view</span> <span class="n">on</span> <span class="n">a</span> <span class="n">memory</span> <span class="n">block</span> <span class="n">allocated</span>
+<span class="ow">in</span> <span class="n">C</span><span class="p">,</span> <span class="n">finalize</span><span class="p">()</span> <span class="n">takes</span> <span class="n">care</span> <span class="n">of</span> <span class="n">the</span> <span class="n">memory</span> <span class="n">deallocation</span><span class="o">.</span><span class="s">&quot;,</span>
+        <span class="n">author</span>      <span class="o">=</span> <span class="s">&quot;Egor Zindy&quot;</span><span class="p">,</span>
+        <span class="n">version</span>     <span class="o">=</span> <span class="s">&quot;1.0&quot;</span><span class="p">,</span>
+        <span class="n">ext_modules</span> <span class="o">=</span> <span class="p">[</span><span class="n">_ezview</span><span class="p">]</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>Compiling the module<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>The setup command-line is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span> <span class="o">--</span><span class="n">compiler</span><span class="o">=</span><span class="n">mingw32</span>
+</pre></div>
+</div>
+<p>depending on your environment.</p>
+</div>
+<div class="section" id="id6">
+<h2>Testing the module<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>If everything goes according to plan, there should be a `_ezview.pyd`
+file available in the `build\lib.XXX` directory. You will need to
+copy the file in the directory where the `ezview.py` file is
+(generated by swig), in which case, the following will work (in python):</p>
+<p>The test code
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/test_ezview.py">test_ezview.py</a>
+follows:</p>
+<div class="highlight-python"><pre>import atexit
+import numpy
+print "first message is from __call_at_begining()"
+import ezview
+
+#There is no easy way to finalize the module (see PEP3121)
+atexit.register(ezview.finalize)
+
+a = ezview.set_ones()
+print "\ncalling ezview.set_ones() - now the memory block is all ones.\nReturned
+ array (a view on the allocated memory block) is:"
+print a
+
+print "\nwe're setting the array using a[:]=arange(a.shape[0])\nThis changes the
+ content of the allocated memory block:"
+a[:] = numpy.arange(a.shape[0])
+print a
+
+print "\nwe're now deleting the array  - this only deletes the view,\nnot the al
+located memory!"
+del a
+
+print "\nlet's get a new view on the allocated memory, should STILL contain [0,1
+,2,3...]"
+b = ezview.get_view()
+print b
+
+print "\nnext message from __call_at_end() - finalize() registered via module at
+exit"</pre>
+</div>
+<p>Launch test_ezview.py and the following will hopefully happen:</p>
+<div class="highlight-python"><pre>~&gt; python test_ezview.py
+first message is from __call_at_begining()
+__call_at_begining...
+
+calling ezview.set_ones() - now the memory block is all ones.
+Returned array (a view on the allocated memory block) is:
+[ 1.  1.  1.  1.  1.  1.  1.  1.  1.  1.]
+
+we re setting the array using a[:]=arange(a.shape[0])
+This changes the content of the allocated memory block:
+[ 0.  1.  2.  3.  4.  5.  6.  7.  8.  9.]
+
+we re now deleting the array  - this only deletes the view,
+not the allocated memory!
+
+let s get a new view on the allocated memory, should STILL contain [0,1,2,3...]
+[ 0.  1.  2.  3.  4.  5.  6.  7.  8.  9.]
+
+next message from __call_at_end() - finalize() registered via module atexit
+__call_at_end...</pre>
+</div>
+</div>
+</div>
+<div class="section" id="error-handling-using-errno-and-python-exceptions">
+<h1>Error handling using errno and python exceptions<a class="headerlink" href="#error-handling-using-errno-and-python-exceptions" title="Permalink to this headline">¶</a></h1>
+<p>I have been testing this for a few months now and this is the best I&#8217;ve
+come-up with. If anyone knows of a better way, please let me know.</p>
+<p>From the opengroup website, the lvalue errno is used by many functions
+to return error values. The idea is that the global variable errno is
+set to 0 before a function is called (in swig parlance: $action), and
+checked afterwards. If errno is non-zero, a python exception with a
+meaningful message is generated, depending on the value of errno.</p>
+<p>The following example comprises two examples: First example uses errno
+when checking whether an array index is valid. Second example uses errno
+to notify the user of a malloc() problem.</p>
+<div class="section" id="the-c-source-ezerr-c-and-ezerr-h">
+<h2>The C source (ezerr.c and ezerr.h)<a class="headerlink" href="#the-c-source-ezerr-c-and-ezerr-h" title="Permalink to this headline">¶</a></h2>
+<p>Here is the
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/ezerr.h">ezerr.h</a>
+file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">int</span> <span class="n">val</span><span class="p">(</span><span class="nb">int</span> <span class="o">*</span><span class="n">array</span><span class="p">,</span> <span class="nb">int</span> <span class="n">n</span><span class="p">,</span> <span class="nb">int</span> <span class="n">index</span><span class="p">);</span>
+<span class="n">void</span> <span class="n">alloc</span><span class="p">(</span><span class="nb">int</span> <span class="n">n</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Here is the
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/ezerr.c">ezerr.c</a>
+file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#include &lt;stdlib.h&gt;</span>
+<span class="c">#include &lt;errno.h&gt;</span>
+
+<span class="c">#include &quot;ezerr.h&quot;</span>
+
+<span class="o">//</span><span class="k">return</span> <span class="n">the</span> <span class="n">array</span> <span class="n">element</span> <span class="n">defined</span> <span class="n">by</span> <span class="n">index</span>
+<span class="nb">int</span> <span class="n">val</span><span class="p">(</span><span class="nb">int</span> <span class="o">*</span><span class="n">array</span><span class="p">,</span> <span class="nb">int</span> <span class="n">n</span><span class="p">,</span> <span class="nb">int</span> <span class="n">index</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nb">int</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">index</span> <span class="o">&gt;=</span><span class="n">n</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">errno</span> <span class="o">=</span> <span class="n">EPERM</span><span class="p">;</span>
+        <span class="n">goto</span> <span class="n">end</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">value</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">index</span><span class="p">];</span>
+
+<span class="n">end</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">value</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="o">//</span><span class="n">allocate</span> <span class="p">(</span><span class="ow">and</span> <span class="n">free</span><span class="p">)</span> <span class="n">a</span> <span class="n">char</span> <span class="n">array</span> <span class="n">of</span> <span class="n">size</span> <span class="n">n</span>
+<span class="n">void</span> <span class="n">alloc</span><span class="p">(</span><span class="nb">int</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">char</span> <span class="o">*</span><span class="n">array</span><span class="p">;</span>
+
+    <span class="n">array</span> <span class="o">=</span> <span class="p">(</span><span class="n">char</span> <span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">sizeof</span><span class="p">(</span><span class="n">char</span><span class="p">));</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">array</span> <span class="o">==</span> <span class="n">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">errno</span> <span class="o">=</span> <span class="n">ENOMEM</span><span class="p">;</span>
+        <span class="n">goto</span> <span class="n">end</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="o">//</span><span class="n">don</span><span class="s">&#39;t keep the memory allocated...</span>
+    <span class="n">free</span><span class="p">(</span><span class="n">array</span><span class="p">);</span>
+
+<span class="n">end</span><span class="p">:</span>
+    <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-interface-file-ezerr-i">
+<h2>The interface file (ezerr.i)<a class="headerlink" href="#the-interface-file-ezerr-i" title="Permalink to this headline">¶</a></h2>
+<p>Here is the
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/ezerr.i">ezerr.i</a>
+interface file:</p>
+<div class="highlight-python"><pre>%module ezerr
+%{
+#include &lt;errno.h&gt;
+#include "ezerr.h"
+
+#define SWIG_FILE_WITH_INIT
+%}
+
+%include "numpy.i"
+
+%init %{
+    import_array();
+%}
+
+%exception
+{
+    errno = 0;
+    $action
+
+    if (errno != 0)
+    {
+        switch(errno)
+        {
+            case EPERM:
+                PyErr_Format(PyExc_IndexError, "Index out of range");
+                break;
+            case ENOMEM:
+                PyErr_Format(PyExc_MemoryError, "Failed malloc()");
+                break;
+            default:
+                PyErr_Format(PyExc_Exception, "Unknown exception");
+        }
+        SWIG_fail;
+    }
+}
+
+%apply (int* IN_ARRAY1, int DIM1) {(int *array, int n)}
+
+%include "ezerr.h"</pre>
+</div>
+<p>Note the <em>SWIG_fail</em>, which is a macro for <em>goto fail</em> in case there is
+any other cleanup code to execute (thanks Bill!).</p>
+<p>Don&#8217;t forget that you will also need the numpy.i file in the same
+directory.</p>
+</div>
+<div class="section" id="id7">
+<h2>Setup file (setup.py)<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p>This is my
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/setup_err.py">setup.py</a>
+file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! /usr/bin/env python</span>
+
+<span class="c"># System imports</span>
+<span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">distutils</span>      <span class="kn">import</span> <span class="n">sysconfig</span>
+
+<span class="c"># Third-party modules - we depend on numpy for everything</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="c"># Obtain the numpy include directory.  This logic works across numpy versions.</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">numpy_include</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">get_include</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+    <span class="n">numpy_include</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">get_numpy_include</span><span class="p">()</span>
+
+<span class="c"># err extension module</span>
+<span class="n">ezerr</span> <span class="o">=</span> <span class="n">Extension</span><span class="p">(</span><span class="s">&quot;_ezerr&quot;</span><span class="p">,</span>
+                   <span class="p">[</span><span class="s">&quot;ezerr.i&quot;</span><span class="p">,</span><span class="s">&quot;ezerr.c&quot;</span><span class="p">],</span>
+                   <span class="n">include_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">numpy_include</span><span class="p">],</span>
+
+                   <span class="n">extra_compile_args</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;--verbose&quot;</span><span class="p">]</span>
+                   <span class="p">)</span>
+
+<span class="c"># NumyTypemapTests setup</span>
+<span class="n">setup</span><span class="p">(</span>  <span class="n">name</span>        <span class="o">=</span> <span class="s">&quot;err test&quot;</span><span class="p">,</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;A simple test to demonstrate the use of errno and python</span>
+<span class="n">exceptions</span><span class="s">&quot;,</span>
+        <span class="n">author</span>      <span class="o">=</span> <span class="s">&quot;Egor Zindy&quot;</span><span class="p">,</span>
+        <span class="n">version</span>     <span class="o">=</span> <span class="s">&quot;1.0&quot;</span><span class="p">,</span>
+        <span class="n">ext_modules</span> <span class="o">=</span> <span class="p">[</span><span class="n">ezerr</span><span class="p">]</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id8">
+<h2>Compiling the module<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>The setup command-line is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span> <span class="o">--</span><span class="n">compiler</span><span class="o">=</span><span class="n">mingw32</span>
+</pre></div>
+</div>
+<p>depending on your environment.</p>
+</div>
+<div class="section" id="id9">
+<h2>Testing the module<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p>If everything goes according to plan, there should be a `_ezerr.pyd`
+file available in the `build\lib.XXX` directory. You will need to
+copy the file in the directory where the `ezerr.py` file is (generated
+by swig), in which case, the following will work (in python):</p>
+<p>The test code
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/test_err.py">test_err.py</a>
+follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">traceback</span><span class="o">,</span><span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">ezerr</span>
+
+<span class="k">print</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">--- testing ezerr.val() ---&quot;</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">ezerr</span><span class="o">.</span><span class="n">val</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;&gt;&gt; failed for index=</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">i</span>
+        <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;using ezerr.val() a[</span><span class="si">%d</span><span class="s">]=</span><span class="si">%d</span><span class="s"> - should be </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">value</span><span class="p">,</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+<span class="k">print</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">--- testing ezerr.alloc() ---&quot;</span>
+<span class="n">amounts</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c">#1 byte, -1 byte</span>
+
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">amounts</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ezerr</span><span class="o">.</span><span class="n">alloc</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;&gt;&gt; could not allocate </span><span class="si">%d</span><span class="s"> bytes&quot;</span> <span class="o">%</span> <span class="n">n</span>
+        <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;allocated (and deallocated) </span><span class="si">%d</span><span class="s"> bytes&quot;</span> <span class="o">%</span> <span class="n">n</span>
+</pre></div>
+</div>
+<p>Launch test_err.py and the following will hopefully happen:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="o">~&gt;</span> <span class="n">python</span> <span class="n">test_err</span><span class="o">.</span><span class="n">py</span>
+
+<span class="o">---</span> <span class="n">testing</span> <span class="n">ezerr</span><span class="o">.</span><span class="n">val</span><span class="p">()</span> <span class="o">---</span>
+<span class="n">using</span> <span class="n">ezerr</span><span class="o">.</span><span class="n">val</span><span class="p">()</span> <span class="n">a</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">=</span><span class="mi">5</span> <span class="o">-</span> <span class="n">should</span> <span class="n">be</span> <span class="mi">5</span>
+<span class="o">&gt;&gt;</span> <span class="n">failed</span> <span class="k">for</span> <span class="n">index</span><span class="o">=</span><span class="mi">20</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">&quot;test_err.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">11</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">ezerr</span><span class="o">.</span><span class="n">val</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+<span class="ne">IndexError</span><span class="p">:</span> <span class="n">Index</span> <span class="n">out</span> <span class="n">of</span> <span class="nb">range</span>
+<span class="o">&gt;&gt;</span> <span class="n">failed</span> <span class="k">for</span> <span class="n">index</span><span class="o">=-</span><span class="mi">1</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">&quot;test_err.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">11</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">ezerr</span><span class="o">.</span><span class="n">val</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+<span class="ne">IndexError</span><span class="p">:</span> <span class="n">Index</span> <span class="n">out</span> <span class="n">of</span> <span class="nb">range</span>
+
+<span class="o">---</span> <span class="n">testing</span> <span class="n">ezerr</span><span class="o">.</span><span class="n">alloc</span><span class="p">()</span> <span class="o">---</span>
+<span class="n">allocated</span> <span class="p">(</span><span class="ow">and</span> <span class="n">deallocated</span><span class="p">)</span> <span class="mi">1</span> <span class="nb">bytes</span>
+<span class="o">&gt;&gt;</span> <span class="n">could</span> <span class="ow">not</span> <span class="n">allocate</span> <span class="o">-</span><span class="mi">1</span> <span class="nb">bytes</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">&quot;test_err.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">23</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="n">ezerr</span><span class="o">.</span><span class="n">alloc</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="ne">MemoryError</span><span class="p">:</span> <span class="n">Failed</span> <span class="n">malloc</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="dot-product-example-from-bill-spotz-s-article">
+<h1>Dot product example (from Bill Spotz&#8217;s article)<a class="headerlink" href="#dot-product-example-from-bill-spotz-s-article" title="Permalink to this headline">¶</a></h1>
+<p>The last example given in Bill Spotz&#8217;s artice is for a dot product
+function. Here is a fleshed-out version.</p>
+<div class="section" id="the-c-source-dot-c-and-dot-h">
+<h2>The C source (dot.c and dot.h)<a class="headerlink" href="#the-c-source-dot-c-and-dot-h" title="Permalink to this headline">¶</a></h2>
+<p>Here is the
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/dot.h">dot.h</a> file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">double</span> <span class="n">dot</span><span class="p">(</span><span class="nb">int</span> <span class="nb">len</span><span class="p">,</span> <span class="n">double</span><span class="o">*</span> <span class="n">vec1</span><span class="p">,</span> <span class="n">double</span><span class="o">*</span> <span class="n">vec2</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Here is the
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/dot.c">dot.c</a> file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#include &lt;stdio.h&gt;</span>
+<span class="c">#include &quot;dot.h&quot;</span>
+
+<span class="n">double</span> <span class="n">dot</span><span class="p">(</span><span class="nb">int</span> <span class="nb">len</span><span class="p">,</span> <span class="n">double</span><span class="o">*</span> <span class="n">vec1</span><span class="p">,</span> <span class="n">double</span><span class="o">*</span> <span class="n">vec2</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nb">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="n">double</span> <span class="n">d</span><span class="p">;</span>
+
+    <span class="n">d</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="nb">len</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">+=</span> <span class="n">vec1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">vec2</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+
+    <span class="k">return</span> <span class="n">d</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-interface-files-dot-i-and-numpy-i">
+<h2>The interface files (dot.i and numpy.i)<a class="headerlink" href="#the-interface-files-dot-i-and-numpy-i" title="Permalink to this headline">¶</a></h2>
+<p>Here is the complete
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/dot.i">dot.i</a> file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="o">%</span><span class="n">module</span> <span class="n">dot</span>
+
+<span class="o">%</span><span class="p">{</span>
+    <span class="c">#define SWIG_FILE_WITH_INIT</span>
+    <span class="c">#include &quot;dot.h&quot;</span>
+<span class="o">%</span><span class="p">}</span>
+
+<span class="o">%</span><span class="n">include</span> <span class="s">&quot;numpy.i&quot;</span>
+
+<span class="o">%</span><span class="n">init</span> <span class="o">%</span><span class="p">{</span>
+    <span class="n">import_array</span><span class="p">();</span>
+<span class="o">%</span><span class="p">}</span>
+
+<span class="o">%</span><span class="nb">apply</span> <span class="p">(</span><span class="nb">int</span> <span class="n">DIM1</span><span class="p">,</span> <span class="n">double</span><span class="o">*</span> <span class="n">IN_ARRAY1</span><span class="p">)</span> <span class="p">{(</span><span class="nb">int</span> <span class="n">len1</span><span class="p">,</span> <span class="n">double</span><span class="o">*</span> <span class="n">vec1</span><span class="p">),</span> <span class="p">(</span><span class="nb">int</span> <span class="n">len2</span><span class="p">,</span> <span class="n">doubl</span>
+<span class="n">e</span><span class="o">*</span> <span class="n">vec2</span><span class="p">)}</span>
+
+
+<span class="o">%</span><span class="n">include</span> <span class="s">&quot;dot.h&quot;</span>
+<span class="o">%</span><span class="n">rename</span> <span class="p">(</span><span class="n">dot</span><span class="p">)</span> <span class="n">my_dot</span><span class="p">;</span>
+
+<span class="o">%</span><span class="n">inline</span> <span class="o">%</span><span class="p">{</span>
+    <span class="n">double</span> <span class="n">my_dot</span><span class="p">(</span><span class="nb">int</span> <span class="n">len1</span><span class="p">,</span> <span class="n">double</span><span class="o">*</span> <span class="n">vec1</span><span class="p">,</span> <span class="nb">int</span> <span class="n">len2</span><span class="p">,</span> <span class="n">double</span><span class="o">*</span> <span class="n">vec2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">len1</span> <span class="o">!=</span> <span class="n">len2</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">PyErr_Format</span><span class="p">(</span><span class="n">PyExc_ValueError</span><span class="p">,</span> <span class="s">&quot;Arrays of lengths (</span><span class="si">%d</span><span class="s">,</span><span class="si">%d</span><span class="s">) given&quot;</span><span class="p">,</span> <span class="n">len1</span><span class="p">,</span>
+<span class="n">len2</span><span class="p">);</span>
+        <span class="k">return</span> <span class="mf">0.0</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">dot</span><span class="p">(</span><span class="n">len1</span><span class="p">,</span> <span class="n">vec1</span><span class="p">,</span> <span class="n">vec2</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="o">%</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id10">
+<h2>Setup file (setup.py)<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<p>This is the
+<a class="reference external" href="http://ezwidgets.googlecode.com/svn/trunk/numpy/setup_dot.py">setup.py</a>
+file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! /usr/bin/env python</span>
+
+<span class="c"># System imports</span>
+<span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">distutils</span>      <span class="kn">import</span> <span class="n">sysconfig</span>
+
+<span class="c"># Third-party modules - we depend on numpy for everything</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="c"># Obtain the numpy include directory.  This logic works across numpy versions.</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">numpy_include</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">get_include</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+    <span class="n">numpy_include</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">get_numpy_include</span><span class="p">()</span>
+
+<span class="c"># dot extension module</span>
+<span class="n">_dot</span> <span class="o">=</span> <span class="n">Extension</span><span class="p">(</span><span class="s">&quot;_dot&quot;</span><span class="p">,</span>
+                   <span class="p">[</span><span class="s">&quot;dot.i&quot;</span><span class="p">,</span><span class="s">&quot;dot.c&quot;</span><span class="p">],</span>
+                   <span class="n">include_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">numpy_include</span><span class="p">],</span>
+                   <span class="p">)</span>
+
+<span class="c"># dot setup</span>
+<span class="n">setup</span><span class="p">(</span>  <span class="n">name</span>        <span class="o">=</span> <span class="s">&quot;Dot product&quot;</span><span class="p">,</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="s">&quot;Function that performs a dot product (numpy.i: a SWIG Int</span>
+<span class="n">erface</span> <span class="n">File</span> <span class="k">for</span> <span class="n">NumPy</span><span class="p">)</span><span class="s">&quot;,</span>
+        <span class="n">author</span>      <span class="o">=</span> <span class="s">&quot;Egor Zindy (based on the setup.py file available in the n</span>
+<span class="n">umpy</span> <span class="n">tree</span><span class="p">)</span><span class="s">&quot;,</span>
+        <span class="n">version</span>     <span class="o">=</span> <span class="s">&quot;1.0&quot;</span><span class="p">,</span>
+        <span class="n">ext_modules</span> <span class="o">=</span> <span class="p">[</span><span class="n">_dot</span><span class="p">]</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id11">
+<h2>Compiling the module<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<p>The setup command-line is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build</span> <span class="o">--</span><span class="n">compiler</span><span class="o">=</span><span class="n">mingw32</span>
+</pre></div>
+</div>
+<p>depending on your environment.</p>
+</div>
+<div class="section" id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<p>If everything goes according to plan, there should be a `_dot.pyd`
+file available in the `build\lib.XXX` directory. You will need to
+copy the file in the directory where the `dot.py` file is (generated
+by swig), in which case, the following will work (in python):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dot</span><span class="o">.</span><span class="n">dot</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<span class="go">14.0</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="conclusion">
+<h1>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h1>
+<p>That&#8217;s all folks (for now)! As usual, comments welcome!</p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><strong>``TODO``</strong><tt class="docutils literal"><span class="pre">:&nbsp;Code&nbsp;clean-up&nbsp;and&nbsp;moving&nbsp;the&nbsp;examples&nbsp;over&nbsp;to&nbsp;the&nbsp;!SciPy/!NumPy&nbsp;repository?</span></tt></p>
+<p>Regards, Egor</p>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Table of Contents</a></li>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#initial-setup">Initial setup</a><ul>
+<li><a class="reference internal" href="#gcc-and-swig">gcc and SWIG</a></li>
+<li><a class="reference internal" href="#modifying-the-pyfragments-swg-file-mingw-only">Modifying the pyfragments.swg file (MinGW only)</a></li>
+<li><a class="reference internal" href="#compilation-and-testing">Compilation and testing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#a-simple-argout-array1-example">A simple ARGOUT_ARRAY1 example</a><ul>
+<li><a class="reference internal" href="#the-c-source-ezrange-c-and-ezrange-h">The C source (ezrange.c and ezrange.h)</a></li>
+<li><a class="reference internal" href="#the-interface-file-ezrange-i">The interface file (ezrange.i)</a></li>
+<li><a class="reference internal" href="#setup-file-setup-py">Setup file (setup.py)</a></li>
+<li><a class="reference internal" href="#compiling-the-module">Compiling the module</a></li>
+<li><a class="reference internal" href="#testing-the-module">Testing the module</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#a-simple-inplace-array1-example">A simple INPLACE_ARRAY1 example</a><ul>
+<li><a class="reference internal" href="#the-c-source-inplace-c-and-inplace-h">The C source (inplace.c and inplace.h)</a></li>
+<li><a class="reference internal" href="#the-interface-file-inplace-i">The interface file (inplace.i)</a></li>
+<li><a class="reference internal" href="#id1">Setup file (setup.py)</a></li>
+<li><a class="reference internal" href="#id2">Compiling the module</a></li>
+<li><a class="reference internal" href="#id3">Testing the module</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#a-simple-argoutview-array1-example">A simple ARGOUTVIEW_ARRAY1 example</a><ul>
+<li><a class="reference internal" href="#big-fat-multiple-warnings">Big fat multiple warnings</a></li>
+<li><a class="reference internal" href="#the-c-source-ezview-c-and-ezview-h">The C source (ezview.c and ezview.h)</a></li>
+<li><a class="reference internal" href="#the-interface-file-ezview-i">The interface file (ezview.i)</a></li>
+<li><a class="reference internal" href="#id4">Setup file (setup.py)</a></li>
+<li><a class="reference internal" href="#id5">Compiling the module</a></li>
+<li><a class="reference internal" href="#id6">Testing the module</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#error-handling-using-errno-and-python-exceptions">Error handling using errno and python exceptions</a><ul>
+<li><a class="reference internal" href="#the-c-source-ezerr-c-and-ezerr-h">The C source (ezerr.c and ezerr.h)</a></li>
+<li><a class="reference internal" href="#the-interface-file-ezerr-i">The interface file (ezerr.i)</a></li>
+<li><a class="reference internal" href="#id7">Setup file (setup.py)</a></li>
+<li><a class="reference internal" href="#id8">Compiling the module</a></li>
+<li><a class="reference internal" href="#id9">Testing the module</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dot-product-example-from-bill-spotz-s-article">Dot product example (from Bill Spotz&#8217;s article)</a><ul>
+<li><a class="reference internal" href="#the-c-source-dot-c-and-dot-h">The C source (dot.c and dot.h)</a></li>
+<li><a class="reference internal" href="#the-interface-files-dot-i-and-numpy-i">The interface files (dot.i and numpy.i)</a></li>
+<li><a class="reference internal" href="#id10">Setup file (setup.py)</a></li>
+<li><a class="reference internal" href="#id11">Compiling the module</a></li>
+<li><a class="reference internal" href="#testing">Testing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="SWIG_Memory_Deallocation.html"
+                        title="previous chapter">Table of Contents</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="SWIG_and_NumPy.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/SWIG_NumPy_examples.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="SWIG_and_NumPy.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="SWIG_Memory_Deallocation.html" title="Table of Contents"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

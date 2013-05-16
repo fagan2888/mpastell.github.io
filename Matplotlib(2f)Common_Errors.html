@@ -1,0 +1,113 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="Matplotlib(2f)CompilingMatPlotLibOnSolaris10.html" />
+    <link rel="prev" title="Operating on color vectors" href="Matplotlib(2f)ColormapTransformations.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)CompilingMatPlotLibOnSolaris10.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)ColormapTransformations.html" title="Operating on color vectors"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p><tt class="docutils literal"><span class="pre">*&nbsp;imshow&nbsp;-&nbsp;You&nbsp;can&nbsp;get&nbsp;seemingly&nbsp;quirky&nbsp;behavior&nbsp;if&nbsp;you&nbsp;do&nbsp;not&nbsp;set&nbsp;vmin&nbsp;and&nbsp;vmax&nbsp;manually.&nbsp;If&nbsp;they&nbsp;are&nbsp;left&nbsp;unset,&nbsp;then&nbsp;!AxisImage&nbsp;will&nbsp;attempt&nbsp;to&nbsp;automatically&nbsp;scale&nbsp;the&nbsp;values&nbsp;of&nbsp;the&nbsp;elements&nbsp;in&nbsp;order&nbsp;to&nbsp;keep&nbsp;the&nbsp;luminance&nbsp;constant.&nbsp;However,&nbsp;if&nbsp;you&nbsp;are&nbsp;doing&nbsp;something&nbsp;like&nbsp;an&nbsp;animation,&nbsp;or&nbsp;want&nbsp;to&nbsp;compare&nbsp;two&nbsp;images&nbsp;against&nbsp;each&nbsp;other,&nbsp;this&nbsp;can&nbsp;cause&nbsp;problems.&nbsp;For&nbsp;example,&nbsp;if&nbsp;you&nbsp;know&nbsp;your&nbsp;values&nbsp;will&nbsp;range&nbsp;between&nbsp;0&nbsp;and&nbsp;1,&nbsp;you&nbsp;can&nbsp;do:&nbsp;imshow(img,&nbsp;vmin=0,&nbsp;vmax=1,&nbsp;cmap=cm.gray,&nbsp;interpolation=</span></tt><tt class="docutils literal"><span class="pre">).&nbsp;This&nbsp;also&nbsp;sets&nbsp;the&nbsp;color&nbsp;map&nbsp;to&nbsp;grays,&nbsp;and&nbsp;to&nbsp;use&nbsp;square&nbsp;blocks&nbsp;for&nbsp;the&nbsp;elements.</span></tt></p>
+<hr class="docutils" />
+<p>CategoryCookbookMatplotlib</p>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)ColormapTransformations.html"
+                        title="previous chapter">Operating on color vectors</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)CompilingMatPlotLibOnSolaris10.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Matplotlib(2f)Common_Errors.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)CompilingMatPlotLibOnSolaris10.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)ColormapTransformations.html" title="Operating on color vectors"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

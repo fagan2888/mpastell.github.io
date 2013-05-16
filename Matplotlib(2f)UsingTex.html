@@ -1,0 +1,221 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Possible Hangups &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="Matplotlib(2f)Using_MatPlotLib_in_a_CGI_script.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="Matplotlib(2f)UnfilledHistograms.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Using_MatPlotLib_in_a_CGI_script.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)UnfilledHistograms.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>Matplotlib can use LaTeX to handle the text layout in your figures. This
+option (which is still somewhat experimental) can be activated by
+setting text.usetex : true in your rc settings. Text handling with
+matplotlib&#8217;s LaTeX support is slower than standard text handling, but is
+more flexible, and produces publication-quality plots. The results are
+striking, especially when you take care to use the same fonts in your
+figures as in the main document.</p>
+<p>Matplotlib&#8217;s LaTeX support is still under development, although at least
+two individuals have relied upon it to generate the figures for their
+doctoral dissertations. Many improvements have been made beginning with
+matplotlib-0.87, please update matplotlib if you have an earlier
+version. This option requires a working LaTeX installation,
+<a class="reference external" href="http://sourceforge.net/projects/dvipng">dvipng</a> (which may be
+included with your TeX installation), and ghostscript (<a class="reference external" href="http://www.cs.wisc.edu/~ghost/">AFPL,
+GPL</a>, or
+<a class="reference external" href="http://www.cups.org/espgs/index.php">ESP</a> ghostscript should all
+work, but GPL ghostscript-8.60 or later is recommended). The executables
+for these external dependencies must be located on your PATH.</p>
+<p>There are a couple of options to mention, which can be changed using rc
+settings, either using a matplotlibrc file, or the rcParams dict in your
+program. Here is an example matplotlibrc file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">font</span><span class="o">.</span><span class="n">family</span>        <span class="p">:</span> <span class="n">serif</span>
+<span class="n">font</span><span class="o">.</span><span class="n">serif</span>         <span class="p">:</span> <span class="n">Times</span><span class="p">,</span> <span class="n">Palatino</span><span class="p">,</span> <span class="n">New</span> <span class="n">Century</span> <span class="n">Schoolbook</span><span class="p">,</span> <span class="n">Bookman</span><span class="p">,</span> <span class="n">Computer</span>
+<span class="n">Modern</span> <span class="n">Roman</span>
+<span class="n">font</span><span class="o">.</span><span class="n">sans</span><span class="o">-</span><span class="n">serif</span>    <span class="p">:</span> <span class="n">Helvetica</span><span class="p">,</span> <span class="n">Avant</span> <span class="n">Garde</span><span class="p">,</span> <span class="n">Computer</span> <span class="n">Modern</span> <span class="n">Sans</span> <span class="n">serif</span>
+<span class="n">font</span><span class="o">.</span><span class="n">cursive</span>       <span class="p">:</span> <span class="n">Zapf</span> <span class="n">Chancery</span>
+<span class="n">font</span><span class="o">.</span><span class="n">monospace</span>     <span class="p">:</span> <span class="n">Courier</span><span class="p">,</span> <span class="n">Computer</span> <span class="n">Modern</span> <span class="n">Typewriter</span>
+
+<span class="n">text</span><span class="o">.</span><span class="n">usetex</span>        <span class="p">:</span> <span class="n">true</span>
+</pre></div>
+</div>
+<p>The first valid font in each family is the one that will be loaded. If
+the fonts are not specified, the Computer Modern fonts are used by
+default. All of the other fonts are Adobe fonts. Times and Palatino each
+have their own accompanying math fonts, while the other Adobe serif
+fonts make use of the Computer Modern math fonts. See
+<a class="reference external" href="http://www.ctan.org/tex-archive/macros/latex/required/psnfss/psnfss2e.pdf">psnfss2e.pdf</a>
+for more details.</p>
+<p>To use tex and select e.g. Helvetica as the default font, without
+edititing matplotlibrc use:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rc</span>
+<span class="n">rc</span><span class="p">(</span><span class="s">&#39;font&#39;</span><span class="p">,</span><span class="o">**</span><span class="p">{</span><span class="s">&#39;family&#39;</span><span class="p">:</span><span class="s">&#39;sans-serif&#39;</span><span class="p">,</span><span class="s">&#39;sans-serif&#39;</span><span class="p">:[</span><span class="s">&#39;Helvetica&#39;</span><span class="p">]})</span>
+<span class="c">## for Palatino and other serif fonts use:</span>
+<span class="c">#rc(&#39;font&#39;,**{&#39;family&#39;:&#39;serif&#39;,&#39;serif&#39;:[&#39;Palatino&#39;]})</span>
+<span class="n">rc</span><span class="p">(</span><span class="s">&#39;text&#39;</span><span class="p">,</span> <span class="n">usetex</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>N.B.</strong> You need to do this <em>before</em> you import `matplotlib.pylab`.</p>
+<p>Here is the standard example, tex_demo.py:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rc</span>
+<span class="kn">from</span> <span class="nn">matplotlib.numerix</span> <span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">pi</span>
+<span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">figure</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">plot</span><span class="p">,</span> <span class="n">xlabel</span><span class="p">,</span> <span class="n">ylabel</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">savefig</span><span class="p">,</span> <span class="n">show</span>
+
+
+<span class="n">rc</span><span class="p">(</span><span class="s">&#39;text&#39;</span><span class="p">,</span> <span class="n">usetex</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="o">+</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+
+<span class="n">xlabel</span><span class="p">(</span><span class="s">r&#39;\textbf{time (s)}&#39;</span><span class="p">)</span>
+<span class="n">ylabel</span><span class="p">(</span><span class="s">r&#39;\textit{voltage (mV)}&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">title</span><span class="p">(</span><span class="s">r&quot;\TeX\ is Number $\displaystyle\sum_{n=1}^\infty\frac{-e^{i\pi}}{2^n}$!&quot;</span><span class="p">,</span>
+ <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">savefig</span><span class="p">(</span><span class="s">&#39;tex_demo&#39;</span><span class="p">)</span>
+
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="Matplotlib(2f)UsingTex_attachments/tex_demo.png" src="Matplotlib(2f)UsingTex_attachments/tex_demo.png" />
+<p>Note that when TeX/LaTeX support is enabled, you can mix text and math
+modes. Display math mode ($$ e=mc^2 $$) is not supported, but adding the
+command \displaystyle, as in tex_demo.py, will produce the same
+results.</p>
+<p>In order to produce encapsulated postscript files that can be embedded
+in a new LaTeX document, the default behavior of matplotlib is to
+distill the output, which removes some postscript operators used by
+LaTeX that are illegal in an eps file. This step produces fonts which
+may be unacceptable to some users. One workaround is to to set
+ps.distiller.res to a higher value (perhaps 6000) in your rc settings. A
+better workaround, which requires
+<a class="reference external" href="http://www.foolabs.com/xpdf/download.html">xpdf</a> or
+<a class="reference external" href="http://poppler.freedesktop.org/">poppler</a> (the new backend to xpdf)
+can be activated by changing the rc ps.usedistiller setting to xpdf. The
+xpdf alternative produces postscript with text that can be edited in
+Adobe Illustrator, or searched for once converted to pdf.</p>
+<div class="section" id="possible-hangups">
+<h1>Possible Hangups<a class="headerlink" href="#possible-hangups" title="Permalink to this headline">¶</a></h1>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;On&nbsp;Windows,&nbsp;the&nbsp;PATH&nbsp;environment&nbsp;variable&nbsp;may&nbsp;need&nbsp;to&nbsp;be&nbsp;modified&nbsp;to&nbsp;find&nbsp;the&nbsp;latex,&nbsp;dvipng&nbsp;and&nbsp;ghostscript&nbsp;executables.&nbsp;This&nbsp;is&nbsp;done&nbsp;by&nbsp;going&nbsp;to&nbsp;the&nbsp;control&nbsp;panel,&nbsp;selecting&nbsp;the&nbsp;&quot;system&quot;&nbsp;icon,&nbsp;selecting&nbsp;the&nbsp;&quot;advanced&quot;&nbsp;tab,&nbsp;and&nbsp;clicking&nbsp;the&nbsp;&quot;environment&nbsp;variables&quot;&nbsp;button&nbsp;(and&nbsp;people&nbsp;think&nbsp;Linux&nbsp;is&nbsp;complicated.&nbsp;Sheesh.)&nbsp;Select&nbsp;the&nbsp;PATH&nbsp;variable,&nbsp;and&nbsp;add&nbsp;the&nbsp;appropriate&nbsp;directories.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;Using&nbsp;MiKTeX&nbsp;with&nbsp;Computer&nbsp;Modern&nbsp;fonts,&nbsp;if&nbsp;you&nbsp;get&nbsp;odd&nbsp;-Agg&nbsp;and&nbsp;PNG&nbsp;results,&nbsp;go&nbsp;to&nbsp;MiKTeX/Options&nbsp;and&nbsp;update&nbsp;your&nbsp;format&nbsp;files</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;The&nbsp;fonts&nbsp;look&nbsp;terrible&nbsp;on&nbsp;screen.&nbsp;You&nbsp;are&nbsp;probably&nbsp;running&nbsp;Mac&nbsp;OS,&nbsp;and&nbsp;there&nbsp;is&nbsp;some&nbsp;funny&nbsp;business&nbsp;with&nbsp;dvipng&nbsp;on&nbsp;the&nbsp;mac.&nbsp;Set&nbsp;text.dvipnghack&nbsp;:&nbsp;True&nbsp;in&nbsp;your&nbsp;matplotlibrc&nbsp;file.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;On&nbsp;Ubuntu&nbsp;and&nbsp;Gentoo,&nbsp;the&nbsp;base&nbsp;texlive&nbsp;install&nbsp;does&nbsp;not&nbsp;ship&nbsp;with&nbsp;the&nbsp;type1cm&nbsp;package.&nbsp;You&nbsp;may&nbsp;need&nbsp;to&nbsp;install&nbsp;some&nbsp;of&nbsp;the&nbsp;extra&nbsp;packages&nbsp;to&nbsp;get&nbsp;all&nbsp;the&nbsp;goodies&nbsp;that&nbsp;come&nbsp;bundled&nbsp;with&nbsp;other&nbsp;latex&nbsp;distributions.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;Some&nbsp;progress&nbsp;has&nbsp;been&nbsp;made&nbsp;so&nbsp;Matplotlib&nbsp;uses&nbsp;the&nbsp;dvi&nbsp;files&nbsp;directly&nbsp;for&nbsp;text&nbsp;layout.&nbsp;This&nbsp;allows&nbsp;latex&nbsp;to&nbsp;be&nbsp;used&nbsp;for&nbsp;text&nbsp;layout&nbsp;with&nbsp;the&nbsp;pdf&nbsp;and&nbsp;svg&nbsp;backends,&nbsp;as&nbsp;well&nbsp;as&nbsp;the&nbsp;*Agg&nbsp;and&nbsp;PS&nbsp;backends.&nbsp;In&nbsp;the&nbsp;future,&nbsp;a&nbsp;latex&nbsp;installation&nbsp;may&nbsp;be&nbsp;the&nbsp;only&nbsp;external&nbsp;dependency.&nbsp;</span></tt></p>
+</div>
+<div class="section" id="in-the-event-that-things-dont-work">
+<h1>In the event that things dont work<a class="headerlink" href="#in-the-event-that-things-dont-work" title="Permalink to this headline">¶</a></h1>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;Try&nbsp;`rm&nbsp;-r&nbsp;~/.matplotlib/*cache`</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;Make&nbsp;sure&nbsp;LaTeX,&nbsp;dvipng&nbsp;and&nbsp;ghostscript&nbsp;are&nbsp;each&nbsp;working&nbsp;and&nbsp;on&nbsp;your&nbsp;PATH.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;Run&nbsp;your&nbsp;script&nbsp;with&nbsp;verbose&nbsp;mode&nbsp;enabled:&nbsp;python&nbsp;example.py&nbsp;--verbose-helpful&nbsp;(or&nbsp;--verbose-debug-annoying)&nbsp;and&nbsp;inspect&nbsp;the&nbsp;output.&nbsp;Most&nbsp;likely&nbsp;there&nbsp;is&nbsp;a&nbsp;problem&nbsp;reported&nbsp;there.&nbsp;If&nbsp;you&nbsp;need&nbsp;help,&nbsp;post&nbsp;a&nbsp;short&nbsp;example&nbsp;that&nbsp;reproduces&nbsp;the&nbsp;behavior,&nbsp;explicitly&nbsp;noting&nbsp;any&nbsp;changes&nbsp;to&nbsp;your&nbsp;rc&nbsp;settings,&nbsp;along&nbsp;with&nbsp;what&nbsp;version&nbsp;of&nbsp;matplotlib&nbsp;you&nbsp;have&nbsp;installed,&nbsp;your&nbsp;os,&nbsp;and&nbsp;the&nbsp;--verbose-*&nbsp;output.</span></tt></p>
+<hr class="docutils" />
+<p>CategoryCookbookMatplotlib</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Possible Hangups</a></li>
+<li><a class="reference internal" href="#in-the-event-that-things-dont-work">In the event that things dont work</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)UnfilledHistograms.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)Using_MatPlotLib_in_a_CGI_script.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Matplotlib(2f)UsingTex.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Using_MatPlotLib_in_a_CGI_script.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)UnfilledHistograms.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

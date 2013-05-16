@@ -1,0 +1,181 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Linear Chirp &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Note to the administrators of scipy/cookbook" href="GMailPM.html" />
+    <link rel="prev" title="Fortran I/O Formats" href="FortranIO.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="GMailPM.html" title="Note to the administrators of scipy/cookbook"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="FortranIO.html" title="Fortran I/O Formats"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>This page demonstrates two functions in scipy.signal for generating
+frequency-swept signals: `chirp` and `sweep_poly`.</p>
+<p>Some of these require SciPy 0.8.</p>
+<p>To run the code samples, you will need the following imports:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">chirp</span><span class="p">,</span> <span class="n">sweep_poly</span>
+</pre></div>
+</div>
+<div class="section" id="linear-chirp">
+<h1>Linear Chirp<a class="headerlink" href="#linear-chirp" title="Permalink to this headline">¶</a></h1>
+<p>Sample code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5001</span><span class="p">)</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">chirp</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mf">12.5</span><span class="p">,</span> <span class="n">f1</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;linear&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="FrequencySweptDemo_attachments/chirp_linear.png" src="FrequencySweptDemo_attachments/chirp_linear.png" />
+</div>
+<div class="section" id="quadratic-chirp">
+<h1>Quadratic Chirp<a class="headerlink" href="#quadratic-chirp" title="Permalink to this headline">¶</a></h1>
+<p>Sample code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5001</span><span class="p">)</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">chirp</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mf">12.5</span><span class="p">,</span> <span class="n">f1</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;quadratic&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="FrequencySweptDemo_attachments/chirp_quadratic.png" src="FrequencySweptDemo_attachments/chirp_quadratic.png" />
+<p>Sample code using `vertex_zero`:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5001</span><span class="p">)</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">chirp</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mf">12.5</span><span class="p">,</span> <span class="n">f1</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;quadratic&#39;</span><span class="p">,</span> <span class="n">vertex_zero</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="FrequencySweptDemo_attachments/chirp_quadratic_v0false.png" src="FrequencySweptDemo_attachments/chirp_quadratic_v0false.png" />
+</div>
+<div class="section" id="logarithmic-chirp">
+<h1>Logarithmic Chirp<a class="headerlink" href="#logarithmic-chirp" title="Permalink to this headline">¶</a></h1>
+<p>Sample code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5001</span><span class="p">)</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">chirp</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mf">12.5</span><span class="p">,</span> <span class="n">f1</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;logarithmic&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="FrequencySweptDemo_attachments/chirp_logarithmic.png" src="FrequencySweptDemo_attachments/chirp_logarithmic.png" />
+</div>
+<div class="section" id="hyperbolic-chirp">
+<h1>Hyperbolic Chirp<a class="headerlink" href="#hyperbolic-chirp" title="Permalink to this headline">¶</a></h1>
+<p>Sample code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5001</span><span class="p">)</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">chirp</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mf">12.5</span><span class="p">,</span> <span class="n">f1</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;hyperbolic&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="FrequencySweptDemo_attachments/chirp_hyperbolic.png" src="FrequencySweptDemo_attachments/chirp_hyperbolic.png" />
+</div>
+<div class="section" id="sweep-poly">
+<h1>Sweep Poly<a class="headerlink" href="#sweep-poly" title="Permalink to this headline">¶</a></h1>
+<p>Sample code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">p</span> <span class="o">=</span> <span class="n">poly1d</span><span class="p">([</span><span class="mf">0.05</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">])</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5001</span><span class="p">)</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">sweep_poly</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="FrequencySweptDemo_attachments/sweep_poly.png" src="FrequencySweptDemo_attachments/sweep_poly.png" />
+<p>The script that generated the plots is here:</p>
+<img alt="FrequencySweptDemo_attachments/chirp_plot.py" src="FrequencySweptDemo_attachments/chirp_plot.py" />
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Linear Chirp</a></li>
+<li><a class="reference internal" href="#quadratic-chirp">Quadratic Chirp</a></li>
+<li><a class="reference internal" href="#logarithmic-chirp">Logarithmic Chirp</a></li>
+<li><a class="reference internal" href="#hyperbolic-chirp">Hyperbolic Chirp</a></li>
+<li><a class="reference internal" href="#sweep-poly">Sweep Poly</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="FortranIO.html"
+                        title="previous chapter">Fortran I/O Formats</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="GMailPM.html"
+                        title="next chapter">Note to the administrators of scipy/cookbook</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/FrequencySweptDemo.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="GMailPM.html" title="Note to the administrators of scipy/cookbook"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="FortranIO.html" title="Fortran I/O Formats"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

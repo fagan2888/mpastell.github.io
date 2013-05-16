@@ -1,0 +1,379 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The FortranFile class &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Fortran I/O Formats" href="FortranIO.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="FortranIO(2f)FortranFile(2e).html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="FortranIO.html" title="Fortran I/O Formats"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="FortranIO(2f)FortranFile(2e).html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="the-fortranfile-class">
+<h1>The FortranFile class<a class="headerlink" href="#the-fortranfile-class" title="Permalink to this headline">¶</a></h1>
+<p>This subclass of file is designed to simplify reading of Fortran
+unformatted binary files which are typically saved in a record-based
+format.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Copyright 2008, 2009 Neil Martinsen-Burrell</span>
+<span class="c">#</span>
+<span class="c"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c"># of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="c"># in the Software without restriction, including without limitation the rights</span>
+<span class="c"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c"># furnished to do so, subject to the following conditions:</span>
+
+<span class="c"># The above copyright notice and this permission notice shall be included in</span>
+<span class="c"># all copies or substantial portions of the Software.</span>
+
+<span class="c"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN</span>
+<span class="c"># THE SOFTWARE.</span>
+
+<span class="sd">&quot;&quot;&quot;Defines a file-derived class to read/write Fortran unformatted files.</span>
+
+<span class="sd">The assumption is that a Fortran unformatted file is being written by</span>
+<span class="sd">the Fortran runtime as a sequence of records.  Each record consists of</span>
+<span class="sd">an integer (of the default size [usually 32 or 64 bits]) giving the</span>
+<span class="sd">length of the following data in bytes, then the data itself, then the</span>
+<span class="sd">same integer as before.</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+
+<span class="sd">To use the default endian and size settings, one can just do::</span>
+<span class="sd">    &gt;&gt;&gt; f = FortranFile(&#39;filename&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; x = f.readReals()</span>
+
+<span class="sd">One can read arrays with varying precisions::</span>
+<span class="sd">    &gt;&gt;&gt; f = FortranFile(&#39;filename&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; x = f.readInts(&#39;h&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; y = f.readInts(&#39;q&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; z = f.readReals(&#39;f&#39;)</span>
+<span class="sd">Where the format codes are those used by Python&#39;s struct module.</span>
+
+<span class="sd">One can change the default endian-ness and header precision::</span>
+<span class="sd">    &gt;&gt;&gt; f = FortranFile(&#39;filename&#39;, endian=&#39;&gt;&#39;, header_prec=&#39;l&#39;)</span>
+<span class="sd">for a file with little-endian data whose record headers are long</span>
+<span class="sd">integers.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__docformat__</span> <span class="o">=</span> <span class="s">&quot;restructuredtext en&quot;</span>
+
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="k">class</span> <span class="nc">FortranFile</span><span class="p">(</span><span class="nb">file</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;File with methods for dealing with fortran unformatted data files&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_get_header_length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_header_prec</span><span class="p">)</span>
+    <span class="n">_header_length</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_header_length</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_endian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">c</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set endian to big (c=&#39;&gt;&#39;) or little (c=&#39;&lt;&#39;) or native (c=&#39;@&#39;)</span>
+
+<span class="sd">        :Parameters:</span>
+<span class="sd">          `c` : string</span>
+<span class="sd">            The endian-ness to use when reading from this file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="s">&#39;&lt;&gt;@=&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_endian</span> <span class="o">=</span> <span class="n">c</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Cannot set endian-ness&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_get_endian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endian</span>
+    <span class="n">ENDIAN</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fset</span><span class="o">=</span><span class="n">_set_endian</span><span class="p">,</span>
+                      <span class="n">fget</span><span class="o">=</span><span class="n">_get_endian</span><span class="p">,</span>
+                      <span class="n">doc</span><span class="o">=</span><span class="s">&quot;Possible endian values are &#39;&lt;&#39;, &#39;&gt;&#39;, &#39;@&#39;, &#39;=&#39;&quot;</span>
+                     <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_header_prec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prec</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">prec</span> <span class="ow">in</span> <span class="s">&#39;hilq&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_header_prec</span> <span class="o">=</span> <span class="n">prec</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Cannot set header precision&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_get_header_prec</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_prec</span>
+    <span class="n">HEADER_PREC</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fset</span><span class="o">=</span><span class="n">_set_header_prec</span><span class="p">,</span>
+                           <span class="n">fget</span><span class="o">=</span><span class="n">_get_header_prec</span><span class="p">,</span>
+                           <span class="n">doc</span><span class="o">=</span><span class="s">&quot;Possible header precisions are &#39;h&#39;, &#39;i&#39;, &#39;l&#39;, &#39;q</span>
+<span class="s">&#39;&quot;</span>
+                          <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">endian</span><span class="o">=</span><span class="s">&#39;@&#39;</span><span class="p">,</span> <span class="n">header_prec</span><span class="o">=</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Open a Fortran unformatted file for writing.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        endian : character, optional</span>
+<span class="sd">            Specify the endian-ness of the file.  Possible values are</span>
+<span class="sd">            &#39;&gt;&#39;, &#39;&lt;&#39;, &#39;@&#39; and &#39;=&#39;.  See the documentation of Python&#39;s</span>
+<span class="sd">            struct module for their meanings.  The deafult is &#39;&gt;&#39; (native</span>
+<span class="sd">            byte order)</span>
+<span class="sd">        header_prec : character, optional</span>
+<span class="sd">            Specify the precision used for the record headers.  Possible</span>
+<span class="sd">            values are &#39;h&#39;, &#39;i&#39;, &#39;l&#39; and &#39;q&#39; with their meanings from</span>
+<span class="sd">            Python&#39;s struct module.  The default is &#39;i&#39; (the system&#39;s</span>
+<span class="sd">            default integer).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">file</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ENDIAN</span> <span class="o">=</span> <span class="n">endian</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">HEADER_PREC</span> <span class="o">=</span> <span class="n">header_prec</span>
+
+    <span class="k">def</span> <span class="nf">_read_exactly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_bytes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read in exactly num_bytes, raising an error if it can&#39;t be done.&quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="n">num_bytes</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">data</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">read_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">num_bytes</span> <span class="o">-</span> <span class="n">l</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">read_data</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s">&#39;Could not read enough data.&#39;</span>
+                              <span class="s">&#39;  Wanted </span><span class="si">%d</span><span class="s"> bytes, got </span><span class="si">%d</span><span class="s">.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">num_bytes</span><span class="p">,</span> <span class="n">l</span><span class="p">))</span>
+            <span class="n">data</span> <span class="o">+=</span> <span class="n">read_data</span>
+
+    <span class="k">def</span> <span class="nf">_read_check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ENDIAN</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">HEADER_PREC</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">_read_exactly</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_header_length</span><span class="p">)</span>
+                            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_write_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number_of_bytes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write the header for the given number of bytes&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ENDIAN</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">HEADER_PREC</span><span class="p">,</span>
+                               <span class="n">number_of_bytes</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">readRecord</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read a single fortran record&quot;&quot;&quot;</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_check</span><span class="p">()</span>
+        <span class="n">data_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_exactly</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+        <span class="n">check_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_check</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">check_size</span> <span class="o">!=</span> <span class="n">l</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s">&#39;Error reading record from data file&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data_str</span>
+
+    <span class="k">def</span> <span class="nf">writeRecord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">s</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write a record with the given bytes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        s : the string to write</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">length_bytes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_check</span><span class="p">(</span><span class="n">length_bytes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_check</span><span class="p">(</span><span class="n">length_bytes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">readString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read a string.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">readRecord</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">writeString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">s</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write a string</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        s : the string to write</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writeRecord</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="n">_real_precisions</span> <span class="o">=</span> <span class="s">&#39;df&#39;</span>
+
+    <span class="k">def</span> <span class="nf">readReals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="s">&#39;f&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read in an array of real numbers.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        prec : character, optional</span>
+<span class="sd">            Specify the precision of the array using character codes from</span>
+<span class="sd">            Python&#39;s struct module.  Possible values are &#39;d&#39; and &#39;f&#39;.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">_numpy_precisions</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;d&#39;</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                             <span class="s">&#39;f&#39;</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span>
+                            <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">prec</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_real_precisions</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Not an appropriate precision&#39;</span><span class="p">)</span>
+
+        <span class="n">data_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readRecord</span><span class="p">()</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_str</span><span class="p">)</span><span class="o">/</span><span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="n">prec</span><span class="p">)</span>
+        <span class="n">numbers</span> <span class="o">=</span><span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ENDIAN</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">num</span><span class="p">)</span><span class="o">+</span><span class="n">prec</span><span class="p">,</span><span class="n">data_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">numbers</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">_numpy_precisions</span><span class="p">[</span><span class="n">prec</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">writeReals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reals</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="s">&#39;f&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write an array of floats in given precision</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        reals : array</span>
+<span class="sd">            Data to write</span>
+<span class="sd">        prec` : string</span>
+<span class="sd">            Character code for the precision to use in writing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">prec</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_real_precisions</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Not an appropriate precision&#39;</span><span class="p">)</span>
+
+        <span class="c"># Don&#39;t use writeRecord to avoid having to form a</span>
+        <span class="c"># string as large as the array of numbers</span>
+        <span class="n">length_bytes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">reals</span><span class="p">)</span><span class="o">*</span><span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="n">prec</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_check</span><span class="p">(</span><span class="n">length_bytes</span><span class="p">)</span>
+        <span class="n">_fmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ENDIAN</span> <span class="o">+</span> <span class="n">prec</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reals</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">_fmt</span><span class="p">,</span><span class="n">r</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_check</span><span class="p">(</span><span class="n">length_bytes</span><span class="p">)</span>
+
+    <span class="n">_int_precisions</span> <span class="o">=</span> <span class="s">&#39;hilq&#39;</span>
+
+    <span class="k">def</span> <span class="nf">readInts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="s">&#39;i&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read an array of integers.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        prec : character, optional</span>
+<span class="sd">            Specify the precision of the data to be read using</span>
+<span class="sd">            character codes from Python&#39;s struct module.  Possible</span>
+<span class="sd">            values are &#39;h&#39;, &#39;i&#39;, &#39;l&#39; and &#39;q&#39;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">prec</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_int_precisions</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Not an appropriate precision&#39;</span><span class="p">)</span>
+
+        <span class="n">data_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readRecord</span><span class="p">()</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_str</span><span class="p">)</span><span class="o">/</span><span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="n">prec</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ENDIAN</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">num</span><span class="p">)</span><span class="o">+</span><span class="n">prec</span><span class="p">,</span><span class="n">data_str</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">writeInts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ints</span><span class="p">,</span> <span class="n">prec</span><span class="o">=</span><span class="s">&#39;i&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write an array of integers in given precision</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        reals : array</span>
+<span class="sd">            Data to write</span>
+<span class="sd">        prec : string</span>
+<span class="sd">            Character code for the precision to use in writing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">prec</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_int_precisions</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;Not an appropriate precision&#39;</span><span class="p">)</span>
+
+        <span class="c"># Don&#39;t use writeRecord to avoid having to form a</span>
+        <span class="c"># string as large as the array of numbers</span>
+        <span class="n">length_bytes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ints</span><span class="p">)</span><span class="o">*</span><span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="n">prec</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_check</span><span class="p">(</span><span class="n">length_bytes</span><span class="p">)</span>
+        <span class="n">_fmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ENDIAN</span> <span class="o">+</span> <span class="n">prec</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">ints</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">_fmt</span><span class="p">,</span><span class="n">item</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_check</span><span class="p">(</span><span class="n">length_bytes</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="FortranIO(2f)FortranFile(2e).html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="FortranIO.html"
+                        title="next chapter">Fortran I/O Formats</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/FortranIO(2f)FortranFile.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="FortranIO.html" title="Fortran I/O Formats"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="FortranIO(2f)FortranFile(2e).html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

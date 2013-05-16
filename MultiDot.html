@@ -1,0 +1,268 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Using reduce &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Easy multithreading" href="Multithreading.html" />
+    <link rel="prev" title="MetaArray" href="MetaArray.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Multithreading.html" title="Easy multithreading"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="MetaArray.html" title="MetaArray"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>The matrix multiplication function, numpy.dot(), only takes two
+arguments. That means to multiply more than two arrays together you end
+up with nested function calls which are hard to read:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">dot</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">),</span><span class="n">c</span><span class="p">),</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>versus infix notation where you&#8217;d just be able to write</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">a</span><span class="o">*</span><span class="n">b</span><span class="o">*</span><span class="n">c</span><span class="o">*</span><span class="n">d</span>
+</pre></div>
+</div>
+<p>There are a couple of ways to define an &#8216;mdot&#8217; function that acts like
+dot but accepts more than two arguments. Using one of these allows you
+to write the above expression as</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">mdot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="using-reduce">
+<h1>Using reduce<a class="headerlink" href="#using-reduce" title="Permalink to this headline">¶</a></h1>
+<p>The simplest way it to just use reduce.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">mdot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">reduce</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or use the equivalent loop (which is apparently the preferred style <a class="reference external" href="http://www.python.org/dev/peps/pep-3100/#id53">for
+Py3K</a>):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">mdot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ret</span>
+</pre></div>
+</div>
+<p>This will always give you left to right associativity, i.e. the
+expression is interpreted as `(((a*b)*c)*d)`.</p>
+<p>You also can make a right-associative version of the loop:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">mdotr</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">args</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">ret</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ret</span>
+</pre></div>
+</div>
+<p>which evaluates as `(a*(b*(c*d)))`. But sometimes you&#8217;d like to
+have finer control since the order in which matrix multiplies are
+performed can have a big impact on performance. The next version gives
+that control.</p>
+</div>
+<div class="section" id="controlling-order-of-evaluation">
+<h1>Controlling order of evaluation<a class="headerlink" href="#controlling-order-of-evaluation" title="Permalink to this headline">¶</a></h1>
+<p>If we&#8217;re willing to sacrifice Numpy&#8217;s ability to treat tuples as arrays,
+we can use tuples as grouping constructs. This version of `mdot`
+allows syntax like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">mdot</span><span class="p">(</span><span class="n">a</span><span class="p">,((</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">),</span><span class="n">d</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>to control the order in which the pairwise `dot` calls are made.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="k">def</span> <span class="nf">mdot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+   <span class="sd">&quot;&quot;&quot;Multiply all the arguments using matrix product rules.</span>
+<span class="sd">   The output is equivalent to multiplying the arguments one by one</span>
+<span class="sd">   from left to right using dot().</span>
+<span class="sd">   Precedence can be controlled by creating tuples of arguments,</span>
+<span class="sd">   for instance mdot(a,((b,c),d)) multiplies a (a*((b*c)*d)).</span>
+<span class="sd">   Note that this means the output of dot(a,b) and mdot(a,b) will differ if</span>
+<span class="sd">   a or b is a pure tuple of numbers.</span>
+<span class="sd">   &quot;&quot;&quot;</span>
+   <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+       <span class="k">return</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+   <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+       <span class="k">return</span> <span class="n">_mdot_r</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+   <span class="k">else</span><span class="p">:</span>
+       <span class="k">return</span> <span class="n">_mdot_r</span><span class="p">(</span><span class="n">args</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">_mdot_r</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
+   <span class="sd">&quot;&quot;&quot;Recursive helper for mdot&quot;&quot;&quot;</span>
+   <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">==</span><span class="n">types</span><span class="o">.</span><span class="n">TupleType</span><span class="p">:</span>
+       <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+           <span class="n">a</span> <span class="o">=</span> <span class="n">mdot</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">)</span>
+       <span class="k">else</span><span class="p">:</span>
+           <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+   <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">==</span><span class="n">types</span><span class="o">.</span><span class="n">TupleType</span><span class="p">:</span>
+       <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+           <span class="n">b</span> <span class="o">=</span> <span class="n">mdot</span><span class="p">(</span><span class="o">*</span><span class="n">b</span><span class="p">)</span>
+       <span class="k">else</span><span class="p">:</span>
+           <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+   <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="multiply">
+<h1>Multiply<a class="headerlink" href="#multiply" title="Permalink to this headline">¶</a></h1>
+<p>Note that the elementwise multiplication function `numpy.multiply` has
+the same two-argument limitation as `numpy.dot`. The exact same
+generalized forms can be defined for multiply.</p>
+<p>Left associative versions:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">mmultiply</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">reduce</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">multiply</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">mmultiply</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">multiply</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ret</span>
+</pre></div>
+</div>
+<p>Right-associative version:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">mmultiplyr</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">args</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">ret</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ret</span>
+</pre></div>
+</div>
+<p>Version using tuples to control order of evaluation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="k">def</span> <span class="nf">mmultiply</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+   <span class="sd">&quot;&quot;&quot;Multiply all the arguments using elementwise product.</span>
+<span class="sd">   The output is equivalent to multiplying the arguments one by one</span>
+<span class="sd">   from left to right using multiply().</span>
+<span class="sd">   Precedence can be controlled by creating tuples of arguments,</span>
+<span class="sd">   for instance mmultiply(a,((b,c),d)) multiplies a (a*((b*c)*d)).</span>
+<span class="sd">   Note that this means the output of multiply(a,b) and mmultiply(a,b) will diff</span>
+<span class="sd">er if</span>
+<span class="sd">   a or b is a pure tuple of numbers.</span>
+<span class="sd">   &quot;&quot;&quot;</span>
+   <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+       <span class="k">return</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+   <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+       <span class="k">return</span> <span class="n">_mmultiply_r</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+   <span class="k">else</span><span class="p">:</span>
+       <span class="k">return</span> <span class="n">_mmultiply_r</span><span class="p">(</span><span class="n">args</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">_mmultiply_r</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
+   <span class="sd">&quot;&quot;&quot;Recursive helper for mmultiply&quot;&quot;&quot;</span>
+   <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">==</span><span class="n">types</span><span class="o">.</span><span class="n">TupleType</span><span class="p">:</span>
+       <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+           <span class="n">a</span> <span class="o">=</span> <span class="n">mmultiply</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">)</span>
+       <span class="k">else</span><span class="p">:</span>
+           <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+   <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">==</span><span class="n">types</span><span class="o">.</span><span class="n">TupleType</span><span class="p">:</span>
+       <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+           <span class="n">b</span> <span class="o">=</span> <span class="n">mmultiply</span><span class="p">(</span><span class="o">*</span><span class="n">b</span><span class="p">)</span>
+       <span class="k">else</span><span class="p">:</span>
+           <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+   <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Using reduce</a></li>
+<li><a class="reference internal" href="#controlling-order-of-evaluation">Controlling order of evaluation</a></li>
+<li><a class="reference internal" href="#multiply">Multiply</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="MetaArray.html"
+                        title="previous chapter">MetaArray</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Multithreading.html"
+                        title="next chapter">Easy multithreading</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/MultiDot.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Multithreading.html" title="Easy multithreading"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="MetaArray.html" title="MetaArray"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

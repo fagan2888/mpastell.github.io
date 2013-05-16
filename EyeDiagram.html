@@ -1,0 +1,363 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Eye Diagram &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Short examples" href="F2Py.html" />
+    <link rel="prev" title="Embedding a Matplotlib Figure in a Traits App" href="EmbeddingInTraitsGUI.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="F2Py.html" title="Short examples"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="EmbeddingInTraitsGUI.html" title="Embedding a Matplotlib Figure in a Traits App"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="eye-diagram">
+<h1>Eye Diagram<a class="headerlink" href="#eye-diagram" title="Permalink to this headline">¶</a></h1>
+<p>The code below generates the following plot:</p>
+<img alt="EyeDiagram_attachments/eye-diagram3.png" src="EyeDiagram_attachments/eye-diagram3.png" />
+<p>The main script generates `num_traces` traces, and on a grid of
+600x600, it counts the number times a trace crosses a grid point. The
+grid is then plotted using matplotlib&#8217;s imshow() function. The counting
+is performed using Bresenham&#8217;s line algorithm
+(<a class="reference external" href="http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm">http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm</a>), to ensure
+that the counting is correct, and steep parts of the curve don&#8217;t result
+in missed counts.</p>
+<p>Bresenham&#8217;s algorithm is slow in pure Python, so a Cython version is
+included. If you do not build the Cython version of the Bresenham code,
+be sure to reduce `num_traces` before running the program!</p>
+<p>Here&#8217;s the main demo script, eye_demo.py.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="n">use_fast</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">brescount</span> <span class="kn">import</span> <span class="n">bres_curve_count</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&quot;The cython version of the curve counter is not available.&quot;</span>
+    <span class="n">use_fast</span> <span class="o">=</span> <span class="bp">False</span>
+
+
+<span class="k">def</span> <span class="nf">bres_segment_count_slow</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Bresenham&#39;s algorithm.</span>
+
+<span class="sd">    The value of grid[x,y] is incremented for each x,y</span>
+<span class="sd">    in the line from (x0,y0) up to but not including (x1, y1).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">dx</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y0</span><span class="p">)</span>
+
+    <span class="n">sx</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">x0</span> <span class="o">&lt;</span> <span class="n">x1</span><span class="p">:</span>
+        <span class="n">sx</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sx</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">sy</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">y0</span> <span class="o">&lt;</span> <span class="n">y1</span><span class="p">:</span>
+        <span class="n">sy</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sy</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="n">err</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">-</span> <span class="n">dy</span>
+
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="c"># Note: this test is moved before setting</span>
+        <span class="c"># the value, so we don&#39;t set the last point.</span>
+        <span class="k">if</span> <span class="n">x0</span> <span class="o">==</span> <span class="n">x1</span> <span class="ow">and</span> <span class="n">y0</span> <span class="o">==</span> <span class="n">y1</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">x0</span> <span class="o">&lt;</span> <span class="n">nrows</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">y0</span> <span class="o">&lt;</span> <span class="n">ncols</span><span class="p">:</span>
+            <span class="n">grid</span><span class="p">[</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">e2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">err</span>
+        <span class="k">if</span> <span class="n">e2</span> <span class="o">&gt;</span> <span class="o">-</span><span class="n">dy</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">-=</span> <span class="n">dy</span>
+            <span class="n">x0</span> <span class="o">+=</span> <span class="n">sx</span>
+        <span class="k">if</span> <span class="n">e2</span> <span class="o">&lt;</span> <span class="n">dx</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">+=</span> <span class="n">dx</span>
+            <span class="n">y0</span> <span class="o">+=</span> <span class="n">sy</span>
+
+<span class="k">def</span> <span class="nf">bres_curve_count_slow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="n">y0</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">y1</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">bres_segment_count_slow</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">random_trace</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
+    <span class="n">s</span> <span class="o">+=</span> <span class="n">r</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">+</span> <span class="mf">0.001</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="n">q</span><span class="o">*</span><span class="p">(</span><span class="mi">6</span> <span class="o">+</span> <span class="mf">0.01</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">())</span>
+    <span class="n">t2</span> <span class="o">+=</span> <span class="mf">0.05</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span><span class="o">*</span><span class="n">t</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">s</span><span class="o">*</span><span class="n">t2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">s</span><span class="o">*</span><span class="n">t2</span><span class="p">))</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.07</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">y</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+    <span class="n">grid_size</span> <span class="o">=</span> <span class="mi">600</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">grid_size</span><span class="p">,</span> <span class="n">grid_size</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+
+    <span class="n">tmin</span> <span class="o">=</span> <span class="o">-</span><span class="mf">10.0</span>
+    <span class="n">tmax</span> <span class="o">=</span> <span class="mf">10.0</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">81</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">tmax</span> <span class="o">-</span> <span class="n">tmin</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">ymin</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.5</span>
+    <span class="n">ymax</span> <span class="o">=</span> <span class="mf">1.5</span>
+
+    <span class="n">num_traces</span> <span class="o">=</span> <span class="mi">100000</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_traces</span><span class="p">):</span>
+
+        <span class="c"># Add some noise to the times at which the signal</span>
+        <span class="c"># will be sampled.  Without this, all the samples occur</span>
+        <span class="c"># at the same times, and this produces an aliasing</span>
+        <span class="c"># effect in the resulting bin counts.</span>
+        <span class="c"># If n == grid_size, this can be dropped, and t2 = t</span>
+        <span class="c"># can be used instead. (Or, implement an antialiased</span>
+        <span class="c"># version of bres_curve_count.)</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.01</span> <span class="o">*</span> <span class="n">dt</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">steps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">steps_sum</span> <span class="o">=</span> <span class="n">steps</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+        <span class="n">t2</span> <span class="o">=</span> <span class="n">tmin</span> <span class="o">+</span> <span class="p">(</span><span class="n">tmax</span> <span class="o">-</span> <span class="n">tmin</span><span class="p">)</span> <span class="o">*</span> <span class="n">steps_sum</span> <span class="o">/</span> <span class="n">steps_sum</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">td</span> <span class="o">=</span> <span class="p">(((</span><span class="n">t2</span> <span class="o">-</span> <span class="n">tmin</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">tmax</span> <span class="o">-</span> <span class="n">tmin</span><span class="p">))</span> <span class="o">*</span> <span class="n">grid_size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+
+        <span class="n">y</span> <span class="o">=</span> <span class="n">random_trace</span><span class="p">(</span><span class="n">t2</span><span class="p">)</span>
+
+        <span class="c"># Convert y to integers in the range [0,grid_size).</span>
+        <span class="n">yd</span> <span class="o">=</span> <span class="p">(((</span><span class="n">y</span> <span class="o">-</span> <span class="n">ymin</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span><span class="p">))</span> <span class="o">*</span> <span class="n">grid_size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">use_fast</span><span class="p">:</span>
+            <span class="n">bres_curve_count</span><span class="p">(</span><span class="n">td</span><span class="p">,</span> <span class="n">yd</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bres_curve_count_slow</span><span class="p">(</span><span class="n">td</span><span class="p">,</span> <span class="n">yd</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="c"># Convert to float32 so we can use nan instead of 0.</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">grid</span><span class="p">[</span><span class="n">grid</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">T</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">,:],</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">coolwarm</span><span class="p">,</span>
+               <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;gaussian&#39;</span><span class="p">)</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_axis_bgcolor</span><span class="p">(</span><span class="s">&#39;k&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">11</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">11</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+
+    <span class="c">#plt.savefig(&quot;eye-diagram.png&quot;, bbox_inches=&#39;tight&#39;)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Here&#8217;s brescount.pyx, the Cython implementation of Bresenham&#8217;s line
+algorithm:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="n">cimport</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="n">cimport</span> <span class="n">cython</span>
+
+
+<span class="nd">@cython.boundscheck</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">cdef</span> <span class="nb">int</span> <span class="n">bres_segment_count</span><span class="p">(</span><span class="n">unsigned</span> <span class="n">x0</span><span class="p">,</span> <span class="n">unsigned</span> <span class="n">y0</span><span class="p">,</span>
+                            <span class="n">unsigned</span> <span class="n">x1</span><span class="p">,</span> <span class="n">unsigned</span> <span class="n">y1</span><span class="p">,</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32_t</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">]</span> <span class="n">grid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Bresenham&#39;s algorithm.</span>
+
+<span class="sd">    See http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cdef</span> <span class="n">unsigned</span> <span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span>
+    <span class="n">cdef</span> <span class="nb">int</span> <span class="n">e2</span><span class="p">,</span> <span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">err</span>
+    <span class="n">cdef</span> <span class="nb">int</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span>
+
+    <span class="n">nrows</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ncols</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">x1</span> <span class="o">&gt;</span> <span class="n">x0</span><span class="p">:</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">-</span> <span class="n">x0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">-</span> <span class="n">x1</span>
+    <span class="k">if</span> <span class="n">y1</span> <span class="o">&gt;</span> <span class="n">y0</span><span class="p">:</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">y1</span> <span class="o">-</span> <span class="n">y0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">y0</span> <span class="o">-</span> <span class="n">y1</span>
+
+    <span class="n">sx</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">x0</span> <span class="o">&lt;</span> <span class="n">x1</span><span class="p">:</span>
+        <span class="n">sx</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sx</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">sy</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">y0</span> <span class="o">&lt;</span> <span class="n">y1</span><span class="p">:</span>
+        <span class="n">sy</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sy</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="n">err</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">-</span> <span class="n">dy</span>
+
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="c"># Note: this test occurs before increment the</span>
+        <span class="c"># grid value, so we don&#39;t count the last point.</span>
+        <span class="k">if</span> <span class="n">x0</span> <span class="o">==</span> <span class="n">x1</span> <span class="ow">and</span> <span class="n">y0</span> <span class="o">==</span> <span class="n">y1</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">x0</span> <span class="o">&lt;</span> <span class="n">nrows</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">y0</span> <span class="o">&lt;</span> <span class="n">ncols</span><span class="p">):</span>
+            <span class="n">grid</span><span class="p">[</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">e2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">err</span>
+        <span class="k">if</span> <span class="n">e2</span> <span class="o">&gt;</span> <span class="o">-</span><span class="n">dy</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">-=</span> <span class="n">dy</span>
+            <span class="n">x0</span> <span class="o">+=</span> <span class="n">sx</span>
+        <span class="k">if</span> <span class="n">e2</span> <span class="o">&lt;</span> <span class="n">dx</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">+=</span> <span class="n">dx</span>
+            <span class="n">y0</span> <span class="o">+=</span> <span class="n">sy</span>
+
+    <span class="k">return</span> <span class="mi">0</span>
+
+
+<span class="k">def</span> <span class="nf">bres_curve_count</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32_t</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">]</span> <span class="n">x</span><span class="p">,</span>
+                     <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32_t</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">]</span> <span class="n">y</span><span class="p">,</span>
+                     <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32_t</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">]</span> <span class="n">grid</span><span class="p">):</span>
+    <span class="n">cdef</span> <span class="n">unsigned</span> <span class="n">k</span>
+    <span class="n">cdef</span> <span class="nb">int</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="n">y0</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">y1</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">bres_segment_count</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
+    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">x1</span> <span class="o">&lt;</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">y1</span> <span class="o">&lt;</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">grid</span><span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>This file, setup.py, can be used to build the Cython extension module:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
+<span class="kn">from</span> <span class="nn">distutils.extension</span> <span class="kn">import</span> <span class="n">Extension</span>
+<span class="kn">from</span> <span class="nn">Cython.Distutils</span> <span class="kn">import</span> <span class="n">build_ext</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="n">ext</span> <span class="o">=</span> <span class="n">Extension</span><span class="p">(</span><span class="s">&quot;brescount&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;brescount.pyx&quot;</span><span class="p">],</span>
+    <span class="n">include_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">get_include</span><span class="p">()])</span>
+
+<span class="n">setup</span><span class="p">(</span><span class="n">ext_modules</span><span class="o">=</span><span class="p">[</span><span class="n">ext</span><span class="p">],</span>
+      <span class="n">cmdclass</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;build_ext&#39;</span><span class="p">:</span> <span class="n">build_ext</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>To build the extension module, you must have Cython installed.</p>
+<p>You can build the extension module as follows:</p>
+<div class="highlight-python"><pre>$ python setup.py build_ext --inplace</pre>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="EmbeddingInTraitsGUI.html"
+                        title="previous chapter">Embedding a Matplotlib Figure in a Traits App</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="F2Py.html"
+                        title="next chapter">Short examples</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/EyeDiagram.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="F2Py.html" title="Short examples"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="EmbeddingInTraitsGUI.html" title="Embedding a Matplotlib Figure in a Traits App"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

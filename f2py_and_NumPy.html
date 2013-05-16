@@ -1,0 +1,194 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Wrapping C codes using f2py &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Another loader script" href="hdf5_in_Matlab.html" />
+    <link rel="prev" title="Update - 1/18/2007" href="dbase.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="hdf5_in_Matlab.html" title="Another loader script"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dbase.html" title="Update - 1/18/2007"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="wrapping-c-codes-using-f2py">
+<h1>Wrapping C codes using f2py<a class="headerlink" href="#wrapping-c-codes-using-f2py" title="Permalink to this headline">¶</a></h1>
+<p>While initially f2py was developed for wrapping Fortran codes for
+Python, it can be easily used for wrapping C codes as well. Signature
+files describing the interface to wrapped functions must be created
+manually and the functions and their arguments must have the attribute .
+See <a class="reference external" href="http://cens.ioc.ee/projects/f2py2e/usersguide/index.html">f2py
+UsersGuide</a>
+for more information about the syntax of signature files.</p>
+<p>Here follows as simple C code</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="o">/*</span> <span class="n">File</span> <span class="n">foo</span><span class="o">.</span><span class="n">c</span> <span class="o">*/</span>
+<span class="n">void</span> <span class="n">foo</span><span class="p">(</span><span class="nb">int</span> <span class="n">n</span><span class="p">,</span> <span class="n">double</span> <span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="n">double</span> <span class="o">*</span><span class="n">y</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nb">int</span> <span class="n">i</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>and the corresponding signature file</p>
+<div class="highlight-python"><pre>! File m.pyf
+python module m
+interface
+  subroutine foo(n,x,y)
+    intent(c) foo                 ! foo is a C function
+    intent(c)                     ! all foo arguments are
+                                  ! considered as C based
+    integer intent(hide), depend(x) :: n=len(x)  ! n is the length
+                                                 ! of input array x
+    double precision intent(in) :: x(n)          ! x is input array
+                                                 ! (or  arbitrary sequence)
+    double precision intent(out) :: y(n)         ! y is output array,
+                                                 ! see code in foo.c
+  end subroutine foo
+end interface
+end python module m</pre>
+</div>
+<p>To build the wrapper, one can either create a setup.py script</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># File setup.py</span>
+<span class="k">def</span> <span class="nf">configuration</span><span class="p">(</span><span class="n">parent_package</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span><span class="n">top_path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">numpy.distutils.misc_util</span> <span class="kn">import</span> <span class="n">Configuration</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span><span class="n">parent_package</span><span class="p">,</span><span class="n">top_path</span><span class="p">)</span>
+
+    <span class="n">config</span><span class="o">.</span><span class="n">add_extension</span><span class="p">(</span><span class="s">&#39;m&#39;</span><span class="p">,</span>
+                         <span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;m.pyf&#39;</span><span class="p">,</span><span class="s">&#39;foo.c&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">config</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">numpy.distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
+    <span class="n">setup</span><span class="p">(</span><span class="o">**</span><span class="n">configuration</span><span class="p">(</span><span class="n">top_path</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">todict</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>and execute:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">build_src</span> <span class="n">build_ext</span> <span class="o">--</span><span class="n">inplace</span>
+</pre></div>
+</div>
+<p>Or one can call f2py directly in command line to build the wrapper as
+follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">f2py</span> <span class="n">m</span><span class="o">.</span><span class="n">pyf</span> <span class="n">foo</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">c</span>
+</pre></div>
+</div>
+<p>In both cases an extension module will be created to current directory
+that can be imported to python:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">m</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">m</span><span class="o">.</span><span class="n">__doc__</span>
+<span class="go">This module &#39;m&#39; is auto-generated with f2py (version:2_2130).</span>
+<span class="go">Functions:</span>
+<span class="go">  y = foo(x)</span>
+<span class="go">.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">m</span><span class="o">.</span><span class="n">foo</span><span class="o">.</span><span class="n">__doc__</span>
+<span class="go">foo - Function signature:</span>
+<span class="go">  y = foo(x)</span>
+<span class="go">Required arguments:</span>
+<span class="go">  x : input rank-1 array(&#39;d&#39;) with bounds (n)</span>
+<span class="go">Return objects:</span>
+<span class="go">  y : rank-1 array(&#39;d&#39;) with bounds (n)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">m</span><span class="o">.</span><span class="n">foo</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
+<span class="go">[ 1.  3.  5.  7.  9.]</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="dbase.html"
+                        title="previous chapter">Update - 1/18/2007</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="hdf5_in_Matlab.html"
+                        title="next chapter">Another loader script</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/f2py_and_NumPy.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="hdf5_in_Matlab.html" title="Another loader script"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dbase.html" title="Update - 1/18/2007"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

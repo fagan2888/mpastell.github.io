@@ -1,0 +1,374 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Introduction" href="MayaVi(2f)ScriptingMayavi2(2f)Filters.html" />
+    <link rel="prev" title="Introduction" href="MayaVi(2f)RunningMayavi2.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)ScriptingMayavi2(2f)Filters.html" title="Introduction"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)RunningMayavi2.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>TableOfContents</p>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>These modules are called &#8220;basic&#8221; because they are general and
+independant to all kind of data.</p>
+<p>Before using a module, remind that you have to import it.</p>
+<p>In general, if you want to change the color of an object, you have to
+type:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">module</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>
+</pre></div>
+</div>
+<p>where fg_color is a &#8220;tuple&#8221;, say (0, 0, 0) for black.</p>
+<p>Note: You can set color for each module/filter (when available, of
+course), as above. But you can also set background/foreground colors for
+all your !MayaVi2 sessions. See [:Cookbook/MayaVi/Tips:
+Cookbook/MayaVi/Tips]. So, your background and foreground colors may (in
+fact, must) be different from those in the pictures presented here.</p>
+</div>
+<div class="section" id="outline-module">
+<h1>Outline module<a class="headerlink" href="#outline-module" title="Permalink to this headline">¶</a></h1>
+<p>Nothing special for this very simple module.</p>
+<p>Begin to import the Outline module:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.outline</span> <span class="kn">import</span> <span class="n">Outline</span>
+</pre></div>
+</div>
+<p>then</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">fg_color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>    <span class="c"># black foreground color</span>
+<span class="n">o</span> <span class="o">=</span> <span class="n">Outline</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+<span class="n">o</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>
+</pre></div>
+</div>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)BasicModules_attachments/basic_outline.png" src="MayaVi(2f)ScriptingMayavi2(2f)BasicModules_attachments/basic_outline.png" />
+</div>
+<div class="section" id="axes-module">
+<h1>Axes module<a class="headerlink" href="#axes-module" title="Permalink to this headline">¶</a></h1>
+<p>For axis, you can set several parameters:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;color&nbsp;for&nbsp;axes;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;color&nbsp;for&nbsp;labels;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;labels&nbsp;name;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;and&nbsp;label&nbsp;format.</span></tt></div>
+</div>
+<p>Here&#8217;s what you can type:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.axes</span> <span class="kn">import</span> <span class="n">Axes</span>
+</pre></div>
+</div>
+<p>then</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">a</span> <span class="o">=</span> <span class="n">Axes</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">a</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>                     <span class="c"># color for axes</span>
+<span class="n">a</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">axis_title_text_property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>     <span class="c"># color for axes title</span>
+<span class="n">a</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">x_label</span> <span class="o">=</span> <span class="s">&quot;Lx&quot;</span>                                <span class="c"># label for Ox axis</span>
+<span class="n">a</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">y_label</span> <span class="o">=</span> <span class="s">&quot;Ly&quot;</span>                                <span class="c"># label for Oy axis</span>
+<span class="n">a</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">z_label</span> <span class="o">=</span> <span class="s">&quot;Lz&quot;</span>                                <span class="c"># label for Oz axis</span>
+<span class="n">a</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">label_format</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>                             <span class="c"># no dimensions displayed</span>
+<span class="n">a</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">axis_label_text_property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>     <span class="c"># in case we want to displa</span>
+<span class="n">y</span> <span class="n">them</span>
+</pre></div>
+</div>
+<p>Label format is the format for the dimensions along Ox, Oy and Oz axis.
+By default, it is set to %6.3g.</p>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)BasicModules_attachments/basic_axes.png" src="MayaVi(2f)ScriptingMayavi2(2f)BasicModules_attachments/basic_axes.png" />
+</div>
+<div class="section" id="orientationaxes-module">
+<h1>OrientationAxes module<a class="headerlink" href="#orientationaxes-module" title="Permalink to this headline">¶</a></h1>
+<p>!OrientationAxes module will display a little trihedron in the corner of
+the render window, showing the orientation of the three axes, Ox, Oy,
+Oz.</p>
+<p>Note: VTK &gt; 5.0 must be installed in order to use this module.</p>
+<p>Nothing special here, as the Outline module, you can set the labels
+color:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.orientation_axes</span> <span class="kn">import</span> <span class="n">OrientationAxes</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">oa</span> <span class="o">=</span> <span class="n">OrientationAxes</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">oa</span><span class="p">)</span>
+<span class="n">oa</span><span class="o">.</span><span class="n">text_property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>
+</pre></div>
+</div>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)BasicModules_attachments/basic_orientationaxes.png" src="MayaVi(2f)ScriptingMayavi2(2f)BasicModules_attachments/basic_orientationaxes.png" />
+</div>
+<div class="section" id="text-module">
+<h1>Text module<a class="headerlink" href="#text-module" title="Permalink to this headline">¶</a></h1>
+<p>You can use this module to display a title for your rendering window.</p>
+<p>You need a text (a string), and you have to set up its position in the
+window (coordinates go from 0 to 1 in x and y) with the x_position and
+y_position parameters.</p>
+<p>Then you can set up the height and the width of your text:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">enthought.mayavi.modules.text</span> <span class="kn">import</span> <span class="n">Text</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># I like my title centered and at top of the window</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">Text</span><span class="p">()</span>
+<span class="n">t</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">&quot;My Title Centered at the Top&quot;</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="n">t</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">scaled_text</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">t</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">text_property</span><span class="o">.</span><span class="n">font_size</span> <span class="o">=</span> <span class="mi">34</span>
+<span class="n">t</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">text_property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>
+<span class="c"># have to find out text width to center it. Tricky, but works fine. Thanks to Pr</span>
+<span class="c">#abhu.</span>
+<span class="n">t</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">*</span><span class="n">t</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">get_width</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">renderer</span><span class="p">)</span><span class="o">/</span><span class="n">t</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span>
+<span class="p">]</span>
+<span class="n">height</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">*</span><span class="n">t</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">get_height</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">renderer</span><span class="p">)</span><span class="o">/</span><span class="n">t</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span>
+<span class="p">]</span>
+<span class="n">t</span><span class="o">.</span><span class="n">x_position</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">-</span><span class="n">t</span><span class="o">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span>
+<span class="n">t</span><span class="o">.</span><span class="n">y_position</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="n">height</span>
+</pre></div>
+</div>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)BasicModules_attachments/basic_title.png" src="MayaVi(2f)ScriptingMayavi2(2f)BasicModules_attachments/basic_title.png" />
+<p>Now, we will present how to set up the color bar, called &#8220;scalar&#8221; or
+&#8220;vector&#8221; color bar. It depends of the data you have in your file.</p>
+</div>
+<div class="section" id="setting-up-color-bar">
+<h1>Setting up color bar<a class="headerlink" href="#setting-up-color-bar" title="Permalink to this headline">¶</a></h1>
+<p>Strictly speaking, the color bar is not a module, i.e. you don&#8217;t need to
+add it with an add_module() command: you have to associate the
+&#8220;module_manager&#8221; object to a module, previously loaded, say the Text
+module for example.</p>
+<p>Then, you can configure the color bar as follows (keywords are
+self-explanatory):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">mmsclut</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span>
+<span class="n">mmsclut</span><span class="o">.</span><span class="n">show_scalar_bar</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">mmsclutsc</span> <span class="o">=</span> <span class="n">mmsclut</span><span class="o">.</span><span class="n">scalar_bar</span>
+<span class="n">mmsclutsc</span><span class="o">.</span><span class="n">orientation</span> <span class="o">=</span> <span class="s">&quot;vertical&quot;</span>    <span class="c"># or &quot;horizontal&quot;</span>
+<span class="n">mmsclutsc</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">mmsclutsc</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="n">mmsclutsc</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">)</span>     <span class="c"># color bar located to the left of the ren</span>
+<span class="n">dering</span> <span class="n">window</span>
+<span class="n">mmsclutsc</span><span class="o">.</span><span class="n">label_text_property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>
+<span class="n">mmsclutsc</span><span class="o">.</span><span class="n">title_text_property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>
+<span class="n">mmsclut</span><span class="o">.</span><span class="n">number_of_labels</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">mmsclut</span><span class="o">.</span><span class="n">number_of_colors</span> <span class="o">=</span> <span class="mi">64</span>
+<span class="n">mmsclut</span><span class="o">.</span><span class="n">data_name</span> <span class="o">=</span> <span class="s">&quot;My Label&quot;</span>
+</pre></div>
+</div>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)BasicModules_attachments/basic_colorbar.png" src="MayaVi(2f)ScriptingMayavi2(2f)BasicModules_attachments/basic_colorbar.png" />
+<p>Note: To configure a color bar for vectors instead of scalars, replace
+&#8220;scalar_lut_manager&#8221; by &#8220;vector_lut_manager&#8221; above.</p>
+<p>At last, to close the &#8220;basic&#8221; modules section, let&#8217;s see how we can
+setting up the scene.</p>
+</div>
+<div class="section" id="setting-up-the-scene">
+<h1>Setting up the scene<a class="headerlink" href="#setting-up-the-scene" title="Permalink to this headline">¶</a></h1>
+<p>By &#8220;setting up the scene&#8221;, you have to read &#8220;how the scene will be
+seen&#8221;: for example, setting the color background and the point of view
+of the scene.</p>
+<p>As usual, setting these parameters using python &amp; TVTK is very easy.</p>
+<p>If you want to change background color, you may need to also change
+foreground color for all modules. We recall them here.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! /usr/bin/env python</span>
+
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.outline</span> <span class="kn">import</span> <span class="n">Outline</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.axes</span> <span class="kn">import</span> <span class="n">Axes</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.orientation_axes</span> <span class="kn">import</span> <span class="n">OrientationAxes</span>
+<span class="kn">from</span> <span class="nn">enthought.mayavi.modules.text</span> <span class="kn">import</span> <span class="n">Text</span>
+
+<span class="c"># we want a dark foreground color on a bright background</span>
+<span class="n">fg_color</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.06666</span><span class="p">,</span> <span class="mf">0.06666</span><span class="p">,</span> <span class="mf">0.1804</span><span class="p">)</span>   <span class="c"># dark blue</span>
+<span class="n">bg_color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.94118</span><span class="p">)</span>              <span class="c"># ivory</span>
+
+<span class="c"># setting foreground color for Outline module</span>
+<span class="n">o</span> <span class="o">=</span> <span class="n">Outline</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+<span class="n">o</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>
+
+<span class="c"># setting foreground color for Axes module</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">Axes</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">a</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>                     <span class="c"># color for axes</span>
+<span class="n">a</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">axis_title_text_property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>     <span class="c"># color for axes label</span>
+<span class="n">a</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">x_label</span> <span class="o">=</span> <span class="s">&quot;Lx&quot;</span>                                <span class="c"># label for Ox axis</span>
+<span class="n">a</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">y_label</span> <span class="o">=</span> <span class="s">&quot;Ly&quot;</span>                                <span class="c"># label for Oy axis</span>
+<span class="n">a</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">z_label</span> <span class="o">=</span> <span class="s">&quot;Lz&quot;</span>                                <span class="c"># label for Oz axis</span>
+<span class="n">a</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">label_format</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>                             <span class="c"># no dimensions displayed</span>
+
+
+<span class="c"># setting foreground color for OrientationAxes module</span>
+<span class="n">oa</span> <span class="o">=</span> <span class="n">OrientationAxes</span><span class="p">()</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">oa</span><span class="p">)</span>
+<span class="n">oa</span><span class="o">.</span><span class="n">text_property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>
+
+<span class="c"># setting foreground color for Text module</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">Text</span><span class="p">()</span>
+<span class="n">t</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">&quot;My Title Centered at the Top&quot;</span>
+<span class="n">script</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="n">t</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">scaled_text</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">t</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">text_property</span><span class="o">.</span><span class="n">font_size</span> <span class="o">=</span> <span class="mi">34</span>
+<span class="n">t</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">text_property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>
+<span class="n">t</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">*</span><span class="n">t</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">get_width</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">renderer</span><span class="p">)</span><span class="o">/</span><span class="n">t</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span>
+<span class="p">]</span>
+<span class="n">height</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">*</span><span class="n">t</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">get_height</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">renderer</span><span class="p">)</span><span class="o">/</span><span class="n">t</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span>
+<span class="p">]</span>
+<span class="n">t</span><span class="o">.</span><span class="n">x_position</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">-</span><span class="n">t</span><span class="o">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span>
+<span class="n">t</span><span class="o">.</span><span class="n">y_position</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="n">height</span>
+
+<span class="c"># setting foreground color for labels and title color bar.</span>
+<span class="n">mmsclut</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">module_manager</span><span class="o">.</span><span class="n">scalar_lut_manager</span>
+<span class="n">mmsclut</span><span class="o">.</span><span class="n">show_scalar_bar</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">mmsclutsc</span> <span class="o">=</span> <span class="n">mmsclut</span><span class="o">.</span><span class="n">scalar_bar</span>
+<span class="n">mmsclutsc</span><span class="o">.</span><span class="n">orientation</span> <span class="o">=</span> <span class="s">&quot;vertical&quot;</span>
+<span class="n">mmsclutsc</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">mmsclutsc</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="n">mmsclutsc</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">)</span>
+<span class="n">mmsclutsc</span><span class="o">.</span><span class="n">label_text_property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>
+<span class="n">mmsclutsc</span><span class="o">.</span><span class="n">title_text_property</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">fg_color</span>
+<span class="n">mmsclut</span><span class="o">.</span><span class="n">number_of_labels</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">mmsclut</span><span class="o">.</span><span class="n">number_of_colors</span> <span class="o">=</span> <span class="mi">64</span>
+<span class="n">mmsclut</span><span class="o">.</span><span class="n">data_name</span> <span class="o">=</span> <span class="s">&quot;My Label&quot;</span>
+
+<span class="c"># setting background color for the scene.</span>
+<span class="n">t</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">bg_color</span>
+</pre></div>
+</div>
+<p>Some points of view are also predefined in !MayaVi2.</p>
+<p>If you want:</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;Ox&nbsp;axis&nbsp;normal&nbsp;to&nbsp;the&nbsp;scene:&nbsp;use&nbsp;x_plus_view()&nbsp;(towards)&nbsp;or&nbsp;x_minus_view()&nbsp;(backwards)&nbsp;method;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;Oy&nbsp;axis&nbsp;normal&nbsp;to&nbsp;the&nbsp;scene:&nbsp;use&nbsp;y_plus_view()&nbsp;(towards)&nbsp;or&nbsp;y_minus_view()&nbsp;(backwards)&nbsp;method;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;Oz&nbsp;axis&nbsp;normal&nbsp;to&nbsp;the&nbsp;scene:&nbsp;use&nbsp;z_plus_view()&nbsp;(towards)&nbsp;or&nbsp;z_minus_view()&nbsp;(backwards)&nbsp;method;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;an&nbsp;isometric&nbsp;view&nbsp;(coordinates&nbsp;normal&nbsp;are&nbsp;(1,&nbsp;1,&nbsp;1)),&nbsp;use&nbsp;isometric_view&nbsp;method.</span></tt></p>
+<p>You can also:</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;set&nbsp;the&nbsp;elevation&nbsp;and&nbsp;azimuth&nbsp;angles&nbsp;to&nbsp;your&nbsp;needs&nbsp;(in&nbsp;degrees);</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;set&nbsp;a&nbsp;zooming&nbsp;factor&nbsp;of&nbsp;your&nbsp;scene.</span></tt></p>
+<p>with:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">t</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">x_plus_view</span><span class="p">()</span>
+<span class="n">t</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">azimuth</span><span class="p">(</span><span class="mi">62</span><span class="p">)</span>
+<span class="n">t</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">elevation</span><span class="p">(</span><span class="mf">19.5</span><span class="p">)</span>
+<span class="n">t</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">zoom</span><span class="p">(</span><span class="mf">1.5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>At last, you can choose if you want a perspective view or a parallel
+projection for your scene:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">t</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">parallel_projection</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</div>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)BasicModules_attachments/basic_scene_parall.png" src="MayaVi(2f)ScriptingMayavi2(2f)BasicModules_attachments/basic_scene_parall.png" />
+<p>for a parallel projection, or:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">t</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">parallel_projection</span> <span class="o">=</span> <span class="bp">False</span>
+</pre></div>
+</div>
+<img alt="MayaVi(2f)ScriptingMayavi2(2f)BasicModules_attachments/basic_scene_persp.png" src="MayaVi(2f)ScriptingMayavi2(2f)BasicModules_attachments/basic_scene_persp.png" />
+<p>for a perspective view.</p>
+<p>Here, &#8220;t&#8221; stands for the Text module previously loaded.</p>
+<p>Note: There are a lot of others parameters you can set up for your
+scene. See [:Cookbook/MayaVi/Tips: Cookbook/MayaVi/Tips] to read how to
+get more information about setting parameters modules.</p>
+<p>Now, it&#8217;s time to read the most interesting part: configuring and using
+modules and filters which interact with your data.</p>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a></li>
+<li><a class="reference internal" href="#outline-module">Outline module</a></li>
+<li><a class="reference internal" href="#axes-module">Axes module</a></li>
+<li><a class="reference internal" href="#orientationaxes-module">OrientationAxes module</a></li>
+<li><a class="reference internal" href="#text-module">Text module</a></li>
+<li><a class="reference internal" href="#setting-up-color-bar">Setting up color bar</a></li>
+<li><a class="reference internal" href="#setting-up-the-scene">Setting up the scene</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="MayaVi(2f)RunningMayavi2.html"
+                        title="previous chapter">Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="MayaVi(2f)ScriptingMayavi2(2f)Filters.html"
+                        title="next chapter">Introduction</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/MayaVi(2f)ScriptingMayavi2(2f)BasicModules.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)ScriptingMayavi2(2f)Filters.html" title="Introduction"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)RunningMayavi2.html" title="Introduction"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

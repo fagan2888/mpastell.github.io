@@ -1,0 +1,701 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Reading SPE file from CCD camera" href="Reading_SPE_files.html" />
+    <link rel="prev" title="Rank and nullspace of a matrix" href="RankNullspace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Reading_SPE_files.html" title="Reading SPE file from CCD camera"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="RankNullspace.html" title="Rank and nullspace of a matrix"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>TableOfContents(2)</p>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>In this cookbook, we will focus on using
+<a class="reference external" href="http://pyparsing.wikispaces.com/">pyparsing</a> and numpy to read a
+structured text file like this one, <a class="reference external" href="..image::Reading_Custom_Text_Files_with_Pyparsing_attachments/data3.txt">data.txt</a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># This is is an example file structured in section</span>
+<span class="c"># with comments begining with &#39;#&#39;</span>
+
+<span class="p">[</span> <span class="n">INFOS</span> <span class="p">]</span>
+<span class="n">Debug</span>          <span class="o">=</span> <span class="bp">False</span>
+<span class="n">Shape</span>  <span class="p">(</span><span class="n">mm</span><span class="o">^-</span><span class="mi">1</span><span class="p">)</span> <span class="o">=</span> <span class="mf">2.3</span>
+<span class="c"># here is a unit</span>
+<span class="n">Length</span> <span class="p">(</span><span class="n">mm</span><span class="p">)</span>    <span class="o">=</span> <span class="mf">25361.15</span>
+<span class="n">Path</span> <span class="mi">1</span>         <span class="o">=</span> <span class="n">C</span><span class="p">:</span>\\<span class="n">This</span>\<span class="ow">is</span>\<span class="n">a</span>\<span class="nb">long</span>\<span class="n">path</span>\<span class="k">with</span> <span class="n">some</span> <span class="n">space</span> <span class="ow">in</span> <span class="n">it</span>\<span class="n">data</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">description</span>    <span class="o">=</span> <span class="n">raw</span> <span class="n">values</span> <span class="n">can</span> <span class="n">have</span> <span class="n">multiple</span> <span class="n">lines</span><span class="p">,</span> <span class="n">but</span> <span class="n">additional</span> <span class="n">lines</span> <span class="n">must</span> <span class="n">s</span>
+<span class="n">tart</span>
+                 <span class="k">with</span> <span class="n">a</span> <span class="n">whitespace</span> <span class="n">which</span> <span class="ow">is</span> <span class="n">automatically</span> <span class="n">skipped</span>
+<span class="n">Parent</span>         <span class="o">=</span> <span class="bp">None</span>
+
+<span class="p">[</span> <span class="n">EMPTY</span> <span class="n">SECTION</span> <span class="p">]</span>
+<span class="c"># empty section should not be taken into account</span>
+
+<span class="p">[</span> <span class="n">TABLE</span> <span class="n">IN</span> <span class="n">ROWS</span> <span class="p">]</span>
+<span class="n">Temp</span>    <span class="p">(</span><span class="n">C</span><span class="p">)</span>             <span class="mi">100</span>             <span class="mi">200</span>        <span class="mi">300</span>       <span class="mf">450.0</span>        <span class="mi">600</span>
+<span class="n">E</span> <span class="n">XX</span>    <span class="p">(</span><span class="n">GPa</span><span class="p">)</span>           <span class="mf">159.4</span>       <span class="mf">16.9E+0</span>       <span class="mf">51.8</span>      <span class="o">.</span><span class="mf">15E02</span>        <span class="mi">4</span>
+<span class="c"># Here is a space in the row name</span>
+<span class="n">Words</span>               <span class="s">&#39;hundred&#39;</span>   <span class="s">&#39;two hundreds&#39;</span>  <span class="s">&#39;a lot&#39;</span>     <span class="s">&#39;four&#39;</span>      <span class="s">&#39;five&#39;</span>
+<span class="c"># Here are QuotedStrings with space</span>
+
+<span class="p">[</span> <span class="n">TABLE</span> <span class="n">IN</span> <span class="n">COLUMNS</span> <span class="p">]</span>
+<span class="n">STATION</span>         <span class="n">PRECIPITATION</span>   <span class="n">T_MAX_ABS</span>  <span class="n">T_MIN_ABS</span>
+<span class="p">(</span><span class="o">/</span><span class="p">)</span>                     <span class="p">(</span><span class="n">mm</span><span class="p">)</span>    <span class="p">(</span><span class="n">C</span><span class="p">)</span>        <span class="p">(</span><span class="n">C</span><span class="p">)</span>       <span class="c"># Columns must have a unit</span>
+<span class="n">Ajaccio</span>                 <span class="mf">64.8</span>    <span class="mf">18.8E+0</span>    <span class="o">-</span><span class="mf">2.6</span>
+<span class="n">Auxerre</span>                 <span class="mf">49.6</span>    <span class="mf">16.9E+0</span>    <span class="n">Nan</span>       <span class="c"># Here is a Nan</span>
+<span class="n">Bastia</span>                  <span class="mf">114.2</span>   <span class="mf">20.8E+0</span>    <span class="o">-</span><span class="mf">0.9</span>
+
+<span class="p">[</span> <span class="n">MATRIX</span> <span class="p">]</span>
+<span class="bp">True</span>    <span class="mi">2</span>       <span class="mi">3</span>
+<span class="mf">4.</span>      <span class="mf">5.</span>      <span class="mf">6.</span>
+<span class="mf">7.</span>      <span class="n">nan</span>     <span class="mi">8</span>
+</pre></div>
+</div>
+<p>and we will create a reusable parser class to automatically:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;detect&nbsp;section&nbsp;blocs,&nbsp;among&nbsp;four&nbsp;possible&nbsp;kinds&nbsp;:</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;a&nbsp;set&nbsp;of&nbsp;variable&nbsp;declarations&nbsp;:&nbsp;</span></tt><em>``name``</em><tt class="docutils literal"><span class="pre">&nbsp;(</span></tt><em>``unit``</em><tt class="docutils literal"><span class="pre">)&nbsp;=&nbsp;</span></tt><em>``value``</em><tt class="docutils literal"><span class="pre">,&nbsp;</span></tt><em>``unit``</em><tt class="docutils literal"><span class="pre">&nbsp;is&nbsp;optional</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;a&nbsp;table&nbsp;defined&nbsp;row&nbsp;by&nbsp;row,&nbsp;where&nbsp;the&nbsp;first&nbsp;column&nbsp;defines&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;row.&nbsp;This&nbsp;name&nbsp;can&nbsp;have&nbsp;spaces&nbsp;in&nbsp;it&nbsp;if&nbsp;it&nbsp;is&nbsp;followed&nbsp;by&nbsp;an&nbsp;unit,&nbsp;otherwise&nbsp;it&nbsp;can't.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;a&nbsp;table&nbsp;defined&nbsp;column&nbsp;by&nbsp;column.&nbsp;Column&nbsp;names&nbsp;can't&nbsp;contain&nbsp;spaces&nbsp;and&nbsp;the&nbsp;second&nbsp;row&nbsp;should&nbsp;in&nbsp;this&nbsp;case&nbsp;contains&nbsp;units</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;a&nbsp;matrix&nbsp;containing&nbsp;only&nbsp;numeric&nbsp;values,&nbsp;True,&nbsp;False&nbsp;or&nbsp;NaN</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;convert&nbsp;values&nbsp;into&nbsp;the&nbsp;adequate&nbsp;Python&nbsp;or&nbsp;Numpy&nbsp;type&nbsp;(True,&nbsp;False,&nbsp;None,&nbsp;NaN,&nbsp;float,&nbsp;str&nbsp;or&nbsp;array)</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;detect&nbsp;associated&nbsp;units&nbsp;if&nbsp;present</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;return&nbsp;a&nbsp;data&nbsp;structure&nbsp;with&nbsp;the&nbsp;same&nbsp;organization&nbsp;in&nbsp;section&nbsp;as&nbsp;the&nbsp;input&nbsp;file&nbsp;and&nbsp;clean&nbsp;up&nbsp;variable&nbsp;name&nbsp;to&nbsp;get&nbsp;a&nbsp;name&nbsp;compatible&nbsp;with&nbsp;named&nbsp;attribute&nbsp;access</span></tt></div>
+</div>
+<p>Here is a session example with this parser,
+<a class="reference external" href="..image::Reading_Custom_Text_Files_with_Pyparsing_attachments/ConfigNumParser_v0.1.1.py">ConfigNumParser</a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ConfigNumParser</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">parseConfigFile</span><span class="p">(</span><span class="s">&#39;data.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">asList</span><span class="p">())</span>
+<span class="go">[[&#39;infos&#39;,</span>
+<span class="go">  [&#39;debug&#39;, False],</span>
+<span class="go">  [&#39;shape&#39;, 2.2999999999999998],</span>
+<span class="go">  [&#39;length&#39;, 25361.150000000001],</span>
+<span class="go">  [&#39;path_1&#39;, &#39;C:\\\\This\\is\\a\\long\\path\\with some space in it\\data.txt&#39;],</span>
+<span class="go">  [&#39;description&#39;,</span>
+<span class="go">   &#39;raw values can have multiple lines, but additional lines must start\nwith a</span>
+<span class="go">whitespace which is automatically skipped&#39;],</span>
+<span class="go">  [&#39;parent&#39;, None],</span>
+<span class="go">  [&#39;names_&#39;, [&#39;debug&#39;, &#39;shape&#39;, &#39;length&#39;, &#39;path_1&#39;, &#39;description&#39;, &#39;parent&#39;]],</span>
+<span class="go">  [&#39;unit_&#39;, {&#39;length&#39;: &#39;mm&#39;, &#39;shape&#39;: &#39;mm^-1&#39;}]],</span>
+<span class="go"> [&#39;table_in_rows&#39;,</span>
+<span class="go">  [&#39;temp&#39;, array([ 100.,  200.,  300.,  450.,  600.])],</span>
+<span class="go">  [&#39;e_xx&#39;, array([ 159.4,   16.9,   51.8,   15. ,    4. ])],</span>
+<span class="go">  [&#39;words&#39;, array([&#39;hundred&#39;, &#39;two hundreds&#39;, &#39;a lot&#39;, &#39;four&#39;, &#39;five&#39;], dtype=&#39;|</span>
+<span class="go">S12&#39;)],</span>
+<span class="go">  [&#39;names_&#39;, [&#39;temp&#39;, &#39;e_xx&#39;, &#39;words&#39;]],</span>
+<span class="go">  [&#39;unit_&#39;, {&#39;e_xx&#39;: &#39;GPa&#39;, &#39;temp&#39;: &#39;C&#39;}]],</span>
+<span class="go"> [&#39;table_in_columns&#39;,</span>
+<span class="go">  [&#39;station&#39;, array([&#39;Ajaccio&#39;, &#39;Auxerre&#39;, &#39;Bastia&#39;], dtype=&#39;|S7&#39;)],</span>
+<span class="go">  [&#39;precipitation&#39;, array([  64.8,   49.6,  114.2])],</span>
+<span class="go">  [&#39;t_max_abs&#39;, array([ 18.8,  16.9,  20.8])],</span>
+<span class="go">  [&#39;t_min_abs&#39;, array([-2.6,  NaN, -0.9])],</span>
+<span class="go">  [&#39;names_&#39;, [&#39;station&#39;, &#39;precipitation&#39;, &#39;t_max_abs&#39;, &#39;t_min_abs&#39;]],</span>
+<span class="go">  [&#39;unit_&#39;,  {&#39;precipitation&#39;: &#39;mm&#39;, &#39;t_max_abs&#39;: &#39;C&#39;, &#39;t_min_abs&#39;: &#39;C&#39;}]],</span>
+<span class="go"> [&#39;matrix&#39;,</span>
+<span class="go">  array([[  1.,   2.,   3.],</span>
+<span class="go">       [  4.,   5.,   6.],</span>
+<span class="go">       [  7.,  NaN,   8.]])]]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">matrix</span>
+<span class="go">array([[  1.,   2.,   3.],</span>
+<span class="go">       [  4.,   5.,   6.],</span>
+<span class="go">       [  7.,  NaN,   8.]])</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">table_in_columns</span><span class="o">.</span><span class="n">t_max_abs</span>
+<span class="go">array([ 18.8,  16.9,  20.8])</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">infos</span><span class="o">.</span><span class="n">length</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">infos</span><span class="o">.</span><span class="n">unit_</span><span class="p">[</span><span class="s">&#39;length&#39;</span><span class="p">]</span>
+<span class="go">(25361.15, &#39;mm&#39;)</span>
+</pre></div>
+</div>
+<p>This parser add two specials fields in all sections but matrix ones :</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><em>``names_``</em><tt class="docutils literal"><span class="pre">&nbsp;:&nbsp;a&nbsp;list&nbsp;containing&nbsp;the&nbsp;names&nbsp;of&nbsp;all&nbsp;variables&nbsp;found&nbsp;in&nbsp;this&nbsp;section</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><em>``unit_``</em><tt class="docutils literal"><span class="pre">&nbsp;:&nbsp;a&nbsp;dict&nbsp;containing&nbsp;the&nbsp;unit&nbsp;corresponding&nbsp;to&nbsp;each&nbsp;variable&nbsp;name,&nbsp;if&nbsp;there&nbsp;is&nbsp;any</span></tt></div>
+</div>
+</div>
+<div class="section" id="defining-a-parser-for-parameter-declarations">
+<h1>Defining a parser for parameter declarations<a class="headerlink" href="#defining-a-parser-for-parameter-declarations" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="http://pyparsing.wikispaces.com/">pyparsing</a> is an efficient tool to
+deal with formatted text, and let you process in two steps:</p>
+<p><tt class="docutils literal"><span class="pre">1.&nbsp;Define&nbsp;rules&nbsp;to&nbsp;identify&nbsp;strings&nbsp;representing&nbsp;sections,&nbsp;variable&nbsp;names,&nbsp;and&nbsp;so&nbsp;on.&nbsp;&nbsp;With&nbsp;pyparsing,&nbsp;theses&nbsp;rules&nbsp;can&nbsp;be&nbsp;combined&nbsp;easily&nbsp;with&nbsp;the&nbsp;standard&nbsp;operators&nbsp;|&nbsp;and&nbsp;+&nbsp;and&nbsp;creating&nbsp;reusable&nbsp;components&nbsp;becomes&nbsp;&nbsp;easy&nbsp;too.&nbsp;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">1.&nbsp;Define&nbsp;actions&nbsp;to&nbsp;be&nbsp;executed&nbsp;on&nbsp;theses&nbsp;fields,&nbsp;to&nbsp;convert&nbsp;them&nbsp;into&nbsp;python&nbsp;objects.</span></tt></p>
+<p>In the file example above, there are four kinds of data: parameter
+definitions, table in rows, table in columns and matrix.</p>
+<p>So, we will define a parser for each one and combine them to define the
+final parser.</p>
+<div class="section" id="first-steps-with-pyparsing">
+<h2>First steps with pyparsing<a class="headerlink" href="#first-steps-with-pyparsing" title="Permalink to this headline">¶</a></h2>
+<p>This section will describe step by step how to build the function
+`paramParser` defined in
+<a class="reference external" href="..image::Reading_Custom_Text_Files_with_Pyparsing_attachments/ConfigNumParser_v0.1.1.py">ConfigNumParser</a>, used to
+parse the bloc [ INFOS ] in the example above.</p>
+<p>A parameter declaration has the form:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;</span></tt><em>``key``</em><tt class="docutils literal"><span class="pre">&nbsp;(</span></tt><em>``unit``</em><tt class="docutils literal"><span class="pre">)&nbsp;=&nbsp;</span></tt><em>``value``</em></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;with:</span></tt></div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;</span></tt><em>``key``</em><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;:&nbsp;a&nbsp;set&nbsp;of&nbsp;alphanumeric&nbsp;characters&nbsp;or&nbsp;_</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;</span></tt><em>``unit``</em><tt class="docutils literal"><span class="pre">&nbsp;:&nbsp;an&nbsp;optional&nbsp;set&nbsp;of&nbsp;alphanumeric&nbsp;characters&nbsp;or&nbsp;^&nbsp;*&nbsp;/&nbsp;-&nbsp;.&nbsp;_</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;</span></tt><em>``value``</em><tt class="docutils literal"><span class="pre">:&nbsp;anything&nbsp;to&nbsp;the&nbsp;end&nbsp;of&nbsp;line&nbsp;or&nbsp;to&nbsp;the&nbsp;character&nbsp;#&nbsp;which&nbsp;starts&nbsp;a&nbsp;comment</span></tt></div>
+</div>
+<p>This can be translated almost literally with pyparsing syntax (see <a class="reference external" href="http://pyparsing.wikispaces.com/HowToUsePyparsing">how
+to use pyparsing</a>
+for more information):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span>    <span class="nn">pyparsing</span>   <span class="kn">import</span> <span class="o">*</span>
+<span class="c"># parameter definition</span>
+<span class="n">keyName</span>       <span class="o">=</span> <span class="n">Word</span><span class="p">(</span><span class="n">alphanums</span> <span class="o">+</span> <span class="s">&#39;_&#39;</span><span class="p">)</span>
+<span class="n">unitDef</span>       <span class="o">=</span> <span class="s">&#39;(&#39;</span> <span class="o">+</span> <span class="n">Word</span><span class="p">(</span><span class="n">alphanums</span> <span class="o">+</span> <span class="s">&#39;^*/-._&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;)&#39;</span>
+<span class="n">paramValueDef</span> <span class="o">=</span> <span class="n">SkipTo</span><span class="p">(</span><span class="s">&#39;#&#39;</span><span class="o">|</span><span class="n">lineEnd</span><span class="p">)</span>
+
+<span class="n">paramDef</span> <span class="o">=</span> <span class="n">keyName</span> <span class="o">+</span> <span class="n">Optional</span><span class="p">(</span><span class="n">unitDef</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;=&quot;</span> <span class="o">+</span> <span class="n">empty</span> <span class="o">+</span> <span class="n">paramValueDef</span>
+</pre></div>
+</div>
+<p>It is easy to test what will be found with this pattern in the data
+file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># print all params found</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">paramDef</span><span class="o">.</span><span class="n">searchString</span><span class="p">(</span><span class="nb">file</span><span class="p">(</span><span class="s">&#39;data.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()):</span>
+<span class="o">...</span>     <span class="k">print</span> <span class="n">param</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span>
+<span class="o">...</span>     <span class="k">print</span> <span class="s">&#39;...&#39;</span>
+<span class="p">[</span><span class="s">&#39;Context&#39;</span><span class="p">,</span> <span class="s">&#39;=&#39;</span><span class="p">,</span> <span class="s">&#39;full&#39;</span><span class="p">]</span>
+<span class="o">...</span>
+<span class="p">[</span><span class="s">&#39;Temp_ref&#39;</span><span class="p">,</span> <span class="s">&#39;(&#39;</span><span class="p">,</span> <span class="s">&#39;K&#39;</span><span class="p">,</span> <span class="s">&#39;)&#39;</span><span class="p">,</span> <span class="s">&#39;=&#39;</span><span class="p">,</span> <span class="s">&#39;298.15&#39;</span><span class="p">]</span>
+<span class="o">...</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>We can improved it in a few ways:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;suppress&nbsp;meaningless&nbsp;fields&nbsp;'(',&nbsp;'=',&nbsp;')'&nbsp;from&nbsp;the&nbsp;output,&nbsp;with&nbsp;the&nbsp;use&nbsp;of&nbsp;the&nbsp;`Suppress`&nbsp;element,&nbsp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;give&nbsp;a&nbsp;name&nbsp;to&nbsp;the&nbsp;different&nbsp;fields,&nbsp;with&nbsp;the&nbsp;`setResultsName`&nbsp;method,&nbsp;or&nbsp;simply&nbsp;just&nbsp;by&nbsp;calling&nbsp;an&nbsp;element&nbsp;with&nbsp;the&nbsp;name&nbsp;in&nbsp;argument</span></tt></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># parameter definition</span>
+<span class="n">keyName</span>       <span class="o">=</span> <span class="n">Word</span><span class="p">(</span><span class="n">alphanums</span> <span class="o">+</span> <span class="s">&#39;_&#39;</span><span class="p">)</span>
+<span class="n">unitDef</span>       <span class="o">=</span> <span class="n">Suppress</span><span class="p">(</span><span class="s">&#39;(&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">Word</span><span class="p">(</span><span class="n">alphanums</span> <span class="o">+</span> <span class="s">&#39;^*/-._&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">Suppress</span><span class="p">(</span><span class="s">&#39;)&#39;</span><span class="p">)</span>
+<span class="n">paramValueDef</span> <span class="o">=</span> <span class="n">SkipTo</span><span class="p">(</span><span class="s">&#39;#&#39;</span><span class="o">|</span><span class="n">lineEnd</span><span class="p">)</span>
+
+<span class="n">paramDef</span> <span class="o">=</span> <span class="n">keyName</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">Optional</span><span class="p">(</span><span class="n">unitDef</span><span class="p">)(</span><span class="s">&#39;unit&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">Suppress</span><span class="p">(</span><span class="s">&quot;=&quot;</span><span class="o">+</span><span class="n">empty</span><span class="p">)</span> <span class="o">+</span> <span class="n">p</span>
+<span class="n">aramValueDef</span><span class="p">(</span><span class="s">&#39;value&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The test will now give name to results and gives a nicer output:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="s">&#39;Context&#39;</span><span class="p">,</span> <span class="s">&#39;full&#39;</span><span class="p">]</span>
+<span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">Context</span>
+<span class="o">-</span> <span class="n">value</span><span class="p">:</span> <span class="n">full</span>
+<span class="o">...</span>
+<span class="p">[</span><span class="s">&#39;Temp_ref&#39;</span><span class="p">,</span> <span class="s">&#39;K&#39;</span><span class="p">,</span> <span class="s">&#39;298.15&#39;</span><span class="p">]</span>
+<span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">Temp_ref</span>
+<span class="o">-</span> <span class="n">unit</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;K&#39;</span><span class="p">]</span>
+<span class="o">-</span> <span class="n">value</span><span class="p">:</span> <span class="mf">298.15</span>
+<span class="o">...</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="converting-data-into-python-objects">
+<h2>Converting data into Python objects<a class="headerlink" href="#converting-data-into-python-objects" title="Permalink to this headline">¶</a></h2>
+<p>We will detail further what kind of values are expected to let pyparsing
+handle the conversion.</p>
+<p>They can be divided in two parts :</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Python&nbsp;objects&nbsp;like&nbsp;numbers,&nbsp;True,&nbsp;False,&nbsp;None,&nbsp;NaN&nbsp;or&nbsp;any&nbsp;string&nbsp;between&nbsp;quotes.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Raw&nbsp;strings&nbsp;that&nbsp;should&nbsp;not&nbsp;be&nbsp;converted</span></tt></div>
+</div>
+<p>Let&#8217;s begin with numbers. We can use the `Regex` element to rapidly
+detect strings representing numbers:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">re</span>        <span class="kn">import</span> <span class="n">VERBOSE</span>
+<span class="n">number</span> <span class="o">=</span> <span class="n">Regex</span><span class="p">(</span><span class="s">r&quot;&quot;&quot;</span>
+<span class="s">        [+-]?                           # optional sign</span>
+<span class="s">         (</span>
+<span class="s">            (?:\d+(?P&lt;float1&gt;\.\d*)?)   # match 2 or 2.02</span>
+<span class="s">          |                             # or</span>
+<span class="s">            (?P&lt;float2&gt;\.\d+)           # match .02</span>
+<span class="s">         )</span>
+<span class="s">         (?P&lt;float3&gt;[Ee][+-]?\d+)?      # optional exponent</span>
+<span class="s">        &quot;&quot;&quot;</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">VERBOSE</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="http://docs.python.org/library/re.html#module-re">Regular expression
+operations</a> for
+more information on regular expressions. We could have built a parser
+with standard pyparsing elements (`Combine`, `Optional`, `oneOf`,
+etc.) but low-level expressions like floating point numbers are said to
+do really much better using the `Regex` class. I know it feels like
+cheating, but in truth, pyparsing uses a number of re&#8217;s under the
+covers.</p>
+<p>Now we will define a function to convert this string into python float
+or integer and set a `parseAction` to tell pyparsing to automatically
+convert a number when it find one:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">convertNumber</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a string matching a number to a python number&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">float1</span> <span class="ow">or</span> <span class="n">t</span><span class="o">.</span><span class="n">float2</span> <span class="ow">or</span> <span class="n">t</span><span class="o">.</span><span class="n">float3</span> <span class="p">:</span> <span class="k">return</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+    <span class="k">else</span>                                <span class="p">:</span> <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="p">]</span>
+
+<span class="n">number</span><span class="o">.</span><span class="n">setParseAction</span><span class="p">(</span><span class="n">convertNumber</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The `convertNumber` function is a simple example of `parseAction`:</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;it&nbsp;should&nbsp;accepts&nbsp;a&nbsp;`parseResults`&nbsp;object&nbsp;as&nbsp;input&nbsp;value&nbsp;(some&nbsp;functions&nbsp;can&nbsp;accepts&nbsp;3&nbsp;parameters,&nbsp;see&nbsp;`setParseAction`&nbsp;documentation).&nbsp;A&nbsp;`parseResults`&nbsp;object&nbsp;can&nbsp;be&nbsp;used&nbsp;as&nbsp;a&nbsp;list,&nbsp;as&nbsp;a&nbsp;dict&nbsp;or&nbsp;directly&nbsp;with&nbsp;a&nbsp;named&nbsp;attribute&nbsp;if&nbsp;you&nbsp;have&nbsp;named&nbsp;your&nbsp;results.&nbsp;Here&nbsp;we&nbsp;had&nbsp;set&nbsp;three&nbsp;named&nbsp;group&nbsp;float1,&nbsp;float2&nbsp;and&nbsp;float3&nbsp;and&nbsp;we&nbsp;can&nbsp;use&nbsp;them&nbsp;to&nbsp;decide&nbsp;whether&nbsp;to&nbsp;use&nbsp;int()&nbsp;or&nbsp;float().</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;it&nbsp;should&nbsp;return&nbsp;either&nbsp;a&nbsp;`parseResults`&nbsp;object&nbsp;or&nbsp;a&nbsp;list&nbsp;of&nbsp;results&nbsp;which&nbsp;will&nbsp;be&nbsp;automatically&nbsp;converted&nbsp;to&nbsp;a&nbsp;`parseResults`&nbsp;object.</span></tt></p>
+<p>Pyparsing comes with a very convenient function to convert fields to a
+constant object, namely `replaceWith`. This can be used to create a
+list of element converting strings to python objects:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">numpy</span>     <span class="kn">import</span> <span class="n">NAN</span>
+
+<span class="n">pyValue_list</span> <span class="o">=</span> <span class="p">[</span> <span class="n">number</span>                                                        <span class="p">,</span>
+
+                 <span class="n">Keyword</span><span class="p">(</span><span class="s">&#39;True&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setParseAction</span><span class="p">(</span><span class="n">replaceWith</span><span class="p">(</span><span class="bp">True</span><span class="p">))</span>             <span class="p">,</span>
+
+                 <span class="n">Keyword</span><span class="p">(</span><span class="s">&#39;False&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setParseAction</span><span class="p">(</span><span class="n">replaceWith</span><span class="p">(</span><span class="bp">False</span><span class="p">))</span>           <span class="p">,</span>
+
+                 <span class="n">Keyword</span><span class="p">(</span><span class="s">&#39;NAN&#39;</span><span class="p">,</span> <span class="n">caseless</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">setParseAction</span><span class="p">(</span><span class="n">replaceWith</span><span class="p">(</span><span class="n">NAN</span><span class="p">)),</span>
+
+                 <span class="n">Keyword</span><span class="p">(</span><span class="s">&#39;None&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setParseAction</span><span class="p">(</span><span class="n">replaceWith</span><span class="p">(</span><span class="bp">None</span><span class="p">))</span>             <span class="p">,</span>
+
+                 <span class="n">QuotedString</span><span class="p">(</span><span class="s">&#39;&quot;&quot;&quot;&#39;</span><span class="p">,</span> <span class="n">multiline</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>                           <span class="p">,</span>
+
+                 <span class="n">QuotedString</span><span class="p">(</span><span class="s">&quot;&#39;&#39;&#39;&quot;</span><span class="p">,</span> <span class="n">multiline</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>                           <span class="p">,</span>
+
+                 <span class="n">QuotedString</span><span class="p">(</span><span class="s">&#39;&quot;&#39;</span><span class="p">)</span>                                             <span class="p">,</span>
+
+                 <span class="n">QuotedString</span><span class="p">(</span><span class="s">&quot;&#39;&quot;</span><span class="p">)</span>                                             <span class="p">,</span>
+
+               <span class="p">]</span>
+
+<span class="n">pyValue</span>     <span class="o">=</span> <span class="n">MatchFirst</span><span class="p">(</span> <span class="n">e</span><span class="o">.</span><span class="n">setWhitespaceChars</span><span class="p">(</span><span class="s">&#39; </span><span class="se">\t\r</span><span class="s">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">pyValue_list</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here we used:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;`Keyword`&nbsp;to&nbsp;detect&nbsp;standard&nbsp;python&nbsp;keyword&nbsp;and&nbsp;replace&nbsp;them&nbsp;on&nbsp;the&nbsp;fly&nbsp;&nbsp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;`QuotedString`&nbsp;to&nbsp;detect&nbsp;quoted&nbsp;string&nbsp;and&nbsp;automatically&nbsp;unquote&nbsp;them</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;`MatchFirst`&nbsp;to&nbsp;build&nbsp;a&nbsp;super&nbsp;element,&nbsp;`pyValue`&nbsp;to&nbsp;convert&nbsp;all&nbsp;kind&nbsp;of&nbsp;python&nbsp;values.</span></tt></div>
+</div>
+<p>Let&#8217;s see what we get:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">test2</span> <span class="o">=</span> <span class="s">&#39;&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">    1   2   3.0  0.3 .3  2e2  -.2e+2 +2.2256E-2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">    True False nan NAN None</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">    &quot;word&quot; &quot;two words&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">    &quot;&quot;&quot;&#39;more words&#39;, he said&quot;&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&#39;&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">pyValue</span><span class="o">.</span><span class="n">searchString</span><span class="p">(</span><span class="n">test2</span><span class="p">)</span>
+<span class="go">[[1], [2], [3.0], [0.29999999999999999], [0.29999999999999999], [200.0], [-20.0]</span>
+<span class="go">, [0.022256000000000001],</span>
+<span class="go">[True], [False], [nan], [nan], [None], [&#39;word&#39;], [&#39;two words&#39;], [&quot;&#39;more words&#39;,</span>
+<span class="go">he said&quot;]]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="some-words-on-whitespace-characters">
+<h2>Some words on whitespace characters<a class="headerlink" href="#some-words-on-whitespace-characters" title="Permalink to this headline">¶</a></h2>
+<p>By default, pyparsing considers any characters in &#8216; \t\r\n&#8217;) as
+whitespace and meaningless. If you need to detect ends-of-line you need
+to change this behavior by using `setWhitespaceChars` or
+`setDefaultWhitespaceChars`.</p>
+<p>As we are going to process tables line by line, we need to configure
+this and this should be set up <em>at the lowest level</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">pyValue2</span>     <span class="o">=</span> <span class="n">MatchFirst</span><span class="p">(</span><span class="n">pyValue_list</span><span class="p">)</span>          <span class="c"># default behavior</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">OneOrMore</span><span class="p">(</span><span class="n">pyValue2</span><span class="p">)</span><span class="o">.</span><span class="n">searchString</span><span class="p">(</span><span class="n">test2</span><span class="p">)</span>
+<span class="go">[[1, 2, 3.0, 0.29999999999999999, 0.29999999999999999, 200.0, -20.0, 0.022256000</span>
+<span class="go">000000001, True, False, nan, nan, None, &#39;word&#39;, &#39;two words&#39;, &quot;&#39;more words&#39;, he s</span>
+<span class="go">aid&quot;]]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># to compare to</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">OneOrMore</span><span class="p">(</span><span class="n">pyValue</span><span class="p">)</span><span class="o">.</span><span class="n">searchString</span><span class="p">(</span><span class="n">test2</span><span class="p">)</span>
+<span class="go">[[1, 2, 3.0, 0.29999999999999999, 0.29999999999999999, 200.0, -20.0, 0.022256000</span>
+<span class="go">000000001],</span>
+<span class="go">[True, False, nan, nan, None],</span>
+<span class="go">[&#39;word&#39;, &#39;two words&#39;],</span>
+<span class="go">[&quot;&#39;more words&#39;, he said&quot;]]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="converting-variables-names">
+<h2>Converting variables names<a class="headerlink" href="#converting-variables-names" title="Permalink to this headline">¶</a></h2>
+<p>We must also detail what is an acceptable parameter name.</p>
+<p>As the end of the parameter name is delimited by the = character, we
+could accept to have spaces in it. But as we want the possibility to
+access to its value via a named attribute, we need to convert it to a
+standard form, compatible with python&#8217;s naming conventions. Here we
+choose to format parameter names to lowercase, with any set of character
+in &#8216; -/.&#8217; replaced with underscores.</p>
+<p>Later, we will have to deal with parameter names where spaces can&#8217;t be
+allowed. So we will have to define two kind of names:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">variableParser</span><span class="p">(</span><span class="n">escapedChars</span><span class="p">,</span> <span class="n">baseChars</span><span class="o">=</span><span class="n">alphanums</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Return pattern matching any characters in baseChars separated by</span>
+<span class="sd">    characters defined in escapedChars. Thoses characters are replaced with &#39;_&#39;</span>
+
+<span class="sd">    The &#39;_&#39; character is therefore automatically in escapedChars.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">escapeDef</span> <span class="o">=</span> <span class="n">Word</span><span class="p">(</span><span class="n">escapedChars</span> <span class="o">+</span> <span class="s">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setParseAction</span><span class="p">(</span><span class="n">replaceWith</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">))</span>
+    <span class="n">whitespaceChars</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="s">&#39; </span><span class="se">\t\r</span><span class="s">&#39;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">escapedChars</span> <span class="p">)</span>
+    <span class="n">escapeDef</span> <span class="o">=</span> <span class="n">escapeDef</span><span class="o">.</span><span class="n">setWhitespaceChars</span><span class="p">(</span><span class="n">whitespaceChars</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Combine</span><span class="p">(</span><span class="n">Word</span><span class="p">(</span><span class="n">baseChars</span><span class="p">)</span> <span class="o">+</span> <span class="n">Optional</span><span class="p">(</span><span class="n">OneOrMore</span><span class="p">(</span><span class="n">escapeDef</span> <span class="o">+</span> <span class="n">Word</span><span class="p">(</span><span class="n">baseCha</span>
+<span class="n">rs</span><span class="p">))))</span>
+
+<span class="n">keyName</span>             <span class="o">=</span> <span class="n">variableParser</span><span class="p">(</span><span class="s">&#39; _-./&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setParseAction</span><span class="p">(</span><span class="n">downcaseTokens</span><span class="p">)</span>
+<span class="n">keyNameWithoutSpace</span> <span class="o">=</span> <span class="n">variableParser</span><span class="p">(</span><span class="s">&#39;_-./&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setParseAction</span><span class="p">(</span><span class="n">downcaseTokens</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>`downcaseTokens` is a special pyparsing function returning every
+matching tokens lowercase.</p>
+</div>
+<div class="section" id="dealing-with-raw-text">
+<h2>Dealing with raw text<a class="headerlink" href="#dealing-with-raw-text" title="Permalink to this headline">¶</a></h2>
+<p>To finish this parser, we now need to add a rule to match raw text
+following the conditions:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;anything&nbsp;after&nbsp;the&nbsp;#&nbsp;character&nbsp;is&nbsp;considered&nbsp;as&nbsp;a&nbsp;comment&nbsp;and&nbsp;skipped</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;a&nbsp;raw&nbsp;value&nbsp;can&nbsp;be&nbsp;on&nbsp;several&nbsp;lines,&nbsp;but&nbsp;the&nbsp;additional&nbsp;lines&nbsp;must&nbsp;start&nbsp;with&nbsp;a&nbsp;whitespace&nbsp;and&nbsp;not&nbsp;with&nbsp;a&nbsp;[</span></tt></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># rawValue can be multiline but theses lines should start with a Whitespace</span>
+<span class="n">rawLine</span>  <span class="o">=</span> <span class="n">CharsNotIn</span><span class="p">(</span><span class="s">&#39;#</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">lineEnd</span> <span class="o">|</span> <span class="n">Suppress</span><span class="p">(</span><span class="s">&#39;#&#39;</span><span class="o">+</span><span class="n">restOfLine</span><span class="p">))</span>
+<span class="n">rawValue</span> <span class="o">=</span> <span class="n">Combine</span><span class="p">(</span> <span class="n">rawLine</span> <span class="o">+</span> <span class="n">ZeroOrMore</span><span class="p">(</span><span class="n">White</span><span class="p">(</span><span class="s">&#39; </span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">suppress</span><span class="p">()</span><span class="o">+</span> <span class="n">NotAny</span><span class="p">(</span><span class="s">&#39;[&#39;</span><span class="p">)</span> <span class="o">+</span>
+<span class="n">rawLine</span><span class="p">))</span>
+<span class="n">rawValue</span><span class="o">.</span><span class="n">setParseAction</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">t</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>We will also refine our definition of units to handle special cases like
+(-), (/) or (), corresponding to a blank unit.</p>
+<p>This leads to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">unitDef</span>  <span class="o">=</span> <span class="n">Suppress</span><span class="p">(</span><span class="s">&#39;(&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">Suppress</span><span class="p">(</span><span class="n">oneOf</span><span class="p">(</span><span class="s">&#39;- /&#39;</span><span class="p">))</span> <span class="o">|</span> <span class="n">Optional</span><span class="p">(</span><span class="n">Word</span><span class="p">(</span><span class="n">alphanums</span> <span class="o">+</span> <span class="s">&#39;</span>
+<span class="o">^*/-.</span><span class="n">_</span><span class="s">&#39;))) + Suppress(&#39;</span><span class="p">)</span><span class="s">&#39;)</span>
+<span class="n">valueDef</span> <span class="o">=</span> <span class="n">pyValue</span> <span class="o">|</span> <span class="n">rawValue</span>
+<span class="n">paramDef</span> <span class="o">=</span> <span class="n">keyName</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">Optional</span><span class="p">(</span><span class="n">unitDef</span><span class="p">)(</span><span class="s">&#39;unit&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">Suppress</span><span class="p">(</span><span class="s">&quot;=&quot;</span><span class="o">+</span><span class="n">empty</span><span class="p">)</span> <span class="o">+</span> <span class="n">v</span>
+<span class="n">alueDef</span><span class="p">(</span><span class="s">&#39;value&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="structuring-data">
+<h2>Structuring data<a class="headerlink" href="#structuring-data" title="Permalink to this headline">¶</a></h2>
+<p>We will try to organize the results in an easy to use data structure.</p>
+<p>To do so, we will use the `Dict` element, which allows access by key
+as a normal dict or by named attributes. This element takes for every
+tokens found, its first field as the key name and the following ones as
+values. This is very handy when you can group data with the `Group`
+element to have only two fields.</p>
+<p>As we can have three of them (with units) we will put these units aside:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">formatBloc</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Format the result to have a list of (key, values) easily usable with Dic</span>
+<span class="sd">t</span>
+
+<span class="sd">    Add two fields :</span>
+<span class="sd">        names_ : the list of column names found</span>
+<span class="sd">        units_ : a dict in the form {key : unit}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c"># store units and names</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">t</span> <span class="p">:</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ParseResults</span><span class="p">([</span> <span class="n">row</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">value</span> <span class="p">]))</span>
+        <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">unit</span> <span class="p">:</span> <span class="n">units</span><span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">unit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">ParseResults</span><span class="p">([</span> <span class="s">&#39;names_&#39;</span><span class="p">,</span> <span class="n">names</span> <span class="p">]))</span>
+    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">ParseResults</span><span class="p">([</span> <span class="s">&#39;unit_&#39;</span><span class="p">,</span>  <span class="n">units</span><span class="p">]))</span>
+
+    <span class="k">return</span> <span class="n">rows</span>
+
+<span class="n">paramParser</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">OneOrMore</span><span class="p">(</span> <span class="n">Group</span><span class="p">(</span><span class="n">paramDef</span><span class="p">))</span><span class="o">.</span><span class="n">setParseAction</span><span class="p">(</span><span class="n">formatBloc</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This `paramParser` element is exactly the parser created by the
+function `paramParser` defined in
+<a class="reference external" href="..image::Reading_Custom_Text_Files_with_Pyparsing_attachments/ConfigNumParser_v0.1.1.py">ConfigNumParser</a>.</p>
+<p>Let&#8217;s see what we get:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">paramParser</span><span class="o">.</span><span class="n">ignore</span><span class="p">(</span><span class="s">&#39;#&#39;</span> <span class="o">+</span> <span class="n">restOfLine</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">paramParser</span><span class="o">.</span><span class="n">searchString</span><span class="p">(</span><span class="nb">file</span><span class="p">(</span><span class="s">&#39;data.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">data</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span>
+<span class="go">[...]</span>
+<span class="go">- debug: False</span>
+<span class="go">- description: raw values can have multiple lines, but additional lines must sta</span>
+<span class="go">rt</span>
+<span class="go">with a whitespace which is automatically skipped</span>
+<span class="go">- length: 25361.15</span>
+<span class="go">- names_: [&#39;debug&#39;, &#39;shape&#39;, &#39;length&#39;, &#39;path_1&#39;, &#39;description&#39;, &#39;parent&#39;]</span>
+<span class="go">- parent: None</span>
+<span class="go">- path_1: &#39;C:\\This\is\a\long\path\with some space in it\data.txt&#39;</span>
+<span class="go">- shape: 2.3</span>
+<span class="go">- unit_: {&#39;shape&#39;: &#39;mm^-1&#39;, &#39;length&#39;: &#39;mm&#39;}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">length</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">unit_</span><span class="p">[</span><span class="s">&#39;length&#39;</span><span class="p">]</span>
+<span class="go">Out[12]: (25361.150000000001, &#39;mm&#39;)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="defining-a-parser-for-tables">
+<h1>Defining a parser for tables<a class="headerlink" href="#defining-a-parser-for-tables" title="Permalink to this headline">¶</a></h1>
+<p>For parsing parameter declarations, we have seen most of the common
+techniques but one: the use of `Forward` element to define parsing
+rules on the fly.</p>
+<p>Let&#8217;s see how this can be used to parse a table defined column by
+column, according to this schema:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Name_1</span>       <span class="n">Name_2</span>     <span class="o">...</span>      <span class="n">Name_n</span>
+<span class="p">(</span><span class="n">unit_1</span><span class="p">)</span>    <span class="p">(</span><span class="n">unit_2</span><span class="p">)</span>    <span class="o">...</span>     <span class="p">(</span><span class="n">unit_n</span><span class="p">)</span>
+<span class="n">value_11</span>    <span class="n">value_21</span>    <span class="o">...</span>     <span class="n">value_n1</span>
+  <span class="o">...</span>         <span class="o">...</span>       <span class="o">...</span>       <span class="o">...</span>
+</pre></div>
+</div>
+<p>and the following rules:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Names&nbsp;can't&nbsp;contains&nbsp;any&nbsp;whitespaces.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Units&nbsp;are&nbsp;mandatory.</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;Value&nbsp;can&nbsp;be&nbsp;any&nbsp;standard&nbsp;python&nbsp;value&nbsp;(int,&nbsp;number,&nbsp;None,&nbsp;False,&nbsp;True,&nbsp;NaN&nbsp;or&nbsp;quoted&nbsp;strings)&nbsp;or&nbsp;a&nbsp;raw&nbsp;string&nbsp;which&nbsp;can't&nbsp;contains&nbsp;spaces&nbsp;or&nbsp;'['.</span></tt></div>
+</div>
+<p>Such a parser can be generated with the `tableColParser` function
+defined in <a class="reference external" href="..image::Reading_Custom_Text_Files_with_Pyparsing_attachments/ConfigNumParser_v0.1.1.py">ConfigNumParser</a>.</p>
+<p>The heart of the problem is to tell pyparsing that each line should have
+the same number of columns, whereas this number is unknown a priori.</p>
+<div class="section" id="using-the-forward-element">
+<h2>Using the Forward element<a class="headerlink" href="#using-the-forward-element" title="Permalink to this headline">¶</a></h2>
+<p>We will get round this problem by defining the pattern corresponding to
+the unit line and its followers right after reading the header line.</p>
+<p>Indeed, theses lines can be defined with a `Forward` element and we
+can attach a `parseAction` to the header line to redefine these
+elements later, once we know how many columns we have in the headers.</p>
+<p>Redefining a `Forward` element is done via the &lt;&lt; operator:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># We define ends-of-line and what kind of values we expect in tables</span>
+<span class="n">EOL</span>          <span class="o">=</span> <span class="n">LineEnd</span><span class="p">()</span><span class="o">.</span><span class="n">suppress</span><span class="p">()</span>
+<span class="n">tabValueDef</span>  <span class="o">=</span> <span class="n">pyValue</span> <span class="o">|</span> <span class="n">CharsNotIn</span><span class="p">(</span><span class="s">&#39;[ </span><span class="se">\t\r\n</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setWhitespaceChars</span><span class="p">(</span><span class="s">&quot; </span><span class="se">\t</span><span class="s">&quot;</span><span class="p">)</span>
+
+<span class="c"># We define how to detect the first line, which is a header line</span>
+<span class="c"># following lines will be defined later</span>
+<span class="n">firstLine</span>    <span class="o">=</span> <span class="n">Group</span><span class="p">(</span><span class="n">OneOrMore</span><span class="p">(</span><span class="n">keyNameWithoutSpace</span><span class="p">)</span><span class="o">+</span><span class="n">EOL</span><span class="p">)</span>
+<span class="n">unitLine</span>     <span class="o">=</span> <span class="n">Forward</span><span class="p">()</span>
+<span class="n">tabValueLine</span> <span class="o">=</span> <span class="n">Forward</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">defineColNumber</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Define unitLine and tabValueLine to match the same number of columns tha</span>
+<span class="sd">n</span>
+<span class="sd">    the header line&quot;&quot;&quot;</span>
+    <span class="n">nbcols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+    <span class="n">unitLine</span>      <span class="o">&lt;&lt;</span> <span class="n">Group</span><span class="p">(</span> <span class="n">unitDef</span><span class="o">*</span><span class="n">nbcols</span> <span class="o">+</span> <span class="n">EOL</span><span class="p">)</span>
+    <span class="n">tabValueLine</span>  <span class="o">&lt;&lt;</span> <span class="n">Group</span><span class="p">(</span> <span class="n">tabValueDef</span><span class="o">*</span><span class="n">nbcols</span> <span class="o">+</span> <span class="n">EOL</span><span class="p">)</span>
+
+<span class="n">tableColDef</span> <span class="o">=</span> <span class="p">(</span>   <span class="n">firstLine</span><span class="p">(</span><span class="s">&#39;header&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setParseAction</span><span class="p">(</span><span class="n">defineColNumber</span><span class="p">)</span>
+                <span class="o">+</span> <span class="n">unitLine</span><span class="p">(</span><span class="s">&#39;unit&#39;</span><span class="p">)</span>
+                <span class="o">+</span> <span class="n">Group</span><span class="p">(</span><span class="n">OneOrMore</span><span class="p">(</span><span class="n">tabValueLine</span><span class="p">))(</span><span class="s">&#39;data&#39;</span><span class="p">)</span>
+              <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="structuring-our-data">
+<h2>Structuring our data<a class="headerlink" href="#structuring-our-data" title="Permalink to this headline">¶</a></h2>
+<p>Now will organize our data the same way we did for parameters, but we
+will use this time the name of the column as the key and we will
+transform our data into numpy arrays:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">formatBloc</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Format the result to have a list of (key, values) easily usable</span>
+<span class="sd">    with Dict and transform data into array</span>
+
+<span class="sd">    Add two fields :</span>
+<span class="sd">        names_ : the list of column names found</span>
+<span class="sd">        units_ : a dict in the form {key : unit}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c"># store names and units names</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">header</span>
+    <span class="n">units</span>   <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">transposedData</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">t</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">header</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span> <span class="n">transposedData</span><span class="p">):</span>
+        <span class="n">units</span><span class="p">[</span><span class="n">header</span><span class="p">]</span> <span class="o">=</span> <span class="n">unit</span>
+        <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ParseResults</span><span class="p">([</span><span class="n">header</span><span class="p">,</span> <span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)]))</span>
+
+    <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ParseResults</span><span class="p">([</span><span class="s">&#39;names_&#39;</span><span class="p">,</span> <span class="n">names</span><span class="p">]))</span>
+    <span class="n">columns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ParseResults</span><span class="p">([</span><span class="s">&#39;unit_&#39;</span>   <span class="p">,</span> <span class="n">units</span>  <span class="p">]))</span>
+
+    <span class="k">return</span> <span class="n">columns</span>
+
+<span class="n">tableColParser</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span><span class="n">tableColDef</span><span class="o">.</span><span class="n">setParseAction</span><span class="p">(</span><span class="n">formatBloc</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Let&#8217;s see what we get:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tableColParser</span><span class="o">.</span><span class="n">ignore</span><span class="p">(</span><span class="s">&#39;#&#39;</span> <span class="o">+</span> <span class="n">restOfLine</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">tableColParser</span><span class="o">.</span><span class="n">searchString</span><span class="p">(</span><span class="nb">file</span><span class="p">(</span><span class="s">&#39;data3.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">data</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span>
+<span class="go">[...]</span>
+<span class="go">- names_: [&#39;station&#39;, &#39;precipitation&#39;, &#39;t_max_abs&#39;, &#39;t_min_abs&#39;]</span>
+<span class="go">- precipitation: [  64.8   49.6  114.2]</span>
+<span class="go">- station: [&#39;Ajaccio&#39; &#39;Auxerre&#39; &#39;Bastia&#39;]</span>
+<span class="go">- t_max_abs: [ 18.8  16.9  20.8]</span>
+<span class="go">- t_min_abs: [-2.6  NaN -0.9]</span>
+<span class="go">- unit_: {&#39;station&#39;: &#39;/&#39;, &#39;precipitation&#39;: &#39;mm&#39;, &#39;t_min_abs&#39;: &#39;C&#39;, &#39;t_max_abs&#39;:</span>
+<span class="go">&#39;C&#39;}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="building-the-final-parser">
+<h1>Building the final parser<a class="headerlink" href="#building-the-final-parser" title="Permalink to this headline">¶</a></h1>
+<p>We have now three kinds of parsers:</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;`variableParser&nbsp;&nbsp;:`&nbsp;handle&nbsp;variables&nbsp;names</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;`paramParser&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:`&nbsp;handle&nbsp;a&nbsp;set&nbsp;of&nbsp;variable&nbsp;definitions</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;`tableColParser&nbsp;&nbsp;:`&nbsp;handle&nbsp;tables&nbsp;defined&nbsp;column&nbsp;by&nbsp;column</span></tt></div>
+</div>
+<p>There are two more in
+<a class="reference external" href="..image::Reading_Custom_Text_Files_with_Pyparsing_attachments/ConfigNumParser_v0.1.1.py">ConfigNumParser</a> :</p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;`tableRowParser&nbsp;&nbsp;:`&nbsp;handle&nbsp;tables&nbsp;defined&nbsp;row&nbsp;by&nbsp;row</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">*&nbsp;`matrixParser&nbsp;&nbsp;&nbsp;&nbsp;:`&nbsp;handle&nbsp;matrix&nbsp;containg&nbsp;only&nbsp;python&nbsp;values&nbsp;or&nbsp;NaN</span></tt></div>
+</div>
+<p>We won&#8217;t detail them here, because they use exactly the same techniques
+we&#8217;ve already seen.</p>
+<p>We will rather see how to combine them into a complex parser as it is
+done in the `parseConfigFile` function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Section header</span>
+<span class="n">sectionName</span> <span class="o">=</span> <span class="n">Suppress</span><span class="p">(</span><span class="s">&#39;[&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">keyName</span> <span class="o">+</span> <span class="n">Suppress</span><span class="p">(</span><span class="s">&#39;]&#39;</span><span class="p">)</span>
+
+<span class="c"># Group section name and content</span>
+<span class="n">section</span> <span class="o">=</span> <span class="n">Group</span> <span class="p">(</span><span class="n">sectionName</span> <span class="o">+</span>
+                  <span class="p">(</span> <span class="n">paramParser</span><span class="p">()</span>
+                  <span class="o">|</span> <span class="n">tableColParser</span><span class="p">()</span>
+                  <span class="o">|</span> <span class="n">tableRowParser</span><span class="p">()</span>
+                  <span class="o">|</span> <span class="n">matrixParser</span><span class="p">()</span>
+            <span class="p">)</span>     <span class="p">)</span>
+
+<span class="c"># Build the final parser and suppress empty sections</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">OneOrMore</span><span class="p">(</span> <span class="n">section</span> <span class="o">|</span> <span class="n">Suppress</span><span class="p">(</span><span class="n">sectionName</span><span class="p">)</span> <span class="p">))</span>
+
+<span class="c"># Defines comments</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">ignore</span><span class="p">(</span><span class="s">&#39;#&#39;</span> <span class="o">+</span> <span class="n">restOfLine</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>That&#8217;s all.</p>
+<p>The parser can now be use through its method `parseString` or
+`parseFile`. See
+<a class="reference external" href="..image::Reading_Custom_Text_Files_with_Pyparsing_attachments/ConfigNumParser_v0.1.1.py">ConfigNumParser</a> for more
+information.</p>
+<p>I hope this will give you a good starting point to read complex
+formatted text.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a></li>
+<li><a class="reference internal" href="#defining-a-parser-for-parameter-declarations">Defining a parser for parameter declarations</a><ul>
+<li><a class="reference internal" href="#first-steps-with-pyparsing">First steps with pyparsing</a></li>
+<li><a class="reference internal" href="#converting-data-into-python-objects">Converting data into Python objects</a></li>
+<li><a class="reference internal" href="#some-words-on-whitespace-characters">Some words on whitespace characters</a></li>
+<li><a class="reference internal" href="#converting-variables-names">Converting variables names</a></li>
+<li><a class="reference internal" href="#dealing-with-raw-text">Dealing with raw text</a></li>
+<li><a class="reference internal" href="#structuring-data">Structuring data</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#defining-a-parser-for-tables">Defining a parser for tables</a><ul>
+<li><a class="reference internal" href="#using-the-forward-element">Using the Forward element</a></li>
+<li><a class="reference internal" href="#structuring-our-data">Structuring our data</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#building-the-final-parser">Building the final parser</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="RankNullspace.html"
+                        title="previous chapter">Rank and nullspace of a matrix</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Reading_SPE_files.html"
+                        title="next chapter">Reading SPE file from CCD camera</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Reading_Custom_Text_Files_with_Pyparsing.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Reading_SPE_files.html" title="Reading SPE file from CCD camera"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="RankNullspace.html" title="Rank and nullspace of a matrix"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

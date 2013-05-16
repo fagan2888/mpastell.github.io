@@ -1,0 +1,209 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Finding the Convex Hull of a 2-D Dataset &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Finding the minimum point in the convex hull of a finite set of points" href="Finding_Convex_Hull_Minimum_Point.html" />
+    <link rel="prev" title="Code" href="FiltFilt.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Finding_Convex_Hull_Minimum_Point.html" title="Finding the minimum point in the convex hull of a finite set of points"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="FiltFilt.html" title="Code"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>TableOfContents</p>
+<div class="section" id="finding-the-convex-hull-of-a-2-d-dataset">
+<h1>Finding the Convex Hull of a 2-D Dataset<a class="headerlink" href="#finding-the-convex-hull-of-a-2-d-dataset" title="Permalink to this headline">¶</a></h1>
+<p>This code finds the subsets of points describing the convex hull around
+a set of 2-D data points. The code optionally uses pylab to animate its
+progress.</p>
+<img alt="Finding_Convex_Hull_attachments/convex_hull.png" src="Finding_Convex_Hull_attachments/convex_hull.png" />
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">n</span><span class="o">,</span> <span class="nn">pylab</span> <span class="kn">as</span> <span class="nn">p</span><span class="o">,</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">_angle_to_point</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">centre</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;calculate angle in 2-D between points and x axis&#39;&#39;&#39;</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">point</span> <span class="o">-</span> <span class="n">centre</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">delta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">delta</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">delta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">+=</span> <span class="n">n</span><span class="o">.</span><span class="n">pi</span>
+    <span class="k">return</span> <span class="n">res</span>
+
+
+<span class="k">def</span> <span class="nf">_draw_triangle</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">p3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="n">p3</span><span class="p">))</span>
+    <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">transpose</span><span class="p">())]</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="c">#time.sleep(0.2)</span>
+
+
+<span class="k">def</span> <span class="nf">area_of_triangle</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">p3</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;calculate area of any triangle given co-ordinates of the corners&#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">n</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">cross</span><span class="p">((</span><span class="n">p2</span> <span class="o">-</span> <span class="n">p1</span><span class="p">),</span> <span class="p">(</span><span class="n">p3</span> <span class="o">-</span> <span class="n">p1</span><span class="p">)))</span><span class="o">/</span><span class="mf">2.</span>
+
+
+<span class="k">def</span> <span class="nf">convex_hull</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">graphic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">smidgen</span><span class="o">=</span><span class="mf">0.0075</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Calculate subset of points that make a convex hull around points</span>
+
+<span class="sd">Recursively eliminates points that lie inside two neighbouring points until only</span>
+<span class="sd"> convex hull is remaining.</span>
+
+<span class="sd">:Parameters:</span>
+<span class="sd">    points : ndarray (2 x m)</span>
+<span class="sd">        array of points for which to find hull</span>
+<span class="sd">    graphic : bool</span>
+<span class="sd">        use pylab to show progress?</span>
+<span class="sd">    smidgen : float</span>
+<span class="sd">        offset for graphic number labels - useful values depend on your data ran</span>
+<span class="sd">ge</span>
+
+<span class="sd">:Returns:</span>
+<span class="sd">    hull_points : ndarray (2 x n)</span>
+<span class="sd">        convex hull surrounding points</span>
+<span class="sd">&#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">graphic</span><span class="p">:</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">points</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&#39;ro&#39;</span><span class="p">)</span>
+    <span class="n">n_pts</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">n_pts</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">centre</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">graphic</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">plot</span><span class="p">((</span><span class="n">centre</span><span class="p">[</span><span class="mi">0</span><span class="p">],),(</span><span class="n">centre</span><span class="p">[</span><span class="mi">1</span><span class="p">],),</span><span class="s">&#39;bo&#39;</span><span class="p">)</span>
+    <span class="n">angles</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">apply_along_axis</span><span class="p">(</span><span class="n">_angle_to_point</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">centre</span><span class="p">)</span>
+    <span class="n">pts_ord</span> <span class="o">=</span> <span class="n">points</span><span class="p">[:,</span><span class="n">angles</span><span class="o">.</span><span class="n">argsort</span><span class="p">()]</span>
+    <span class="k">if</span> <span class="n">graphic</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n_pts</span><span class="p">):</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">pts_ord</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">smidgen</span><span class="p">,</span> <span class="n">pts_ord</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">smidgen</span><span class="p">,</span> \
+                   <span class="s">&#39;</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+    <span class="n">pts</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pts_ord</span><span class="o">.</span><span class="n">transpose</span><span class="p">())]</span>
+    <span class="n">prev_pts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pts</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">prev_pts</span> <span class="o">&gt;</span> <span class="n">n_pts</span><span class="p">:</span>
+        <span class="n">prev_pts</span> <span class="o">=</span> <span class="n">n_pts</span>
+        <span class="n">n_pts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pts</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">graphic</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">patches</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">n_pts</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">Aij</span> <span class="o">=</span> <span class="n">area_of_triangle</span><span class="p">(</span><span class="n">centre</span><span class="p">,</span> <span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>     <span class="n">pts</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">n_pts</span><span class="p">])</span>
+            <span class="n">Ajk</span> <span class="o">=</span> <span class="n">area_of_triangle</span><span class="p">(</span><span class="n">centre</span><span class="p">,</span> <span class="n">pts</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">n_pts</span><span class="p">],</span> \
+                                   <span class="n">pts</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="n">n_pts</span><span class="p">])</span>
+            <span class="n">Aik</span> <span class="o">=</span> <span class="n">area_of_triangle</span><span class="p">(</span><span class="n">centre</span><span class="p">,</span> <span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>     <span class="n">pts</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="n">n_pts</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">graphic</span><span class="p">:</span>
+                <span class="n">_draw_triangle</span><span class="p">(</span><span class="n">centre</span><span class="p">,</span> <span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pts</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">n_pts</span><span class="p">],</span> \
+                               <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;blue&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">)</span>
+                <span class="n">_draw_triangle</span><span class="p">(</span><span class="n">centre</span><span class="p">,</span> <span class="n">pts</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">n_pts</span><span class="p">],</span> \
+                               <span class="n">pts</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="n">n_pts</span><span class="p">],</span> \
+                               <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;green&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">)</span>
+                <span class="n">_draw_triangle</span><span class="p">(</span><span class="n">centre</span><span class="p">,</span> <span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pts</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="n">n_pts</span><span class="p">],</span> \
+                               <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;red&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">Aij</span> <span class="o">+</span> <span class="n">Ajk</span> <span class="o">&lt;</span> <span class="n">Aik</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">graphic</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">plot</span><span class="p">((</span><span class="n">pts</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],),(</span><span class="n">pts</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],),</span><span class="s">&#39;go&#39;</span><span class="p">)</span>
+                <span class="k">del</span> <span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">n_pts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pts</span><span class="p">)</span>
+        <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">n</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">pts</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_sample</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">40</span><span class="p">))</span>
+    <span class="n">hull_pts</span> <span class="o">=</span> <span class="n">convex_hull</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="FiltFilt.html"
+                        title="previous chapter">Code</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Finding_Convex_Hull_Minimum_Point.html"
+                        title="next chapter">Finding the minimum point in the convex hull of a finite set of points</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Finding_Convex_Hull.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Finding_Convex_Hull_Minimum_Point.html" title="Finding the minimum point in the convex hull of a finite set of points"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="FiltFilt.html" title="Code"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

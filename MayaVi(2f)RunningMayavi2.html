@@ -1,0 +1,270 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Introduction" href="MayaVi(2f)ScriptingMayavi2(2f)BasicModules.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="MayaVi(2f)Installation.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)ScriptingMayavi2(2f)BasicModules.html" title="Introduction"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)Installation.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>TableOfContents</p>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>!MayaVi2 works with two kinds of &#8220;objects&#8221;: modules and filters.</p>
+<p>!MayaVi Users Guide (v. 1.5) by P. Ramachandran defines them as follows:</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;&quot;A&nbsp;Module&nbsp;is&nbsp;an&nbsp;object&nbsp;that&nbsp;actually&nbsp;visualizes&nbsp;the&nbsp;data.&quot;;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;&quot;A&nbsp;Filter&nbsp;is&nbsp;an&nbsp;object&nbsp;that&nbsp;filters&nbsp;out&nbsp;the&nbsp;data&nbsp;in&nbsp;some&nbsp;way&nbsp;or&nbsp;the&nbsp;other.&nbsp;A&nbsp;simple&nbsp;example&nbsp;is&nbsp;the&nbsp;!ExtractVectorNorm&nbsp;filter.&nbsp;This&nbsp;extracts&nbsp;the&nbsp;magnitude&nbsp;of&nbsp;the&nbsp;selected&nbsp;vector&nbsp;data&nbsp;field&nbsp;attribute&nbsp;for&nbsp;the&nbsp;data&nbsp;file.&nbsp;All&nbsp;modules&nbsp;that&nbsp;use&nbsp;this&nbsp;as&nbsp;an&nbsp;input&nbsp;will&nbsp;receive&nbsp;the&nbsp;vector&nbsp;magnitude&nbsp;as&nbsp;the&nbsp;scalar&nbsp;field&nbsp;data.&quot;</span></tt></p>
+<p>You can run !MayaVi2 using one of the following two ways:</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;run&nbsp;!MayaVi2&nbsp;as&nbsp;is,&nbsp;without&nbsp;any&nbsp;options&nbsp;on&nbsp;the&nbsp;command&nbsp;line.&nbsp;You'll&nbsp;manage&nbsp;modules&nbsp;and/or&nbsp;filters&nbsp;using&nbsp;the&nbsp;GUI;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;run&nbsp;!MayaVi2&nbsp;with&nbsp;some&nbsp;options&nbsp;on&nbsp;the&nbsp;command&nbsp;line,&nbsp;thus&nbsp;loading&nbsp;directly&nbsp;the&nbsp;modules&nbsp;and/or&nbsp;the&nbsp;filters&nbsp;you&nbsp;want&nbsp;to&nbsp;use.</span></tt></p>
+</div>
+<div class="section" id="run-mayavi2-as-is">
+<h1>Run MayaVi2 as is<a class="headerlink" href="#run-mayavi2-as-is" title="Permalink to this headline">¶</a></h1>
+<p>Note: It is supposed here, in order to work, that your PATH variable
+contains the directory where !MayaVi2 binary is installed (for instance,
+/usr/local/bin).</p>
+<p>Begin to run !MayaVi2:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">mayavi2</span>
+</pre></div>
+</div>
+<p>!MayaVi2 will be launched with a TVTK Scene which is blank.</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;Let's&nbsp;start&nbsp;by&nbsp;loading&nbsp;some&nbsp;data.&nbsp;Go&nbsp;into&nbsp;File/Open/Vtk&nbsp;file.&nbsp;This&nbsp;will&nbsp;bring&nbsp;up&nbsp;a&nbsp;file&nbsp;dialogue,&nbsp;use&nbsp;this&nbsp;to&nbsp;select&nbsp;the&nbsp;heart.vtk&nbsp;file&nbsp;under&nbsp;examples/data&nbsp;directory.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">The&nbsp;TVTK&nbsp;Scene&nbsp;has&nbsp;not&nbsp;changed,&nbsp;but&nbsp;you&nbsp;see&nbsp;that&nbsp;the&nbsp;file&nbsp;is&nbsp;loaded&nbsp;by&nbsp;looking&nbsp;at&nbsp;the&nbsp;upper&nbsp;left&nbsp;window.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;Now&nbsp;that&nbsp;we&nbsp;have&nbsp;data,&nbsp;we&nbsp;can&nbsp;visualize&nbsp;it.&nbsp;First&nbsp;lets&nbsp;create&nbsp;an&nbsp;outline.&nbsp;Click&nbsp;on&nbsp;&quot;VTK&nbsp;File&nbsp;(heart.vtk)&quot;&nbsp;in&nbsp;the&nbsp;upper&nbsp;left&nbsp;window.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">Go&nbsp;into&nbsp;the&nbsp;menu&nbsp;item&nbsp;Visualize/Modules/Outline.&nbsp;This&nbsp;creates&nbsp;an&nbsp;Outline&nbsp;object.&nbsp;We&nbsp;can&nbsp;edit&nbsp;the&nbsp;properties&nbsp;of&nbsp;the&nbsp;outline&nbsp;in&nbsp;the&nbsp;object&nbsp;editor,&nbsp;and&nbsp;we&nbsp;can&nbsp;rotate&nbsp;and&nbsp;manipulate&nbsp;the&nbsp;object&nbsp;in&nbsp;the&nbsp;scene&nbsp;editor.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;Now&nbsp;lets&nbsp;add&nbsp;three&nbsp;grid&nbsp;planes.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">Select&nbsp;Visualize/Modules/!GridPlane,&nbsp;this&nbsp;create&nbsp;a&nbsp;grid&nbsp;plane&nbsp;in&nbsp;the&nbsp;X&nbsp;axis.&nbsp;We&nbsp;can&nbsp;create&nbsp;two&nbsp;more&nbsp;grid&nbsp;planes.&nbsp;By&nbsp;selecting&nbsp;Axis&nbsp;in&nbsp;object&nbsp;editor,&nbsp;we&nbsp;can&nbsp;set&nbsp;those&nbsp;grid&nbsp;planes&nbsp;in&nbsp;the&nbsp;Y&nbsp;and&nbsp;Z&nbsp;axis.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;We&nbsp;can&nbsp;project&nbsp;the&nbsp;object&nbsp;onto&nbsp;the&nbsp;Grid&nbsp;planes&nbsp;using&nbsp;contour&nbsp;grid&nbsp;planes.&nbsp;Select&nbsp;Visualize/Modules/Contour&nbsp;grid&nbsp;plane.&nbsp;Do&nbsp;this&nbsp;for&nbsp;the&nbsp;Y,&nbsp;and&nbsp;Z&nbsp;planes&nbsp;as&nbsp;well.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;Now&nbsp;we&nbsp;can&nbsp;look&nbsp;at&nbsp;our&nbsp;data&nbsp;by&nbsp;selecting&nbsp;Visualize/Modules/Isosurface.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;We&nbsp;can&nbsp;now&nbsp;finish&nbsp;adding&nbsp;a&nbsp;scalar&nbsp;cut&nbsp;plane&nbsp;by&nbsp;selecting&nbsp;Visualize/Modules/Scalar&nbsp;Cut&nbsp;Plane.&nbsp;By&nbsp;clicking&nbsp;on&nbsp;the&nbsp;white&nbsp;arrow&nbsp;we&nbsp;can&nbsp;move&nbsp;the&nbsp;plane&nbsp;around.</span></tt></p>
+<p>The result should look like this (for issue concerning
+background/forground colors, see [:Cookbook/MayaVi/Tips:
+Cookbook/MayaVi/Tips]):</p>
+<img alt="MayaVi(2f)RunningMayavi2_attachments/mv2.png" src="MayaVi(2f)RunningMayavi2_attachments/mv2.png" />
+</div>
+<div class="section" id="run-mayavi2-with-some-parameters-modules-and-filters-available">
+<h1>Run MayaVi2 with some parameters: modules and filters available<a class="headerlink" href="#run-mayavi2-with-some-parameters-modules-and-filters-available" title="Permalink to this headline">¶</a></h1>
+<p>In order to know what you can set as parameters on the command line,
+type</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">mayavi2</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+</div>
+<p>This will list all the available options. Amongst all these options are:</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;-d&nbsp;file.vtk:&nbsp;set&nbsp;the&nbsp;VTK&nbsp;file&nbsp;to&nbsp;load&nbsp;into&nbsp;!MayaVi2;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;-m&nbsp;</span></tt><em>``module``</em><tt class="docutils literal"><span class="pre">:&nbsp;set&nbsp;the&nbsp;module&nbsp;to&nbsp;use.&nbsp;The&nbsp;following&nbsp;list&nbsp;displays&nbsp;all&nbsp;available&nbsp;modules,&nbsp;in&nbsp;alphabetical&nbsp;order&nbsp;with&nbsp;a&nbsp;short&nbsp;description&nbsp;(taken&nbsp;from&nbsp;Python&nbsp;doc&nbsp;files):</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``Axes``</em><tt class="docutils literal"><span class="pre">:&nbsp;draws&nbsp;a&nbsp;simple&nbsp;axes&nbsp;using&nbsp;tvtk.!CubeAxesActor;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!ContourGridPlane``</em><tt class="docutils literal"><span class="pre">:&nbsp;a&nbsp;contour&nbsp;grid&nbsp;plane&nbsp;module.&nbsp;This&nbsp;module&nbsp;lets&nbsp;one&nbsp;take&nbsp;a&nbsp;slice&nbsp;of&nbsp;input&nbsp;grid&nbsp;data&nbsp;and&nbsp;view&nbsp;contours&nbsp;of&nbsp;the&nbsp;data.&nbsp;The&nbsp;module&nbsp;only&nbsp;works&nbsp;for&nbsp;structured&nbsp;points,&nbsp;rectilinear&nbsp;grid&nbsp;and&nbsp;structured&nbsp;grid&nbsp;input.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!CustomGridPlane``</em><tt class="docutils literal"><span class="pre">:&nbsp;a&nbsp;custom&nbsp;grid&nbsp;plane&nbsp;with&nbsp;a&nbsp;lot&nbsp;more&nbsp;flexibility&nbsp;than&nbsp;!GridPlane.&nbsp;This&nbsp;also&nbsp;only&nbsp;works&nbsp;for&nbsp;non-unstructured/non-polygonal&nbsp;datasets.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``Glyph``</em><tt class="docutils literal"><span class="pre">:&nbsp;displays&nbsp;different&nbsp;types&nbsp;of&nbsp;glyphs&nbsp;oriented&nbsp;and&nbsp;colored&nbsp;as&nbsp;per&nbsp;scalar&nbsp;or&nbsp;vector&nbsp;data&nbsp;at&nbsp;the&nbsp;input&nbsp;points;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!GridPlane``</em><tt class="docutils literal"><span class="pre">:&nbsp;a&nbsp;simple&nbsp;grid&nbsp;plane&nbsp;module;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!ImagePlaneWidget``</em><tt class="docutils literal"><span class="pre">:&nbsp;a&nbsp;simple&nbsp;!ImagePlaneWidget&nbsp;module&nbsp;to&nbsp;view&nbsp;image&nbsp;data;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!IsoSurface``</em><tt class="docutils literal"><span class="pre">:&nbsp;an&nbsp;!IsoSurface&nbsp;module&nbsp;that&nbsp;allows&nbsp;the&nbsp;user&nbsp;to&nbsp;make&nbsp;contours&nbsp;of&nbsp;input&nbsp;point&nbsp;data;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!OrientationAxes``</em><tt class="docutils literal"><span class="pre">:&nbsp;creates&nbsp;a&nbsp;small&nbsp;axes&nbsp;on&nbsp;the&nbsp;side&nbsp;that&nbsp;indicates&nbsp;the&nbsp;position&nbsp;of&nbsp;the&nbsp;co-ordinate&nbsp;axes&nbsp;and&nbsp;thereby&nbsp;marks&nbsp;the&nbsp;orientation&nbsp;of&nbsp;the&nbsp;scene.&nbsp;It&nbsp;uses&nbsp;the&nbsp;!OrientationMarkerWidget&nbsp;which&nbsp;requires&nbsp;VTK-4.5&nbsp;and&nbsp;above.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``Outline``</em><tt class="docutils literal"><span class="pre">:&nbsp;an&nbsp;outline&nbsp;module&nbsp;that&nbsp;draws&nbsp;an&nbsp;outline&nbsp;for&nbsp;the&nbsp;given&nbsp;data;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!ScalarCutPlane``</em><tt class="docutils literal"><span class="pre">:&nbsp;takes&nbsp;a&nbsp;cut&nbsp;plane&nbsp;of&nbsp;any&nbsp;input&nbsp;data&nbsp;set&nbsp;using&nbsp;an&nbsp;implicit&nbsp;plane&nbsp;and&nbsp;plots&nbsp;the&nbsp;data&nbsp;with&nbsp;optional&nbsp;contouring&nbsp;and&nbsp;scalar&nbsp;warping;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!SliceUnstructuredGrid``</em><tt class="docutils literal"><span class="pre">:&nbsp;this&nbsp;module&nbsp;takes&nbsp;a&nbsp;slice&nbsp;of&nbsp;the&nbsp;unstructured&nbsp;grid&nbsp;data&nbsp;and&nbsp;shows&nbsp;the&nbsp;cells&nbsp;that&nbsp;intersect&nbsp;or&nbsp;touch&nbsp;the&nbsp;slice;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``Streamline``</em><tt class="docutils literal"><span class="pre">:&nbsp;allows&nbsp;the&nbsp;user&nbsp;to&nbsp;draw&nbsp;streamlines&nbsp;for&nbsp;given&nbsp;vector&nbsp;data.&nbsp;This&nbsp;supports&nbsp;various&nbsp;types&nbsp;of&nbsp;seed&nbsp;objects&nbsp;(line,&nbsp;sphere,&nbsp;plane&nbsp;and&nbsp;point&nbsp;seeds).&nbsp;It&nbsp;also&nbsp;allows&nbsp;the&nbsp;user&nbsp;to&nbsp;draw&nbsp;ribbons&nbsp;or&nbsp;tubes&nbsp;and&nbsp;further&nbsp;supports&nbsp;different&nbsp;types&nbsp;of&nbsp;interactive&nbsp;modes&nbsp;of&nbsp;calculating&nbsp;the&nbsp;streamlines.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!StructuredGridOutline``</em><tt class="docutils literal"><span class="pre">:&nbsp;draws&nbsp;a&nbsp;grid-conforming&nbsp;outline&nbsp;for&nbsp;structured&nbsp;grids;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``Surface``</em><tt class="docutils literal"><span class="pre">:&nbsp;draws&nbsp;a&nbsp;surface&nbsp;for&nbsp;any&nbsp;input&nbsp;dataset&nbsp;with&nbsp;optional&nbsp;contouring;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``Text``</em><tt class="docutils literal"><span class="pre">:&nbsp;this&nbsp;module&nbsp;allows&nbsp;the&nbsp;user&nbsp;to&nbsp;place&nbsp;text&nbsp;on&nbsp;the&nbsp;screen;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!VectorCutPlane``</em><tt class="docutils literal"><span class="pre">:&nbsp;takes&nbsp;an&nbsp;arbitrary&nbsp;slice&nbsp;of&nbsp;the&nbsp;input&nbsp;data&nbsp;using&nbsp;an&nbsp;implicit&nbsp;cut&nbsp;plane&nbsp;and&nbsp;places&nbsp;glyphs&nbsp;according&nbsp;to&nbsp;the&nbsp;vector&nbsp;field&nbsp;data.&nbsp;The&nbsp;glyphs&nbsp;may&nbsp;be&nbsp;colored&nbsp;using&nbsp;either&nbsp;the&nbsp;vector&nbsp;magnitude&nbsp;or&nbsp;the&nbsp;scalar&nbsp;attributes.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``Vectors``</em><tt class="docutils literal"><span class="pre">:&nbsp;displays&nbsp;different&nbsp;types&nbsp;of&nbsp;glyphs&nbsp;oriented&nbsp;and&nbsp;colored&nbsp;as&nbsp;per&nbsp;vector&nbsp;data&nbsp;at&nbsp;the&nbsp;input&nbsp;points.&nbsp;This&nbsp;is&nbsp;merely&nbsp;a&nbsp;convenience&nbsp;module&nbsp;that&nbsp;is&nbsp;entirely&nbsp;based&nbsp;on&nbsp;the&nbsp;Glyph&nbsp;module.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``Volume``</em><tt class="docutils literal"><span class="pre">:&nbsp;the&nbsp;Volume&nbsp;module&nbsp;visualizes&nbsp;scalar&nbsp;fields&nbsp;using&nbsp;volumetric&nbsp;visualization&nbsp;techniques.&nbsp;This&nbsp;supports&nbsp;!ImageData&nbsp;and&nbsp;!UnstructuredGrid&nbsp;data.&nbsp;It&nbsp;also&nbsp;supports&nbsp;the&nbsp;!FixedPointRenderer&nbsp;for&nbsp;!ImageData.&nbsp;However,&nbsp;the&nbsp;performance&nbsp;is&nbsp;slow&nbsp;so&nbsp;your&nbsp;best&nbsp;bet&nbsp;is&nbsp;probably&nbsp;with&nbsp;the&nbsp;!ImageData&nbsp;based&nbsp;renderers.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!WarpVectorCutPlane``</em><tt class="docutils literal"><span class="pre">:&nbsp;takes&nbsp;an&nbsp;arbitrary&nbsp;slice&nbsp;of&nbsp;the&nbsp;input&nbsp;data&nbsp;using&nbsp;an&nbsp;implicit&nbsp;cut&nbsp;plane&nbsp;and&nbsp;warps&nbsp;it&nbsp;according&nbsp;to&nbsp;the&nbsp;vector&nbsp;field&nbsp;data.&nbsp;The&nbsp;scalars&nbsp;are&nbsp;displayed&nbsp;on&nbsp;the&nbsp;warped&nbsp;surface&nbsp;as&nbsp;colors.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;-f&nbsp;</span></tt><em>``filter``</em><tt class="docutils literal"><span class="pre">:&nbsp;set&nbsp;the&nbsp;filter&nbsp;to&nbsp;use&nbsp;(load&nbsp;it&nbsp;before&nbsp;module&nbsp;if&nbsp;you&nbsp;want&nbsp;to&nbsp;see&nbsp;your&nbsp;data&nbsp;filtered).&nbsp;Available&nbsp;filters&nbsp;are:</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!CellToPointData``</em><tt class="docutils literal"><span class="pre">:&nbsp;transforms&nbsp;cell&nbsp;attribute&nbsp;data&nbsp;to&nbsp;point&nbsp;data&nbsp;by&nbsp;averaging&nbsp;the&nbsp;cell&nbsp;data&nbsp;from&nbsp;the&nbsp;cells&nbsp;at&nbsp;the&nbsp;point.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``Delaunay2D``</em><tt class="docutils literal"><span class="pre">:&nbsp;performs&nbsp;a&nbsp;2D&nbsp;Delaunay&nbsp;triangulation&nbsp;using&nbsp;the&nbsp;tvtk.Delaunay2D&nbsp;class;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``Delaunay3D``</em><tt class="docutils literal"><span class="pre">:&nbsp;performs&nbsp;a&nbsp;3D&nbsp;Delaunay&nbsp;triangulation&nbsp;using&nbsp;the&nbsp;tvtk.Delaunay3D&nbsp;class;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!ExtractGrid``</em><tt class="docutils literal"><span class="pre">:&nbsp;allows&nbsp;a&nbsp;user&nbsp;to&nbsp;select&nbsp;a&nbsp;part&nbsp;of&nbsp;a&nbsp;structured&nbsp;grid;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!ExtractUnstructuredGrid``</em><tt class="docutils literal"><span class="pre">:&nbsp;allows&nbsp;a&nbsp;user&nbsp;to&nbsp;select&nbsp;a&nbsp;part&nbsp;of&nbsp;an&nbsp;unstructured&nbsp;grid;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!ExtractVectorNorm``</em><tt class="docutils literal"><span class="pre">:&nbsp;computes&nbsp;the&nbsp;norm&nbsp;(Eucliedean)&nbsp;of&nbsp;the&nbsp;input&nbsp;vector&nbsp;data&nbsp;(with&nbsp;optional&nbsp;scaling&nbsp;between&nbsp;[0,&nbsp;1]).&nbsp;This&nbsp;is&nbsp;useful&nbsp;when&nbsp;the&nbsp;input&nbsp;data&nbsp;has&nbsp;vector&nbsp;input&nbsp;but&nbsp;no&nbsp;scalar&nbsp;data&nbsp;for&nbsp;the&nbsp;magnitude&nbsp;of&nbsp;the&nbsp;vectors.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!MaskPoints``</em><tt class="docutils literal"><span class="pre">:&nbsp;selectively&nbsp;passes&nbsp;the&nbsp;input&nbsp;points&nbsp;downstream.&nbsp;This&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;subsample&nbsp;the&nbsp;input&nbsp;points.&nbsp;Note&nbsp;that&nbsp;this&nbsp;does&nbsp;not&nbsp;pass&nbsp;geometry&nbsp;data,&nbsp;this&nbsp;means&nbsp;all&nbsp;grid&nbsp;information&nbsp;is&nbsp;lost.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!PointToCellData``</em><tt class="docutils literal"><span class="pre">:&nbsp;does&nbsp;the&nbsp;inverse&nbsp;of&nbsp;the&nbsp;!CellToPointData&nbsp;filter;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!PolyDataNormals``</em><tt class="docutils literal"><span class="pre">:&nbsp;computes&nbsp;normals&nbsp;from&nbsp;input&nbsp;data.&nbsp;This&nbsp;gives&nbsp;meshes&nbsp;a&nbsp;smoother&nbsp;appearance.&nbsp;This&nbsp;should&nbsp;work&nbsp;for&nbsp;any&nbsp;input&nbsp;dataset.&nbsp;Note:&nbsp;this&nbsp;filter&nbsp;is&nbsp;called&nbsp;&quot;Compute&nbsp;Normals&quot;&nbsp;in&nbsp;!MayaVi2&nbsp;GUI&nbsp;(Visualize/Filters/Compute&nbsp;Normals).</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``Threshold``</em><tt class="docutils literal"><span class="pre">:&nbsp;a&nbsp;simple&nbsp;filter&nbsp;that&nbsp;thresholds&nbsp;on&nbsp;input&nbsp;data;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!TransformData``</em><tt class="docutils literal"><span class="pre">:&nbsp;performs&nbsp;a&nbsp;linear&nbsp;transformation&nbsp;to&nbsp;input&nbsp;data&nbsp;using&nbsp;a&nbsp;tvtk.!BoxWidget.&nbsp;This&nbsp;does&nbsp;not&nbsp;work&nbsp;with&nbsp;!ImageData/StructuredPoints.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!WarpScalar``</em><tt class="docutils literal"><span class="pre">:&nbsp;warps&nbsp;the&nbsp;input&nbsp;data&nbsp;along&nbsp;a&nbsp;particular&nbsp;direction&nbsp;(either&nbsp;the&nbsp;normals&nbsp;or&nbsp;a&nbsp;specified&nbsp;direction)&nbsp;with&nbsp;a&nbsp;scale&nbsp;specified&nbsp;by&nbsp;the&nbsp;local&nbsp;scalar&nbsp;value.&nbsp;Useful&nbsp;for&nbsp;making&nbsp;carpet&nbsp;plots.</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">&nbsp;*&nbsp;</span></tt><em>``!WarpVector``</em><tt class="docutils literal"><span class="pre">:&nbsp;warps&nbsp;the&nbsp;input&nbsp;data&nbsp;along&nbsp;a&nbsp;the&nbsp;point&nbsp;vector&nbsp;attribute&nbsp;scaled&nbsp;as&nbsp;per&nbsp;a&nbsp;scale&nbsp;factor.&nbsp;Useful&nbsp;for&nbsp;showing&nbsp;flow&nbsp;profiles&nbsp;or&nbsp;displacements.</span></tt></p>
+<p>Ok, you think you&#8217;ll get rapidly tired to type all these long name
+modules and filters ? Don&#8217;t worry, use your shell completion command !</p>
+<p>For instance, for (t)csh shell, you can put this line in your
+configuration shell file:</p>
+<div class="highlight-python"><pre>complete mayavi2 c/-/"(3 d f m n M p q w x z)"/ n/-3/f:*.3ds/ n/-d/f:*.vt?/ n/-f
+/"(CellToPointData Delaunay2D Delaunay3D ExtractGrid ExtractUnstructuredGrid Ext
+ractVectorNorm MaskPoints PointToCellData PolyDataNormals Threshold TransformDat
+a WarpScalar WarpVector)"/ n/-m/"(Axes ContourGridPlane CustomGridPlane Glyph Gr
+idPlane ImagePlaneWidget IsoSurface Outline OrientationAxes ScalarCutPlane Slice
+UnstructuredGrid Streamline StructuredGridOutline Surface Text Vectors VectorCut
+Plane Volume WarpVectorCutPlane)"/ n/-p/f:{*xyz.bin,*.xyz}/ n/-q/f:{*q.bin,*.q}/
+ n/-w/f:*.wrl/ n/-x/f:*.py/ n/-z/f:*.mv2/</pre>
+</div>
+<p>Quite long to type the first time, but once typed, no more effort load
+the module or filter you want to use ! ;-)</p>
+<p>Thus, typing (in !MayaVi2&#8217;s examples directory, see
+[:Cookbook/MayaVi/Installation: Cookbook/MayaVi/Installation]):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">mayavi2</span> <span class="o">-</span><span class="n">d</span> <span class="n">data</span><span class="o">/</span><span class="n">heart</span><span class="o">.</span><span class="n">vtk</span> <span class="o">-</span><span class="n">m</span> <span class="n">Outline</span> <span class="o">-</span><span class="n">m</span> <span class="n">GridPlane</span> <span class="o">-</span><span class="n">m</span> <span class="n">GridPlane</span> <span class="o">-</span><span class="n">m</span> <span class="n">GridPlane</span> <span class="o">-</span><span class="n">m</span> <span class="n">C</span>
+<span class="n">ontourGridPlane</span> <span class="o">-</span><span class="n">m</span> <span class="n">ContourGridPlane</span> <span class="o">-</span><span class="n">m</span> <span class="n">IsoSurface</span> <span class="o">-</span><span class="n">m</span> <span class="n">ScalarCutPlane</span>
+</pre></div>
+</div>
+<p>you should get this:</p>
+<img alt="MayaVi(2f)RunningMayavi2_attachments/mv2_cmdline.png" src="MayaVi(2f)RunningMayavi2_attachments/mv2_cmdline.png" />
+<p>Ok, this is not exactly the same as on the previous figure although
+exactly the same modules have been loaded.</p>
+<p>The reason is that you did not set (and you can not, AFAIK) some modules
+properties, such as iso-value for !IsoSurface module, normals to the
+!GridPlane, etc.</p>
+<p>Hopefully, you can set these parameters &#8220;by hand&#8221; using the GUI.</p>
+<p>So now, let&#8217;s play with this GUI ;-)</p>
+</div>
+<div class="section" id="moving-around">
+<h1>Moving around<a class="headerlink" href="#moving-around" title="Permalink to this headline">¶</a></h1>
+<p>So, you can see on these two figures the render window on the right
+(TVTK Scene) beside the modules tree on the left. Let&#8217;s consider the
+first figure.</p>
+<p>You can handle rendering scene with the mouse as usual using OpenGL:</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;moving&nbsp;the&nbsp;mouse&nbsp;with&nbsp;the&nbsp;left&nbsp;button&nbsp;pressed&nbsp;rotates&nbsp;the&nbsp;scene;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;moving&nbsp;the&nbsp;mouse&nbsp;with&nbsp;middle&nbsp;button&nbsp;pressed&nbsp;translates&nbsp;it;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;and&nbsp;moving&nbsp;the&nbsp;mouse&nbsp;with&nbsp;right&nbsp;button&nbsp;pressed&nbsp;zooms&nbsp;in/out&nbsp;(note:&nbsp;you&nbsp;can&nbsp;also&nbsp;use&nbsp;the&nbsp;wheel&nbsp;of&nbsp;your&nbsp;mouse,&nbsp;if&nbsp;you&nbsp;get&nbsp;one).</span></tt></p>
+<p>Note: You can get a &#8220;predefined&#8221; angle of view (normal to x axis, y or
+z) clicking on the &#8220;View&#8221; item or on each small icons (first X: Ox axis
+points backwards you, second X: Ox axis points towards you, etc...)</p>
+<p>On the left of the window, you can see which modules are loaded (&#8220;TVTK
+Scene&#8221; is the &#8220;root&#8221; of the scene, and &#8220;VTK file&#8221; is the data source,
+i.e. the heart.vtk file):</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;&quot;Outline&quot;&nbsp;module&nbsp;displays&nbsp;the&nbsp;box&nbsp;surrounding&nbsp;the&nbsp;scene;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;you&nbsp;have&nbsp;three&nbsp;grid&nbsp;planes&nbsp;(&quot;!GridPlane&quot;&nbsp;module),&nbsp;at&nbsp;coordinates&nbsp;x&nbsp;=&nbsp;0,&nbsp;y&nbsp;=&nbsp;0,&nbsp;and&nbsp;z&nbsp;=&nbsp;0;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;two&nbsp;contour&nbsp;grid&nbsp;planes&nbsp;(&quot;!ContourGridPlane&quot;&nbsp;module):&nbsp;the&nbsp;first&nbsp;displays&nbsp;contour&nbsp;lines&nbsp;(vertically),&nbsp;the&nbsp;second,&nbsp;the&nbsp;cutplane&nbsp;at&nbsp;z&nbsp;=&nbsp;const;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;&quot;!IsoSurface&quot;&nbsp;module&nbsp;displays&nbsp;the&nbsp;heart&nbsp;as&nbsp;yellow;</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;the&nbsp;last&nbsp;cutplane&nbsp;(vertically,&nbsp;at&nbsp;y&nbsp;=&nbsp;const)&nbsp;is&nbsp;displayed&nbsp;by&nbsp;the&nbsp;&quot;!ScalarCutPlane&quot;&nbsp;module.</span></tt></p>
+<p>Note that no filter is used in these scenes.</p>
+<p>Using each module/filter is very intuitive. Click on your module/filter
+in the tree and set some parameters with the mouse or enter some values
+at the keyboard, in the window at the bottom left of the GUI.</p>
+<p>If you want to copy/paste/delete/cut a given module/filter, click on it
+with the right button. A small window popups, with a items list.</p>
+<p>Note: You can get a larger window double-clicking on the choosen
+module/filter in the tree.</p>
+<p>To load other modules or add filters, click on the &#8220;Visualize&#8221; item at
+the top of the window.</p>
+<p>At last, you can also load another VTK data file, load/save the scene in
+a &#8221;!MayaVi2&#8221; file (with extension .mv2), or convert it to the image
+format you want (PNG, JPEG...), clicking on the &#8220;File&#8221; item or on the
+appropriate icon (small floppy disk).</p>
+<p>You can also get your scene in full-screen clicking on the small icon
+representing four red arrows in a little square. To disable full-screen
+mode, type &#8216;e&#8217; or &#8216;q&#8217;.</p>
+<p>This is the simplest way to use !MayaVi2. You are recalled here that you
+can also try <em>mayavi2 -h</em> to see what options and arguments you can add
+to the !MayaVi2 command line.</p>
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a></li>
+<li><a class="reference internal" href="#run-mayavi2-as-is">Run MayaVi2 as is</a></li>
+<li><a class="reference internal" href="#run-mayavi2-with-some-parameters-modules-and-filters-available">Run MayaVi2 with some parameters: modules and filters available</a></li>
+<li><a class="reference internal" href="#moving-around">Moving around</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="MayaVi(2f)Installation.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="MayaVi(2f)ScriptingMayavi2(2f)BasicModules.html"
+                        title="next chapter">Introduction</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/MayaVi(2f)RunningMayavi2.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="MayaVi(2f)ScriptingMayavi2(2f)BasicModules.html" title="Introduction"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="MayaVi(2f)Installation.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

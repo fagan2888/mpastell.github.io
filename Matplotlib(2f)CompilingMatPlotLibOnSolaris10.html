@@ -1,0 +1,156 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="Matplotlib(2f)CustomLogLabels.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="Matplotlib(2f)Common_Errors.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)CustomLogLabels.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Common_Errors.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p><a class="reference external" href="http://blogs.sun.com/migi/entry/opensolaris_howto_install_sun_studio">how to install
+sunstudio</a>
+and <a class="reference external" href="http://blogs.sun.com/yongsun/entry/build_matplotlib_0_98_3">build matplotlib on solaris
+10</a> might
+give some hints.</p>
+<p>JDH said:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="o">&gt;</span> <span class="n">Hi</span> <span class="n">Erik</span> <span class="o">--</span> <span class="k">if</span> <span class="n">you</span> <span class="n">succeed</span><span class="p">,</span> <span class="n">then</span> <span class="n">we</span><span class="s">&#39;ll have convincing proof that</span>
+<span class="o">&gt;</span> <span class="n">compiling</span> <span class="n">mpl</span> <span class="n">on</span> <span class="n">solaris</span> <span class="ow">is</span> <span class="n">easier</span> <span class="n">than</span> <span class="n">giving</span> <span class="n">up</span> <span class="n">the</span> <span class="n">sauce</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Well, it has turned out to be easier than giving up the sauce (at least
+for me), but only by a whisker. In the end, the fix is incredibly simple
+(if you consider recompiling python and manually adjusting the
+auto-produced pyconfig.h incredibly simple, anyway). After two solid
+days of commenting this and that out, recompiling everything and its
+mother 76 different ways from Sunday, poring over a legion of Solaris
+sys includes, slaughtering a few spotlessly white lambs and one pure
+black sheep, wrapping the bones and tendons and viscera in a double
+layer of fat and burning the offering to Delphic Apollo, I found the
+answer:</p>
+<p><tt class="docutils literal"><span class="pre">1&nbsp;download&nbsp;Python&nbsp;2.4.2</span></tt></p>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">2&nbsp;after&nbsp;extracting&nbsp;it&nbsp;and&nbsp;running&nbsp;./configure,&nbsp;edit&nbsp;the&nbsp;generated&nbsp;pyconfig.h&nbsp;as&nbsp;follows:</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;</span></tt></div>
+<div class="line"><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;&nbsp;i)&nbsp;if&nbsp;_XOPEN_SOURCE&nbsp;is&nbsp;defined&nbsp;to&nbsp;be&nbsp;600&nbsp;(i.e.,&nbsp;if&nbsp;the&nbsp;line&nbsp;&quot;#define&nbsp;_XOPEN_SOURCE&nbsp;600&quot;&nbsp;appears&nbsp;in&nbsp;the&nbsp;file),&nbsp;redefine&nbsp;it&nbsp;to&nbsp;500</span></tt></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">&nbsp;&nbsp;&nbsp;&nbsp;ii)&nbsp;if&nbsp;_XOPEN_SOURCE_EXTENDED&nbsp;is&nbsp;defined&nbsp;at&nbsp;all&nbsp;(i.e.&nbsp;if&nbsp;the&nbsp;line&nbsp;&quot;#define&nbsp;_XOPEN_SOURCE_EXTENDED&nbsp;1&quot;&nbsp;appears&nbsp;in&nbsp;the&nbsp;file),&nbsp;comment&nbsp;out&nbsp;its&nbsp;definition</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">3&nbsp;make&nbsp;&amp;&amp;&nbsp;make&nbsp;install</span></tt></p>
+<p>The problem was with Solaris&#8217;s support for the X/Open standards. To make
+a long story short, you can use Open Group Technical Standard, Issue 6
+(XPG6/UNIX 03/SUSv3) (_XOPEN_SOURCE == 600) if and only if you are
+using an ISO C99 compiler. If you use X/Open CAE Specification, Issue 5
+(XPG5/UNIX 98/SUSv2) (_XOPEN_SOURCE == 500), you don&#8217;t have to use an
+ISO C99 compiler. For full details, see the Solaris header file
+/usr/include/sys/feature_tests.h.</p>
+<p>This is why muhpubuh (AKA matplotlib&#8212;long story) compiles on Solaris
+10 if you have the big bucks and can afford Sun&#8217;s OpenStudio 10
+compiler. gcc does not have full C99 support yet. In particular, its
+lack of support for the wide character library makes the build go bust.
+(See, e.g., <a class="reference external" href="http://gcc.gnu.org/c99status.html">http://gcc.gnu.org/c99status.html</a>.)</p>
+<p>More helpful links on the wchar problem with Python.h and Solaris :</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`http://lists.schmorp.de/pipermail/rxvt-unicode/2005q2/000092.html</span></tt> &lt;<a class="reference external" href="http://lists.schmorp.de/pipermail/rxvt-unicode/2005q2/000092.html">http://lists.schmorp.de/pipermail/rxvt-unicode/2005q2/000092.html</a>&gt;`__</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`http://bugs.opensolaris.org/bugdatabase/view_bug.do?bug_id=6395191</span></tt> &lt;<a class="reference external" href="http://bugs.opensolaris.org/bugdatabase/view_bug.do?bug_id=6395191">http://bugs.opensolaris.org/bugdatabase/view_bug.do?bug_id=6395191</a>&gt;`__</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`http://mail.python.org/pipermail/patches/2005-June/017820.html</span></tt> &lt;<a class="reference external" href="http://mail.python.org/pipermail/patches/2005-June/017820.html">http://mail.python.org/pipermail/patches/2005-June/017820.html</a>&gt;`__</p>
+<p><tt class="docutils literal"><span class="pre">*&nbsp;</span></tt><tt class="docutils literal"><span class="pre">`http://mail.python.org/pipermail/python-bugs-list/2005-November/030900.html</span></tt> &lt;<a class="reference external" href="http://mail.python.org/pipermail/python-bugs-list/2005-November/030900.html">http://mail.python.org/pipermail/python-bugs-list/2005-November/030900.html</a>&gt;`__</p>
+<p>CategoryCookbookMatplotlib</p>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)Common_Errors.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)CustomLogLabels.html"
+                        title="next chapter">&lt;no title&gt;</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Matplotlib(2f)CompilingMatPlotLibOnSolaris10.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)CustomLogLabels.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Matplotlib(2f)Common_Errors.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

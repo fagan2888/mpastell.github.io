@@ -1,0 +1,306 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="Embedding a Matplotlib Figure in a Traits App" href="EmbeddingInTraitsGUI.html" />
+    <link rel="prev" title="Analog Acquisition" href="Data_Acquisition_with_NIDAQmx.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="EmbeddingInTraitsGUI.html" title="Embedding a Matplotlib Figure in a Traits App"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Data_Acquisition_with_NIDAQmx.html" title="Analog Acquisition"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <p>TableOfContents</p>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>This pages illustrates the use of the inexpensive (about $150) <a class="reference external" href="http://www.measurementcomputing.com/cbicatalog/cbiproduct_new.asp?dept_id=412&amp;pf_id=1665&amp;mscssid=G9PDTGJV5VES9P694WLRS3JWG3J615M7">PMD
+USB-1208FS</a>
+data acquisition device from <a class="reference external" href="http://www.measurementcomputing.com">Measurement
+Computing</a>. It makes use of
+<a class="reference external" href="http://www.its.caltech.edu/~astraw/pyul.html">PyUniversalLibrary</a>,
+an open-source wrapper of Measurement Computing&#8217;s <a class="reference external" href="http://www.measurementcomputing.com/cbicatalog/cbiproduct.asp?dept%5Fid=261&amp;pf%5Fid=1084&amp;mscssid=RDNUK9VN7L3L8PL34QF282AX3F987098">Universal
+Library</a>.</p>
+<p>See also [:Cookbook/Data_Acquisition_with_NIDAQmx:Data acquisition
+with Ni-DAQmx].</p>
+<p>The following examples were made with PyUL Release 20050624. The
+<a class="reference external" href="http://www.its.caltech.edu/~astraw/PyUniversalLibrary/PyUniversalLibrary-20050624.win32-py2.4-num23.7.exe">pre-compiled win32
+binaries</a>
+of this version are compatible with the <a class="reference external" href="http://code.enthought.com/enthon/">Enthought Edition of Python
+2.4</a> (Release 1.0.0, 2006-08-02
+12:20), which is what was used to run these examples.</p>
+</div>
+<div class="section" id="example-1-simple-analog-input">
+<h1>Example 1 - Simple Analog input<a class="headerlink" href="#example-1-simple-analog-input" title="Permalink to this headline">¶</a></h1>
+<p>The first example illustrates the use of the unbuffered analog input:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># example1.py</span>
+<span class="kn">import</span> <span class="nn">UniversalLibrary</span> <span class="kn">as</span> <span class="nn">UL</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">BoardNum</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">Gain</span> <span class="o">=</span> <span class="n">UL</span><span class="o">.</span><span class="n">BIP5VOLTS</span>
+<span class="n">Chan</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">tstart</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">times</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">DataValue</span> <span class="o">=</span> <span class="n">UL</span><span class="o">.</span><span class="n">cbAIn</span><span class="p">(</span><span class="n">BoardNum</span><span class="p">,</span> <span class="n">Chan</span><span class="p">,</span> <span class="n">Gain</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">DataValue</span> <span class="p">)</span>
+    <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">tstart</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">break</span>
+
+<span class="kn">import</span> <span class="nn">pylab</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span><span class="n">data</span><span class="p">,</span><span class="s">&#39;o-&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;time (sec)&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;ADC units&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>When I ran this, I had a function generator generating a sine wave
+connected to pins 1 and 2 of my device. This should produce a figure
+like the following:</p>
+<img alt="Data_Acquisition_with_PyUL_attachments/example1.png" src="Data_Acquisition_with_PyUL_attachments/example1.png" />
+</div>
+<div class="section" id="example-2-getting-volts-rather-than-arbitrary-units">
+<h1>Example 2 - Getting Volts rather than arbitrary units<a class="headerlink" href="#example-2-getting-volts-rather-than-arbitrary-units" title="Permalink to this headline">¶</a></h1>
+<p>The values recorded in example 1 are &#8220;ADC units&#8221;, the values recorded
+directly by the Analog-to-Digital hardware. In fact, this device has a
+12-bit A to D converter, but the values are stored as 16-bit signed
+integers. To convert these values to Volts, we use Measurement
+Computing&#8217;s function. Here we do that for each piece of data and plot
+the results.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#example2.py</span>
+<span class="kn">import</span> <span class="nn">UniversalLibrary</span> <span class="kn">as</span> <span class="nn">UL</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">BoardNum</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">Gain</span> <span class="o">=</span> <span class="n">UL</span><span class="o">.</span><span class="n">BIP5VOLTS</span>
+<span class="n">Chan</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">tstart</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">times</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">DataValue</span> <span class="o">=</span> <span class="n">UL</span><span class="o">.</span><span class="n">cbAIn</span><span class="p">(</span><span class="n">BoardNum</span><span class="p">,</span> <span class="n">Chan</span><span class="p">,</span> <span class="n">Gain</span><span class="p">)</span>
+    <span class="n">EngUnits</span> <span class="o">=</span> <span class="n">UL</span><span class="o">.</span><span class="n">cbToEngUnits</span><span class="p">(</span><span class="n">BoardNum</span><span class="p">,</span> <span class="n">Gain</span><span class="p">,</span> <span class="n">DataValue</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">EngUnits</span> <span class="p">)</span>
+    <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">tstart</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">break</span>
+
+<span class="kn">import</span> <span class="nn">pylab</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span><span class="n">data</span><span class="p">,</span><span class="s">&#39;o-&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;time (sec)&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Volts&#39;</span><span class="p">)</span>
+<span class="c">#pylab.savefig(&#39;example2.png&#39;,dpi=72)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Now the output values are in volts:</p>
+<img alt="Data_Acquisition_with_PyUL_attachments/example2.png" src="Data_Acquisition_with_PyUL_attachments/example2.png" />
+</div>
+<div class="section" id="example-3-buffered-input">
+<h1>Example 3 - Buffered input<a class="headerlink" href="#example-3-buffered-input" title="Permalink to this headline">¶</a></h1>
+<p>As you have no doubt noticed, the plots above aren&#8217;t very &#8220;pure&#8221; sine
+waves. This is undoubtedly due to the way we&#8217;re sampling the data.
+Rather than relying on a steady clock to do our acquisition, we&#8217;re
+simply polling the device as fast as it (and the operating system) will
+let us go. There&#8217;s a better way - we can use the clock on board the
+Measurement Computing device to acquire a buffer of data at evenly
+spaced samples.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#example3.py</span>
+<span class="kn">import</span> <span class="nn">UniversalLibrary</span> <span class="kn">as</span> <span class="nn">UL</span>
+<span class="kn">import</span> <span class="nn">Numeric</span>
+<span class="kn">import</span> <span class="nn">pylab</span>
+
+<span class="n">BoardNum</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">Gain</span> <span class="o">=</span> <span class="n">UL</span><span class="o">.</span><span class="n">BIP5VOLTS</span>
+
+<span class="n">LowChan</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">HighChan</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">Count</span> <span class="o">=</span> <span class="mi">2000</span>
+<span class="n">Rate</span> <span class="o">=</span> <span class="mi">3125</span>
+
+<span class="n">Options</span> <span class="o">=</span> <span class="n">UL</span><span class="o">.</span><span class="n">CONVERTDATA</span>
+<span class="n">ADData</span> <span class="o">=</span> <span class="n">Numeric</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Count</span><span class="p">,),</span> <span class="n">Numeric</span><span class="o">.</span><span class="n">Int16</span><span class="p">)</span>
+
+<span class="n">ActualRate</span> <span class="o">=</span> <span class="n">UL</span><span class="o">.</span><span class="n">cbAInScan</span><span class="p">(</span><span class="n">BoardNum</span><span class="p">,</span> <span class="n">LowChan</span><span class="p">,</span> <span class="n">HighChan</span><span class="p">,</span> <span class="n">Count</span><span class="p">,</span>
+                     <span class="n">Rate</span><span class="p">,</span> <span class="n">Gain</span><span class="p">,</span> <span class="n">ADData</span><span class="p">,</span> <span class="n">Options</span><span class="p">)</span>
+
+<span class="c"># convert to Volts</span>
+<span class="n">data_in_volts</span> <span class="o">=</span> <span class="p">[</span> <span class="n">UL</span><span class="o">.</span><span class="n">cbToEngUnits</span><span class="p">(</span><span class="n">BoardNum</span><span class="p">,</span> <span class="n">Gain</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">ADData</span><span class="p">]</span>
+
+<span class="n">time</span> <span class="o">=</span> <span class="n">Numeric</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">ADData</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span><span class="o">*</span><span class="mf">1.0</span><span class="o">/</span><span class="n">ActualRate</span>
+
+<span class="n">pylab</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">data_in_volts</span><span class="p">,</span> <span class="s">&#39;o-&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;time (sec)&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Volts&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;example3.png&#39;</span><span class="p">,</span><span class="n">dpi</span><span class="o">=</span><span class="mi">72</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The</p>
+<p>output</p>
+<p>looks</p>
+<p>much</p>
+<p>better:</p>
+<img alt="Data_Acquisition_with_PyUL_attachments/example3.png" src="Data_Acquisition_with_PyUL_attachments/example3.png" />
+</div>
+<div class="section" id="example-4-computing-the-power-spectrum">
+<h1>Example 4 - computing the power spectrum<a class="headerlink" href="#example-4-computing-the-power-spectrum" title="Permalink to this headline">¶</a></h1>
+<p>Now we can use the function from pylab (part of matplotlib) to compute
+the power spectral density.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#example4.py</span>
+<span class="kn">import</span> <span class="nn">UniversalLibrary</span> <span class="kn">as</span> <span class="nn">UL</span>
+<span class="kn">import</span> <span class="nn">Numeric</span>
+<span class="kn">import</span> <span class="nn">pylab</span>
+
+<span class="n">BoardNum</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">Gain</span> <span class="o">=</span> <span class="n">UL</span><span class="o">.</span><span class="n">BIP5VOLTS</span>
+
+<span class="n">LowChan</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">HighChan</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">Count</span> <span class="o">=</span> <span class="mi">2000</span>
+<span class="n">Rate</span> <span class="o">=</span> <span class="mi">10000</span>
+
+<span class="n">Options</span> <span class="o">=</span> <span class="n">UL</span><span class="o">.</span><span class="n">CONVERTDATA</span>
+<span class="n">ADData</span> <span class="o">=</span> <span class="n">Numeric</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Count</span><span class="p">,),</span> <span class="n">Numeric</span><span class="o">.</span><span class="n">Int16</span><span class="p">)</span>
+
+<span class="n">ActualRate</span> <span class="o">=</span> <span class="n">UL</span><span class="o">.</span><span class="n">cbAInScan</span><span class="p">(</span><span class="n">BoardNum</span><span class="p">,</span> <span class="n">LowChan</span><span class="p">,</span> <span class="n">HighChan</span><span class="p">,</span> <span class="n">Count</span><span class="p">,</span>
+                     <span class="n">Rate</span><span class="p">,</span> <span class="n">Gain</span><span class="p">,</span> <span class="n">ADData</span><span class="p">,</span> <span class="n">Options</span><span class="p">)</span>
+<span class="n">time</span> <span class="o">=</span> <span class="n">Numeric</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">ADData</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span><span class="o">*</span><span class="mf">1.0</span><span class="o">/</span><span class="n">ActualRate</span>
+
+<span class="c"># convert to Volts</span>
+<span class="n">data_in_volts</span> <span class="o">=</span> <span class="p">[</span> <span class="n">UL</span><span class="o">.</span><span class="n">cbToEngUnits</span><span class="p">(</span><span class="n">BoardNum</span><span class="p">,</span> <span class="n">Gain</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">ADData</span><span class="p">]</span>
+<span class="n">data_in_volts</span> <span class="o">=</span> <span class="n">Numeric</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data_in_volts</span><span class="p">)</span> <span class="c"># convert to Numeric array</span>
+
+<span class="n">pxx</span><span class="p">,</span> <span class="n">freqs</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span> <span class="n">data_in_volts</span><span class="p">,</span> <span class="n">Fs</span><span class="o">=</span><span class="n">ActualRate</span> <span class="p">)</span>
+<span class="n">decibels</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="n">Numeric</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">pxx</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">100</span><span class="p">:</span><span class="mi">200</span><span class="p">],</span><span class="n">data_in_volts</span><span class="p">[</span><span class="mi">100</span><span class="p">:</span><span class="mi">200</span><span class="p">],</span><span class="s">&#39;o-&#39;</span><span class="p">)</span> <span class="c"># plot a few samples</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;time (sec)&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Volts&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">decibels</span><span class="p">,</span> <span class="s">&#39;o-&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;frequency&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Power (decibels)&#39;</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;example4.png&#39;</span><span class="p">,</span><span class="n">dpi</span><span class="o">=</span><span class="mi">72</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For this example, I&#8217;ve turned up the frequency on the function generator
+to 480 Hz. You can see, indeed, that&#8217;s what the function tells us:</p>
+<img alt="Data_Acquisition_with_PyUL_attachments/example4.png" src="Data_Acquisition_with_PyUL_attachments/example4.png" />
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a></li>
+<li><a class="reference internal" href="#example-1-simple-analog-input">Example 1 - Simple Analog input</a></li>
+<li><a class="reference internal" href="#example-2-getting-volts-rather-than-arbitrary-units">Example 2 - Getting Volts rather than arbitrary units</a></li>
+<li><a class="reference internal" href="#example-3-buffered-input">Example 3 - Buffered input</a></li>
+<li><a class="reference internal" href="#example-4-computing-the-power-spectrum">Example 4 - computing the power spectrum</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Data_Acquisition_with_NIDAQmx.html"
+                        title="previous chapter">Analog Acquisition</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="EmbeddingInTraitsGUI.html"
+                        title="next chapter">Embedding a Matplotlib Figure in a Traits App</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Data_Acquisition_with_PyUL.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="EmbeddingInTraitsGUI.html" title="Embedding a Matplotlib Figure in a Traits App"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Data_Acquisition_with_NIDAQmx.html" title="Analog Acquisition"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

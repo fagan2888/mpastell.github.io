@@ -1,0 +1,375 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Presentation of the Lotka-Volterra Model &mdash; CookBook 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CookBook 0.1 documentation" href="index.html" />
+    <link rel="next" title="First a little introduction" href="Matplotlib(2f)AdjustingImageSize.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="LinearRegression.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)AdjustingImageSize.html" title="First a little introduction"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="LinearRegression.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <ol class="arabic simple">
+<li><ol class="first arabic">
+<li>page was renamed from LoktaVolterraTutorial</li>
+</ol>
+</li>
+</ol>
+<p>This example describes how to integrate ODEs with the scipy.integrate
+module, and how to use the matplotlib module to plot trajectories,
+direction fields and other information.</p>
+<p>You can get the source code for this tutorial here:
+.. image:: LoktaVolterraTutorial_attachments/tutorial_lokta-voltera_v4.py .</p>
+<div class="section" id="presentation-of-the-lotka-volterra-model">
+<h1>Presentation of the Lotka-Volterra Model<a class="headerlink" href="#presentation-of-the-lotka-volterra-model" title="Permalink to this headline">¶</a></h1>
+<p>We will have a look at the Lotka-Volterra model, also known as the
+predator-prey equations, which is a pair of first order, non-linear,
+differential equations frequently used to describe the dynamics of
+biological systems in which two species interact, one a predator and the
+other its prey. The model was proposed independently by Alfred J. Lotka
+in 1925 and Vito Volterra in 1926, and can be described by</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">du</span><span class="o">/</span><span class="n">dt</span> <span class="o">=</span>  <span class="n">a</span><span class="o">*</span><span class="n">u</span> <span class="o">-</span>   <span class="n">b</span><span class="o">*</span><span class="n">u</span><span class="o">*</span><span class="n">v</span>
+<span class="n">dv</span><span class="o">/</span><span class="n">dt</span> <span class="o">=</span> <span class="o">-</span><span class="n">c</span><span class="o">*</span><span class="n">v</span> <span class="o">+</span> <span class="n">d</span><span class="o">*</span><span class="n">b</span><span class="o">*</span><span class="n">u</span><span class="o">*</span><span class="n">v</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="n">the</span> <span class="n">following</span> <span class="n">notations</span><span class="p">:</span>
+
+<span class="o">*</span>  <span class="n">u</span><span class="p">:</span> <span class="n">number</span> <span class="n">of</span> <span class="n">preys</span> <span class="p">(</span><span class="k">for</span> <span class="n">example</span><span class="p">,</span> <span class="n">rabbits</span><span class="p">)</span>
+
+<span class="o">*</span>  <span class="n">v</span><span class="p">:</span> <span class="n">number</span> <span class="n">of</span> <span class="n">predators</span> <span class="p">(</span><span class="k">for</span> <span class="n">example</span><span class="p">,</span> <span class="n">foxes</span><span class="p">)</span>
+
+<span class="o">*</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="n">are</span> <span class="n">constant</span> <span class="n">parameters</span> <span class="n">defining</span> <span class="n">the</span> <span class="n">behavior</span> <span class="n">of</span> <span class="n">the</span> <span class="n">population</span><span class="p">:</span>
+
+
+  <span class="o">+</span> <span class="n">a</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">natural</span> <span class="n">growing</span> <span class="n">rate</span> <span class="n">of</span> <span class="n">rabbits</span><span class="p">,</span> <span class="n">when</span> <span class="n">there</span><span class="s">&#39;s no fox</span>
+
+  <span class="o">+</span> <span class="n">b</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">natural</span> <span class="n">dying</span> <span class="n">rate</span> <span class="n">of</span> <span class="n">rabbits</span><span class="p">,</span> <span class="n">due</span> <span class="n">to</span> <span class="n">predation</span>
+
+  <span class="o">+</span> <span class="n">c</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">natural</span> <span class="n">dying</span> <span class="n">rate</span> <span class="n">of</span> <span class="n">fox</span><span class="p">,</span> <span class="n">when</span> <span class="n">there</span><span class="s">&#39;s no rabbit</span>
+
+  <span class="o">+</span> <span class="n">d</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">factor</span> <span class="n">describing</span> <span class="n">how</span> <span class="n">many</span> <span class="n">caught</span> <span class="n">rabbits</span> <span class="n">let</span> <span class="n">create</span> <span class="n">a</span> <span class="n">new</span> <span class="n">fox</span>
+</pre></div>
+</div>
+<p>We will use X=[u, v] to describe the state of both populations.</p>
+<p>Definition of the equations:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">pylab</span> <span class="kn">as</span> <span class="nn">p</span>
+<span class="c"># Definition of parameters</span>
+<span class="n">a</span> <span class="o">=</span> <span class="mf">1.</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mf">1.5</span>
+<span class="n">d</span> <span class="o">=</span> <span class="mf">0.75</span>
+<span class="k">def</span> <span class="nf">dX_dt</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Return the growth rate of fox and rabbit populations. &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">array</span><span class="p">([</span> <span class="n">a</span><span class="o">*</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span>   <span class="n">b</span><span class="o">*</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">,</span>
+                  <span class="o">-</span><span class="n">c</span><span class="o">*</span><span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">d</span><span class="o">*</span><span class="n">b</span><span class="o">*</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">])</span>
+</pre></div>
+</div>
+<div class="section" id="population-equilibrium">
+<h2>Population equilibrium<a class="headerlink" href="#population-equilibrium" title="Permalink to this headline">¶</a></h2>
+<p>Before using !SciPy to integrate this system, we will have a closer look
+at position equilibrium. Equilibrium occurs when the growth rate is
+equal to 0. This gives two fixed points:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="n">X_f0</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span>     <span class="mf">0.</span> <span class="p">,</span>  <span class="mf">0.</span><span class="p">])</span>
+<span class="n">X_f1</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span> <span class="n">c</span><span class="o">/</span><span class="p">(</span><span class="n">d</span><span class="o">*</span><span class="n">b</span><span class="p">),</span> <span class="n">a</span><span class="o">/</span><span class="n">b</span><span class="p">])</span>
+<span class="nb">all</span><span class="p">(</span><span class="n">dX_dt</span><span class="p">(</span><span class="n">X_f0</span><span class="p">)</span> <span class="o">==</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">dX_dt</span><span class="p">(</span><span class="n">X_f1</span><span class="p">)</span> <span class="o">==</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="c"># =&gt; True</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="stability-of-the-fixed-points">
+<h2>Stability of the fixed points<a class="headerlink" href="#stability-of-the-fixed-points" title="Permalink to this headline">¶</a></h2>
+<p>Near these two points, the system can be linearized: dX_dt = A_f*X
+where A is the Jacobian matrix evaluated at the corresponding point. We
+have to define the Jacobian matrix:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="k">def</span> <span class="nf">d2X_dt2</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Return the Jacobian matrix evaluated in X. &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">array</span><span class="p">([[</span><span class="n">a</span> <span class="o">-</span><span class="n">b</span><span class="o">*</span><span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>   <span class="o">-</span><span class="n">b</span><span class="o">*</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>     <span class="p">],</span>
+                  <span class="p">[</span><span class="n">b</span><span class="o">*</span><span class="n">d</span><span class="o">*</span><span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">,</span>   <span class="o">-</span><span class="n">c</span> <span class="o">+</span><span class="n">b</span><span class="o">*</span><span class="n">d</span><span class="o">*</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="p">])</span>
+</pre></div>
+</div>
+<p>So near X_f0, which represents the extinction of both species, we have:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#! python</span>
+<span class="n">A_f0</span> <span class="o">=</span> <span class="n">d2X_dt2</span><span class="p">(</span><span class="n">X_f0</span><span class="p">)</span>                    <span class="c"># &gt;&gt;&gt; array([[ 1. , -0. ],</span>
+                                        <span class="c">#            [ 0. , -1.5]])</span>
+</pre></div>
+</div>
+<p>Near X_f0, the number of rabbits increase and the population of foxes
+decrease. The origin is therefore a <a class="reference external" href="http://en.wikipedia.org/wiki/Saddle_point">saddle
+point</a>.</p>
+<p>Near X_f1, we have:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="n">A_f1</span> <span class="o">=</span> <span class="n">d2X_dt2</span><span class="p">(</span><span class="n">X_f1</span><span class="p">)</span>                    <span class="c"># &gt;&gt;&gt; array([[ 0.  , -2.  ],</span>
+                                        <span class="c">#            [ 0.75,  0.  ]])</span>
+<span class="c"># whose eigenvalues are +/- sqrt(c*a).j:</span>
+<span class="n">lambda1</span><span class="p">,</span> <span class="n">lambda2</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">A_f1</span><span class="p">)</span> <span class="c"># &gt;&gt;&gt; (1.22474j, -1.22474j)</span>
+<span class="c"># They are imaginary numbers. The fox and rabbit populations are periodic as fol</span>
+<span class="c">#lows from further</span>
+<span class="c"># analysis. Their period is given by:</span>
+<span class="n">T_f1</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="nb">abs</span><span class="p">(</span><span class="n">lambda1</span><span class="p">)</span>                <span class="c"># &gt;&gt;&gt; 5.130199</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="integrating-the-ode-using-scipy-integrate">
+<h1>Integrating the ODE using scipy.integrate<a class="headerlink" href="#integrating-the-ode-using-scipy-integrate" title="Permalink to this headline">¶</a></h1>
+<p>Now we will use the scipy.integrate module to integrate the ODEs. This
+module offers a method named odeint, which is very easy to use to
+integrate ODEs:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">integrate</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span>  <span class="mi">1000</span><span class="p">)</span>              <span class="c"># time</span>
+<span class="n">X0</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>                     <span class="c"># initials conditions: 10 rabbits and 5</span>
+<span class="n">foxes</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">infodict</span> <span class="o">=</span> <span class="n">integrate</span><span class="o">.</span><span class="n">odeint</span><span class="p">(</span><span class="n">dX_dt</span><span class="p">,</span> <span class="n">X0</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">full_output</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">infodict</span><span class="p">[</span><span class="s">&#39;message&#39;</span><span class="p">]</span>                     <span class="c"># &gt;&gt;&gt; &#39;Integration successful.&#39;</span>
+</pre></div>
+</div>
+<p>`infodict` is optional, and you can omit the `full_output` argument
+if you don&#8217;t want it. Type &#8220;info(odeint)&#8221; if you want more information
+about odeint inputs and outputs.</p>
+<p>We can now use Matplotlib to plot the evolution of both populations:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="n">rabbits</span><span class="p">,</span> <span class="n">foxes</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span>
+<span class="n">f1</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">p</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">rabbits</span><span class="p">,</span> <span class="s">&#39;r-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;Rabbits&#39;</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">foxes</span>  <span class="p">,</span> <span class="s">&#39;b-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;Foxes&#39;</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">p</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s">&#39;best&#39;</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;time&#39;</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;population&#39;</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Evolution of fox and rabbit populations&#39;</span><span class="p">)</span>
+<span class="n">f1</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;rabbits_and_foxes_1.png&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="LoktaVolterraTutorial_attachments/rabbits_and_foxes_1v2.png" src="LoktaVolterraTutorial_attachments/rabbits_and_foxes_1v2.png" />
+<p>The populations are indeed periodic, and their period is close to the
+value T_f1 that we computed.</p>
+</div>
+<div class="section" id="plotting-direction-fields-and-trajectories-in-the-phase-plane">
+<h1>Plotting direction fields and trajectories in the phase plane<a class="headerlink" href="#plotting-direction-fields-and-trajectories-in-the-phase-plane" title="Permalink to this headline">¶</a></h1>
+<p>We will plot some trajectories in a phase plane for different starting
+points between X_f0 and X_f1.</p>
+<p>We will use Matplotlib&#8217;s colormap to define colors for the trajectories.
+These colormaps are very useful to make nice plots. Have a look at
+<a class="reference external" href="http://www.scipy.org/Cookbook/Matplotlib/Show_colormaps">ShowColormaps</a>
+if you want more information.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">values</span>  <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>                          <span class="c"># position of X0 betwee</span>
+<span class="n">n</span> <span class="n">X_f0</span> <span class="ow">and</span> <span class="n">X_f1</span>
+<span class="n">vcolors</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">autumn_r</span><span class="p">(</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)))</span>  <span class="c"># colors for each traje</span>
+<span class="n">ctory</span>
+
+<span class="n">f2</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+
+<span class="c">#-------------------------------------------------------</span>
+<span class="c"># plot trajectories</span>
+<span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">vcolors</span><span class="p">):</span>
+    <span class="n">X0</span> <span class="o">=</span> <span class="n">v</span> <span class="o">*</span> <span class="n">X_f1</span>                               <span class="c"># starting point</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">integrate</span><span class="o">.</span><span class="n">odeint</span><span class="p">(</span> <span class="n">dX_dt</span><span class="p">,</span> <span class="n">X0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>         <span class="c"># we don&#39;t need infodict here</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span> <span class="n">X</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">3.5</span><span class="o">*</span><span class="n">v</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&#39;X0=(%.f, %.f)&#39;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">X0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="p">,</span> <span class="n">X0</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">)</span>
+
+<span class="c">#-------------------------------------------------------</span>
+<span class="c"># define a grid and compute direction at each point</span>
+<span class="n">ymax</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>                        <span class="c"># get axis limits</span>
+<span class="n">xmax</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xmin</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">nb_points</span>   <span class="o">=</span> <span class="mi">20</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">nb_points</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">nb_points</span><span class="p">)</span>
+
+<span class="n">X1</span> <span class="p">,</span> <span class="n">Y1</span>  <span class="o">=</span> <span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>                       <span class="c"># create a grid</span>
+<span class="n">DX1</span><span class="p">,</span> <span class="n">DY1</span> <span class="o">=</span> <span class="n">dX_dt</span><span class="p">([</span><span class="n">X1</span><span class="p">,</span> <span class="n">Y1</span><span class="p">])</span>                      <span class="c"># compute growth rate on the gri</span>
+<span class="n">dt</span>
+<span class="n">M</span> <span class="o">=</span> <span class="p">(</span><span class="n">hypot</span><span class="p">(</span><span class="n">DX1</span><span class="p">,</span> <span class="n">DY1</span><span class="p">))</span>                           <span class="c"># Norm of the growth rate</span>
+<span class="n">M</span><span class="p">[</span> <span class="n">M</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>                                 <span class="c"># Avoid zero division errors</span>
+<span class="n">DX1</span> <span class="o">/=</span> <span class="n">M</span>                                        <span class="c"># Normalize each arrows</span>
+<span class="n">DY1</span> <span class="o">/=</span> <span class="n">M</span>
+
+<span class="c">#-------------------------------------------------------</span>
+<span class="c"># Drow direction fields, using matplotlib &#39;s quiver function</span>
+<span class="c"># I choose to plot normalized arrows and to use colors to give information on</span>
+<span class="c"># the growth speed</span>
+<span class="n">p</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Trajectories and direction fields&#39;</span><span class="p">)</span>
+<span class="n">Q</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">X1</span><span class="p">,</span> <span class="n">Y1</span><span class="p">,</span> <span class="n">DX1</span><span class="p">,</span> <span class="n">DY1</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">pivot</span><span class="o">=</span><span class="s">&#39;mid&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Number of rabbits&#39;</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Number of foxes&#39;</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">p</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">p</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
+<span class="n">f2</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;rabbits_and_foxes_2.png&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="LoktaVolterraTutorial_attachments/rabbits_and_foxes_2v3.png" src="LoktaVolterraTutorial_attachments/rabbits_and_foxes_2v3.png" />
+<p>This graph shows us that changing either the fox or the rabbit
+population can have an unintuitive effect. If, in order to decrease the
+number of rabbits, we introduce foxes, this can lead to an increase of
+rabbits in the long run, depending on the time of intervention.</p>
+</div>
+<div class="section" id="plotting-contours">
+<h1>Plotting contours<a class="headerlink" href="#plotting-contours" title="Permalink to this headline">¶</a></h1>
+<p>We can verify that the function IF defined below remains constant along
+a trajectory:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="k">def</span> <span class="nf">IF</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">X</span>
+    <span class="k">return</span> <span class="n">u</span><span class="o">**</span><span class="p">(</span><span class="n">c</span><span class="o">/</span><span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">v</span> <span class="o">*</span> <span class="n">exp</span><span class="p">(</span> <span class="o">-</span><span class="p">(</span><span class="n">b</span><span class="o">/</span><span class="n">a</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">d</span><span class="o">*</span><span class="n">u</span><span class="o">+</span><span class="n">v</span><span class="p">)</span> <span class="p">)</span>
+<span class="c"># We will verify that IF remains constant for different trajectories</span>
+<span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+    <span class="n">X0</span> <span class="o">=</span> <span class="n">v</span> <span class="o">*</span> <span class="n">X_f1</span>                               <span class="c"># starting point</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">integrate</span><span class="o">.</span><span class="n">odeint</span><span class="p">(</span> <span class="n">dX_dt</span><span class="p">,</span> <span class="n">X0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="n">I</span> <span class="o">=</span> <span class="n">IF</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>                                 <span class="c"># compute IF along the trajector</span>
+<span class="n">y</span>
+    <span class="n">I_mean</span> <span class="o">=</span> <span class="n">I</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="n">I</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">-</span><span class="n">I</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">/</span><span class="n">I_mean</span>
+    <span class="k">print</span> <span class="s">&#39;X0=(%2.f,%2.f) =&gt; I ~ </span><span class="si">%.1f</span><span class="s"> |delta = </span><span class="si">%.3G</span><span class="s"> </span><span class="si">%%</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">X0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X0</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">I_mean</span><span class="p">,</span>
+ <span class="n">delta</span><span class="p">)</span>
+<span class="c"># &gt;&gt;&gt; X0=( 6, 3) =&gt; I ~ 20.8 |delta = 6.19E-05 %</span>
+<span class="c">#     X0=( 9, 4) =&gt; I ~ 39.4 |delta = 2.67E-05 %</span>
+<span class="c">#     X0=(12, 6) =&gt; I ~ 55.7 |delta = 1.82E-05 %</span>
+<span class="c">#     X0=(15, 8) =&gt; I ~ 66.8 |delta = 1.12E-05 %</span>
+<span class="c">#     X0=(18, 9) =&gt; I ~ 72.4 |delta = 4.68E-06 %</span>
+</pre></div>
+</div>
+<p>Plotting iso-contours of IF can be a good representation of
+trajectories, without having to integrate the ODE</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!python</span>
+<span class="c">#-------------------------------------------------------</span>
+<span class="c"># plot iso contours</span>
+<span class="n">nb_points</span> <span class="o">=</span> <span class="mi">80</span>                              <span class="c"># grid size</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">nb_points</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">nb_points</span><span class="p">)</span>
+<span class="n">X2</span> <span class="p">,</span> <span class="n">Y2</span>  <span class="o">=</span> <span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>                   <span class="c"># create the grid</span>
+<span class="n">Z2</span> <span class="o">=</span> <span class="n">IF</span><span class="p">([</span><span class="n">X2</span><span class="p">,</span> <span class="n">Y2</span><span class="p">])</span>                           <span class="c"># compute IF on each point</span>
+<span class="n">f3</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">CS</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Y2</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Purples_r</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">CS2</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Y2</span><span class="p">,</span> <span class="n">Z2</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s">&#39;black&#39;</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="mf">2.</span> <span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">clabel</span><span class="p">(</span><span class="n">CS2</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;%.f&#39;</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">p</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Number of rabbits&#39;</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Number of foxes&#39;</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;IF contours&#39;</span><span class="p">)</span>
+<span class="n">f3</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;rabbits_and_foxes_3.png&#39;</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="LoktaVolterraTutorial_attachments/rabbits_and_foxes_3v2.png" src="LoktaVolterraTutorial_attachments/rabbits_and_foxes_3v2.png" />
+<hr class="docutils" />
+<p>CategoryCookbook</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Presentation of the Lotka-Volterra Model</a><ul>
+<li><a class="reference internal" href="#population-equilibrium">Population equilibrium</a></li>
+<li><a class="reference internal" href="#stability-of-the-fixed-points">Stability of the fixed points</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#integrating-the-ode-using-scipy-integrate">Integrating the ODE using scipy.integrate</a></li>
+<li><a class="reference internal" href="#plotting-direction-fields-and-trajectories-in-the-phase-plane">Plotting direction fields and trajectories in the phase plane</a></li>
+<li><a class="reference internal" href="#plotting-contours">Plotting contours</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="LinearRegression.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Matplotlib(2f)AdjustingImageSize.html"
+                        title="next chapter">First a little introduction</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/LoktaVolterraTutorial.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Matplotlib(2f)AdjustingImageSize.html" title="First a little introduction"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="LinearRegression.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="index.html">CookBook 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Matti Pastell.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
